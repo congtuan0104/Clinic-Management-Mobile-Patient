@@ -3,27 +3,36 @@ import { RegisterScreenProps } from "../types/types";
 import {
   Box,
   Heading,
-  Stack,
   VStack,
   FormControl,
   Input,
   Button,
-  Center,
   NativeBaseProvider,
   WarningOutlineIcon,
   Text,
+  Icon,
+  Link,
+  HStack,
 } from "native-base";
 
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { RegisterInfo } from "./types";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-
+import { theme } from "../theme";
+import { AntDesign } from "@expo/vector-icons";
 
 const schema = yup.object().shape({
-  email: yup.string().required("Email is required").email("Must be email"),
-  password: yup.string().required("Password is required").min(8, 'At least 8 characters'),
-  confirmPassword: yup.string().required("Password is required").min(8, 'At least 8 characters').oneOf([yup.ref('password')], 'Password does not match'),
+  email: yup.string().required("Email còn trống").email("Email không hợp lệ"),
+  password: yup
+    .string()
+    .required("Mật khẩu còn trống")
+    .min(8, "Mật khẩu tối thiểu 8 kí tự"),
+  confirmPassword: yup
+    .string()
+    .required("Xác nhận mật khẩu còn trống")
+    .min(8, "Mật khẩu tối thiểu 8 kí tự")
+    .oneOf([yup.ref("password")], "Xác nhận mật khẩu không trùng khớp"),
 });
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
@@ -40,86 +49,117 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
   };
 
   return (
-    <NativeBaseProvider>
-      <Box safeArea flex={1} p={2} w="90%" mx="auto">
-        <Heading size="lg" color="primary.500">
-          Welcome
-        </Heading>
-        <Heading color="muted.400" size="xs">
-          Sign up to continue!
-        </Heading>
-        <VStack space={2} mt={5}>
-          <FormControl isRequired isInvalid={errors.email ? true : false}>
-              <FormControl.Label _text={{color:'muted.700', fontSize:'sm', fontWeight: 600}}>Email</FormControl.Label>
+    <NativeBaseProvider theme={theme}>
+      <Box safeArea flex={1} p={2} w="90%" mx="auto" justifyContent="center">
+        <VStack>
+          <Heading
+            style={{ fontWeight: "bold" }}
+            size="lg"
+            color="muted.900"
+            my="5"
+          >
+            Đăng ký
+          </Heading>
+
+          <Button
+            variant="outline"
+            colorScheme="info"
+            leftIcon={<Icon as={AntDesign} name="google" size="sm" />}
+            style={{ borderColor: "#0284c7" }}
+            bg="light.50"
+          >
+            Đăng nhập với Google
+          </Button>
+          <Heading size="sm" color="muted.400" mt="3" mx="auto">
+            Hoặc
+          </Heading>
+          <VStack space={2}>
+            <FormControl isRequired isInvalid={errors.email ? true : false}>
+              <FormControl.Label
+                _text={{ color: "muted.700", fontSize: "sm", fontWeight: 600 }}
+              >
+                Địa chỉ Email
+              </FormControl.Label>
               <Controller
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
                     type="text"
-                    placeholder="email"
+                    placeholder="Địa chỉ email"
                     onChangeText={onChange}
                     value={value}
                     onBlur={onBlur}
+                    bg="light.50"
                   />
                 )}
                 name="email"
                 defaultValue=""
               />
               <FormControl.HelperText>
-                Must be a valid email.
+                Địa chỉ email phải hợp lệ.
               </FormControl.HelperText>
               <FormControl.ErrorMessage
                 leftIcon={<WarningOutlineIcon size="xs" />}
               >
                 {errors.email && <Text>{errors.email.message}</Text>}
               </FormControl.ErrorMessage>
-          </FormControl>
-          <FormControl isRequired isInvalid={errors.password ? true : false}>
-              <FormControl.Label _text={{color:'muted.700', fontSize:'sm', fontWeight: 600}}>Password</FormControl.Label>
+            </FormControl>
+            <FormControl isRequired isInvalid={errors.password ? true : false}>
+              <FormControl.Label
+                _text={{ color: "muted.700", fontSize: "sm", fontWeight: 600 }}
+              >
+                Mật khẩu
+              </FormControl.Label>
               <Controller
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
                     type="password"
-                    placeholder="password"
+                    placeholder="Mật khẩu"
                     onChangeText={onChange}
                     value={value}
                     onBlur={onBlur}
+                    bg="light.50"
                   />
                 )}
                 name="password"
                 defaultValue=""
               />
               <FormControl.HelperText>
-                Must be a valid password and at least 8 characters.
+                Mật khẩu phải có ít nhất 8 kí tự.
               </FormControl.HelperText>
               <FormControl.ErrorMessage
                 leftIcon={<WarningOutlineIcon size="xs" />}
               >
                 {errors.password && <Text>{errors.password.message}</Text>}
               </FormControl.ErrorMessage>
-          </FormControl>
-          <FormControl
-            isRequired
-            isInvalid={errors.confirmPassword ? true : false}
-          >
-              <FormControl.Label _text={{color:'muted.700', fontSize:'sm', fontWeight: 600}}>Confirm Password</FormControl.Label>
+            </FormControl>
+            <FormControl
+              isRequired
+              isInvalid={errors.confirmPassword ? true : false}
+            >
+              <FormControl.Label
+                _text={{ color: "muted.700", fontSize: "sm", fontWeight: 600 }}
+              >
+                Xác nhận mật khẩu
+              </FormControl.Label>
               <Controller
                 control={control}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
                     type="password"
-                    placeholder="confirmPassword"
+                    placeholder="Xác nhận mật khẩu"
                     onChangeText={onChange}
                     value={value}
                     onBlur={onBlur}
+                    bg="light.50"
                   />
                 )}
                 name="confirmPassword"
                 defaultValue=""
               />
               <FormControl.HelperText>
-                Must be a valid password and at least 8 characters and same with password.
+                Xác nhận mật khẩu phải trùng với mật khẩu.
               </FormControl.HelperText>
               <FormControl.ErrorMessage
                 leftIcon={<WarningOutlineIcon size="xs" />}
@@ -128,17 +168,32 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
                   <Text>{errors.confirmPassword.message}</Text>
                 )}
               </FormControl.ErrorMessage>
-          </FormControl>
-          <VStack space={2} mt={5}>
-            <Button
-            onPress={handleSubmit(onSubmit)}
-            colorScheme="cyan"
-            _text={{
-              color: "white",
-            }}
-          >
-            Submit
-          </Button>
+            </FormControl>
+            <VStack space={2} mt={5}>
+              <Button
+                onPress={handleSubmit(onSubmit)}
+                colorScheme="info"
+                _text={{
+                  color: "white",
+                }}
+              >
+                Đăng kí
+              </Button>
+              <HStack space={1} alignItems="center" justifyContent="center">
+                <Text>Đã có tài khoản?</Text>
+                <Link
+                  isUnderlined={false}
+                  href="https://example.com"
+                  _text={{
+                    _light: {
+                      color: "info.600",
+                    },
+                  }}
+                >
+                  Đăng nhập
+                </Link>
+              </HStack>
+            </VStack>
           </VStack>
         </VStack>
       </Box>

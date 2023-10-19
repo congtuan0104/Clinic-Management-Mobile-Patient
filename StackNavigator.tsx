@@ -6,13 +6,13 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import { RootNativeStackParamList } from './types/types';
 import { NativeBaseProvider } from 'native-base';
-
+import {theme} from './theme'
 
 const StackNavigator = () => {
   // Telling out navigator use it
   const RootStack = createNativeStackNavigator<RootNativeStackParamList>();
   return (
-    <NativeBaseProvider>
+    <NativeBaseProvider theme={theme}>
     <NavigationContainer>
       <RootStack.Navigator initialRouteName="Login">
         <RootStack.Screen  name="Login" component={LoginScreen} options={{headerShown:true}}/>
