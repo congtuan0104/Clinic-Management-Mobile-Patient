@@ -2,18 +2,20 @@ import { StyleSheet, Text, View } from 'react-native'
 import React from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
-
+import LoginScreen from './screens/LoginScreen';
+import RegisterScreen from './screens/RegisterScreen';
+import { RootNativeStackParamList } from './types/types';
 
 
 const StackNavigator = () => {
-    const Stack = createNativeStackNavigator();
+  // Telling out navigator use it
+  const RootStack = createNativeStackNavigator<RootNativeStackParamList>();
   return (
     <NavigationContainer>
-      <Stack.Navigator /* initialRouteName="Login" */>
-        {/* <Stack.Screen name="Login" component={LoginScreen} options={{headerShown:true}}/> */}
-        
-      </Stack.Navigator>
+      <RootStack.Navigator initialRouteName="Login">
+        <RootStack.Screen  name="Login" component={LoginScreen} options={{headerShown:true}}/>
+        <RootStack.Screen name="Register" component={RegisterScreen} options={{title:'Register'}}/>
+      </RootStack.Navigator>
     </NavigationContainer>
   )
 }
