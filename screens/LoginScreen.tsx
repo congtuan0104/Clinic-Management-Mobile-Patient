@@ -1,158 +1,215 @@
+import * as React from "react";
+import { Image } from "expo-image";
+import { StyleSheet } from "react-native";
 import {
-    StyleSheet,
-    Text,
-    View,
-    SafeAreaView,
-    KeyboardAvoidingView,
-    TextInput,
-    Pressable,
-    ActivityIndicator
-  } from "react-native";
-  import { Ionicons } from "@expo/vector-icons";
-  import React, { useEffect, useState } from "react";
-  import { MaterialCommunityIcons } from "@expo/vector-icons";
-  import { useNavigation } from "@react-navigation/native";
-  //import { signInWithEmailAndPassword } from "firebase/auth";
-  //import { auth } from "../firebase";
-  const LoginScreen = () => {
-    const [email, setEmail] = useState("");
-    const [loading,setLoading] = useState(false);
-    const [password, setPassword] = useState("");
-    const navigation = useNavigation();
-  
-    /* useEffect(() => {
-      setLoading(true);
-      const unsubscribe = auth.onAuthStateChanged((authUser) => {
-        if(!authUser){
-          setLoading(false);
-        }
-        if(authUser){
-          navigation.replace("Home");
-        }
-      });
-  
-      return unsubscribe;
-    },[]) */
-    
-    /* const login = () => {
-      signInWithEmailAndPassword(auth,email,password).then((userCredential) => {
-        console.log("user credential",userCredential);
-        const user = userCredential.user;
-        console.log("user details",user)
-      })
-    } */
-  
-    return (
-      <SafeAreaView
-        style={{
-          flex: 1,
-          backgroundColor: "white",
-          alignItems: "center",
-          padding: 10,
-        }}
-      >
-        {loading ? (
-          <View style={{alignItems:"center",justifyContent:"center",flexDirection:"row",flex:1}}>
-            <Text style={{marginRight:10}}>Loading</Text>
-            <ActivityIndicator size="large" color={"red"}/>
-          </View>
-        ) : (
-          <KeyboardAvoidingView>
-          <View
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              marginTop: 100,
-            }}
-          >
-            <Text style={{ fontSize: 20, color: "#662d91", fontWeight: "bold" }}>
-              Sign In
-            </Text>
-  
-            <Text style={{ fontSize: 18, marginTop: 8, fontWeight: "600" }}>
-              Sign In to your account
-            </Text>
-          </View>
-  
-          <View style={{ marginTop: 50 }}>
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <MaterialCommunityIcons
-                name="email-outline"
-                size={24}
-                color="black"
-              />
-              <TextInput
-                placeholder="Email"
-                value={email}
-                onChangeText={(text) => setEmail(text)}
-                placeholderTextColor="black"
-                style={{
-                  fontSize: email ? 18 : 18,
-                  borderBottomWidth: 1,
-                  borderBottomColor: "gray",
-                  marginLeft: 13,
-                  width: 300,
-                  marginVertical: 10,
-                }}
-              />
-            </View>
-  
-            <View style={{ flexDirection: "row", alignItems: "center" }}>
-              <Ionicons name="key-outline" size={24} color="black" />
-              <TextInput
-                value={password}
-                onChangeText={(text) => setPassword(text)}
-                secureTextEntry={true}
-                placeholder="Password"
-                placeholderTextColor="black"
-                style={{
-                  fontSize: password ? 18 : 18,
-                  borderBottomWidth: 1,
-                  borderBottomColor: "gray",
-                  marginLeft: 13,
-                  width: 300,
-                  marginVertical: 20,
-                }}
-              />
-            </View>
-  
-            <Pressable
-            /* onPress={login} */
-              style={{
-                width: 200,
-                backgroundColor: "#318CE7",
-                padding: 15,
-                borderRadius: 7,
-                marginTop: 50,
-                marginLeft: "auto",
-                marginRight: "auto",
+  Checkbox,
+  Box,
+  Text,
+  Heading,
+  VStack,
+  FormControl,
+  Input,
+  Link,
+  Button,
+  HStack,
+  Center,
+  NativeBaseProvider,
+} from "native-base";
+import { useForm, Controller, SubmitHandler } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { LoginInfo } from "./type";
+import * as yup from "yup";
+
+const schema: yup.ObjectSchema<LoginInfo> = yup
+  .object({
+    username: yup.string().required("Email không được để trống"),
+    password: yup
+      .string()
+      .min(8, "Mật khẩu phải có ít nhất 8 kí tự")
+      .required("password required"),
+  })
+  .required();
+
+const Login = () => {
+  const [isChecked, setIsChecked] = React.useState(false);
+
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInfo>({
+    defaultValues: {
+      username: "",
+      password: "",
+    },
+    resolver: yupResolver(schema),
+  });
+  const onSubmit: SubmitHandler<LoginInfo> = (data) => {
+    console.log(data);
+    // call api...
+  };
+
+  return (
+    <Center w="100%">
+      <Box safeArea p="2" py="8" w="100%" /* maxW="500" */>
+        <Heading
+          size="xl"
+          fontWeight="bold"
+          color="coolGray.800"
+          _dark={{
+            color: "warmGray.50",
+          }}
+        >
+          Đăng nhập
+        </Heading>
+        <Heading
+          mt="1"
+          _dark={{
+            color: "warmGray.200",
+          }}
+          color="coolGray.600"
+          fontWeight="medium"
+          size="xs"
+        >
+          <HStack mt="6" justifyContent="center">
+            <Text
+              fontSize="18"
+              color="black"
+              _dark={{
+                color: "warmGray.200",
               }}
             >
-              <Text style={{ fontSize: 18, textAlign: "center", color: "white" }}>
-                Login
+              hoặc{" "}
+            </Text>
+            <Link
+              _text={{
+                color: "#1890ff",
+                fontWeight: "medium",
+                fontSize: "18",
+              }}
+              href="#"
+            >
+              Tạo mới tài khoản
+            </Link>
+          </HStack>
+        </Heading>
+
+        <VStack space={3} mt="5">
+          <FormControl /* isInvalid={!!errors.email} */>
+            <Controller
+              control={control}
+              rules={
+                {
+                  // required: true,
+                }
+              }
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="Email"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                />
+              )}
+              name="username"
+            />
+            {errors.username ? <Text>{errors.username.message}</Text> : null}
+          </FormControl>
+          <FormControl>
+            <Controller
+              control={control}
+              rules={{
+                maxLength: 100,
+              }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="Password"
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value}
+                  secureTextEntry
+                />
+              )}
+              name="password"
+            />
+            {errors.password ? <Text>{errors.password.message}</Text> : null}
+          </FormControl>
+          <Checkbox
+            value="one"
+            isChecked={isChecked}
+            onChange={() => setIsChecked(!isChecked)}
+            my={2}
+            colorScheme="blue"
+          >
+            Ghi nhớ thông tin đăng nhập
+          </Checkbox>
+          <Button
+            mt="2"
+            colorScheme="indigo"
+            style={styles.buttonStyle}
+            onPress={handleSubmit(onSubmit)}
+          >
+            <Text ml={2} fontWeight="medium" style={{ color: "white" }}>
+              Đăng nhập
+            </Text>
+          </Button>
+          <Button
+            mt="2"
+            justifyContent="center"
+            alignItems="center"
+            bg="white" // Set the background color to white
+            borderWidth={1} // Set the border width
+            borderColor="gray.500" // Set the border color to gray
+            borderRadius="md" // Set the border radius
+            p={2} // Add padding to the button
+          >
+            <HStack space={2} alignItems="center">
+              <Image
+                style={styles.logoIcon}
+                contentFit="cover"
+                source={require("../assets/logo.png")}
+              />
+              <Text ml={2} fontWeight="regular">
+                Đăng nhập với Google
               </Text>
-            </Pressable>
-  
-            <Pressable /* onPress={() => navigation.navigate("Register")} */ style={{ marginTop: 20 }}>
-              <Text
-                style={{
-                  textAlign: "center",
-                  fontSize: 17,
-                  color: "gray",
-                  fontWeight: "500",
-                }}
-              >
-                Don't have a account? Sign Up
-              </Text>
-            </Pressable>
-          </View>
-        </KeyboardAvoidingView>
-        )}
-      </SafeAreaView>
-    );
-  };
-  
-  export default LoginScreen;
-  
-  const styles = StyleSheet.create({});
-  
+            </HStack>
+          </Button>
+        </VStack>
+        <Link
+          _text={{
+            fontSize: "14",
+            fontWeight: "500",
+            color: "#1890ff",
+          }}
+          alignSelf="center"
+          mt="3"
+        >
+          Quên mật khẩu?
+        </Link>
+      </Box>
+    </Center>
+  );
+};
+
+export default () => {
+  return (
+    <NativeBaseProvider>
+      <Center flex={1} px="3">
+        <Login />
+      </Center>
+    </NativeBaseProvider>
+  );
+};
+
+const styles = StyleSheet.create({
+  logoIcon: {
+    width: 20,
+    height: 20,
+    marginLeft: 10,
+  },
+  buttonStyle: {
+    backgroundColor: "#1890ff",
+    fontWeight: "bold",
+    color: "white",
+  },
+});
