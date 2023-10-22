@@ -22,7 +22,7 @@ import * as yup from "yup";
 
 const schema: yup.ObjectSchema<LoginInfo> = yup
   .object({
-    username: yup.string().required("Email không được để trống"),
+    username: yup.string().required("Email không được để trống").email('Email không hợp lệ'),
     password: yup
       .string()
       .min(8, "Mật khẩu phải có ít nhất 8 kí tự")
@@ -113,7 +113,7 @@ const Login = () => {
               )}
               name="username"
             />
-            {errors.username ? <Text>{errors.username.message}</Text> : null}
+            {errors.username ? <Text style={{ color: "red" }}>{errors.username.message}</Text> : null}
           </FormControl>
           <FormControl>
             <Controller
@@ -132,7 +132,7 @@ const Login = () => {
               )}
               name="password"
             />
-            {errors.password ? <Text>{errors.password.message}</Text> : null}
+            {errors.password ? <Text style={{ color: "red" }}>{errors.password.message}</Text> : null}
           </FormControl>
           <Checkbox
             value="one"
@@ -193,11 +193,9 @@ const Login = () => {
 
 export default () => {
   return (
-    <NativeBaseProvider>
       <Center flex={1} px="3">
         <Login />
-      </Center>
-    </NativeBaseProvider>
+      </Center>    
   );
 };
 
