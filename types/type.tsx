@@ -9,3 +9,11 @@ export type RootNativeStackParamList = {
 // Define type of props
 export type LoginScreenProps = NativeStackScreenProps<RootNativeStackParamList, 'Login'>;
 export type RegisterScreenProps = NativeStackScreenProps<RootNativeStackParamList, 'Register'>;
+
+export interface IUserInfo {
+  id: string;
+  email: string;
+  password: string;
+  emailVerified: boolean;
+  role: string;
+}
