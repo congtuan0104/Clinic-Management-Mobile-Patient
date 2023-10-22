@@ -1,18 +1,21 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 import { Provider } from 'react-redux';
-import { store } from './store';
+import { store } from './store/store';
 import StackNavigator from "./StackNavigator";
+import { NativeBaseProvider } from "native-base";
 
 export default function App() {
   return (
-    <Provider store={store}>
+    <NativeBaseProvider>
+      <Provider store={store}>
       
-        <StackNavigator />
-        
-        <StatusBar style="auto" />
+          <StackNavigator />
       
-    </Provider>
+          <StatusBar style="auto" />
+      
+      </Provider>
+    </NativeBaseProvider>
   );
 }
 
