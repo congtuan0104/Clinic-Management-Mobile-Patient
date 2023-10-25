@@ -95,9 +95,6 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
                 name="email"
                 defaultValue=""
               />
-              <FormControl.HelperText>
-                Địa chỉ email phải hợp lệ.
-              </FormControl.HelperText>
               <FormControl.ErrorMessage
                 leftIcon={<WarningOutlineIcon size="xs" />}
               >
@@ -125,9 +122,6 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
                 name="password"
                 defaultValue=""
               />
-              <FormControl.HelperText>
-                Mật khẩu phải có ít nhất 8 kí tự.
-              </FormControl.HelperText>
               <FormControl.ErrorMessage
                 leftIcon={<WarningOutlineIcon size="xs" />}
               >
@@ -158,9 +152,6 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
                 name="confirmPassword"
                 defaultValue=""
               />
-              <FormControl.HelperText>
-                Xác nhận mật khẩu phải trùng với mật khẩu.
-              </FormControl.HelperText>
               <FormControl.ErrorMessage
                 leftIcon={<WarningOutlineIcon size="xs" />}
               >
