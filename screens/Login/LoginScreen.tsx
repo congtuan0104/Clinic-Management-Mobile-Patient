@@ -16,9 +16,9 @@ import {
 } from "native-base";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { LoginInfo } from "./type";
+import { LoginInfo } from "../../types";
 import * as yup from "yup";
-import { LoginScreenProps } from "../types/type";
+import { LoginScreenProps } from "../../types";
 
 const schema: yup.ObjectSchema<LoginInfo> = yup
   .object({
@@ -175,7 +175,7 @@ const Login: React.FC<LoginScreenProps> = ({ navigation }) => {
                 <Image
                   style={styles.logoIcon}
                   contentFit="cover"
-                  source={require("../assets/logo.png")}
+                  source={require("../../assets/logo.png")}
                 />
                 <Text ml={2} fontWeight="regular">
                   Đăng nhập với Google
