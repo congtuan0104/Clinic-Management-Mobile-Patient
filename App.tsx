@@ -9,11 +9,8 @@ export default function App() {
   return (
     <NativeBaseProvider>
       <Provider store={store}>
-      
           <StackNavigator />
-      
           <StatusBar style="auto" />
-      
       </Provider>
     </NativeBaseProvider>
   );

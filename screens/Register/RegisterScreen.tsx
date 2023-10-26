@@ -1,5 +1,5 @@
 import React from "react";
-import { RegisterScreenProps } from "../types/type";
+import { RegisterScreenProps } from "../../types/auth.types";
 import {
   Box,
   Heading,
@@ -16,10 +16,10 @@ import {
 } from "native-base";
 
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { RegisterInfo } from "./type";
+import { RegisterInfo } from "../../types";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { theme } from "../theme";
+import { theme } from "../../theme";
 import { AntDesign } from "@expo/vector-icons";
 
 const schema = yup.object().shape({
