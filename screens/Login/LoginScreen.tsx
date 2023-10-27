@@ -23,6 +23,7 @@ import { LoginInfo } from "../../types";
 import * as yup from "yup";
 import { LoginScreenProps } from "../../types";
 import { RootState, loginAction } from "../../store";
+import { loginService } from "../../services/auth.services";
 
 const schema: yup.ObjectSchema<LoginInfo> = yup
   .object({
@@ -56,13 +57,13 @@ const Login: React.FC<LoginScreenProps> = ({
   });
 
   const { setUserToken } = route.params;
-  const token = useAppSelector((state: RootState) => state.authReducer.token);
   const dispatch = useAppDispatch();
 
   const onSubmit: SubmitHandler<LoginInfo> = async (data) => {
     console.log(data);
     // call api...
     // After call api: assume the API give token, we need to set toke
+    await loginService(data);
     const givenToken: string = "thisIsUserTokenFromAPI";
     dispatch(loginAction({ token: givenToken }));
     await SecureStore.setItemAsync("userToken", givenToken);
