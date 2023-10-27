@@ -5,7 +5,7 @@ export type RootNativeStackParamList = {
   // undefined: the route doesn't have params
   Login: { setUserToken: (token: any | null) => void };
   Register: undefined;
-  Home: undefined;
+  Home: { setUserToken: (token: any | null) => void };
 };
 // Define type of props
 export type LoginScreenProps = NativeStackScreenProps<
@@ -15,6 +15,11 @@ export type LoginScreenProps = NativeStackScreenProps<
 export type RegisterScreenProps = NativeStackScreenProps<
   RootNativeStackParamList,
   "Register"
+>;
+
+export type HomeScreenProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "Home"
 >;
 
 export interface IUserInfo {

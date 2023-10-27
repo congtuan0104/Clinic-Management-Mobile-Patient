@@ -9,26 +9,51 @@ import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
 import SplashScreen from "./screens/SplashScreen/SplashScreen";
 import HomeScreen from "./screens/Homepage/HomeScreen";
+import * as SecureStore from "expo-secure-store";
+import { useAppDispatch } from "./hooks";
+import { restoreToken } from "./store";
 
 const StackNavigator = () => {
   // define userToken for validation
   const [isLoading, setIsLoading] = React.useState(true);
-  const [userToken, setUserToken] = React.useState(null);
-  const getUserToken = async () => {
-    // testing purposes
-    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-    try {
-      // custom logic
-      await sleep(2000);
-      const token = null;
-      setUserToken(token);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [userToken, setUserToken] = React.useState<string | null>(null);
+  const dispatch = useAppDispatch();
+  // const getUserToken = async () => {
+  //   // testing purposes
+  //   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  //   try {
+  //     // custom logic
+  //     await sleep(2000);
+  //     const token = null;
+  //     setUserToken(token);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
 
   React.useEffect(() => {
-    getUserToken();
+    // Fetch the token from storage then navigate to our appropriate place
+    const bootstrapAsync = async () => {
+      let userToken;
+      try {
+        // Restore token stored in `SecureStore` or any other encrypted storage
+        userToken = await SecureStore.getItemAsync("userToken");
+        console.log(userToken);
+      } catch (e) {
+        // Restoring token failed
+      } finally {
+        setIsLoading(false);
+      }
+      // After restoring token, we may need to validate it in production apps
+
+      // This will switch to the App screen or Auth screen and this loading
+      // screen will be unmounted and thrown away.
+      if (userToken) {
+        dispatch(restoreToken({ token: userToken }));
+        setUserToken(userToken);
+      }
+    };
+    bootstrapAsync();
   }, []);
 
   if (isLoading) {
@@ -61,6 +86,7 @@ const StackNavigator = () => {
                 name="Home"
                 component={HomeScreen}
                 options={{ title: "Homepage" }}
+                initialParams={{ setUserToken }}
               />
             </>
           )}
