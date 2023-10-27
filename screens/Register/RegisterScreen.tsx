@@ -179,7 +179,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({ navigation }) => {
                       color: "info.600",
                     },
                   }}
-                  onPress={() => navigation.navigate("Login")}
+                  // onPress={() => navigation.navigate("Login")}
                 >
                   Đăng nhập
                 </Link>

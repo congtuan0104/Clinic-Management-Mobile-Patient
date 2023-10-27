@@ -3,8 +3,9 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 // Create an object type with mappings for route name to the params of the route
 export type RootNativeStackParamList = {
   // undefined: the route doesn't have params
-  Login: undefined;
+  Login: { setUserToken: (token: any | null) => void };
   Register: undefined;
+  Home: undefined;
 };
 // Define type of props
 export type LoginScreenProps = NativeStackScreenProps<

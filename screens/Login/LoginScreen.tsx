@@ -33,7 +33,10 @@ const schema: yup.ObjectSchema<LoginInfo> = yup
   })
   .required();
 
-const Login: React.FC<LoginScreenProps> = ({ navigation }) => {
+const Login: React.FC<LoginScreenProps> = ({
+  navigation,
+  route,
+}: LoginScreenProps) => {
   const [isChecked, setIsChecked] = React.useState(false);
 
   const {
@@ -47,9 +50,13 @@ const Login: React.FC<LoginScreenProps> = ({ navigation }) => {
     },
     resolver: yupResolver(schema),
   });
+
+  const { setUserToken } = route.params;
   const onSubmit: SubmitHandler<LoginInfo> = (data) => {
     console.log(data);
     // call api...
+    // After call api: assume the API give token, we need to set token
+    setUserToken("thisistoken");
   };
 
   return (
