@@ -4,53 +4,47 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/Login/LoginScreen";
 import RegisterScreen from "./screens/Register/RegisterScreen";
-import { RootNativeStackParamList } from "./types";
+import { IUserInfo, RootNativeStackParamList } from "./types";
 import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
 import SplashScreen from "./screens/SplashScreen/SplashScreen";
 import HomeScreen from "./screens/Homepage/HomeScreen";
 import * as SecureStore from "expo-secure-store";
 import { useAppDispatch } from "./hooks";
-import { restoreToken } from "./store";
-
+import { restoreUserInfo } from "./store";
 const StackNavigator = () => {
   // define userToken for validation
   const [isLoading, setIsLoading] = React.useState(true);
-  const [userToken, setUserToken] = React.useState<string | null>(null);
+  const [token, setToken] = React.useState<string | null>(null);
   const dispatch = useAppDispatch();
-  // const getUserToken = async () => {
-  //   // testing purposes
-  //   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-  //   try {
-  //     // custom logic
-  //     await sleep(2000);
-  //     const token = null;
-  //     setUserToken(token);
-  //   } finally {
-  //     setIsLoading(false);
-  //   }
-  // };
 
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
-      let userToken;
+      let userToken: string;
       try {
+        // Restore userInfo and dispatch to the store
+        const testData = await SecureStore.getItemAsync("user");
+        if (testData) {
+          const testDataObject = JSON.parse(testData);
+          const userInfo: IUserInfo = {
+            id: testDataObject.id,
+            email: testDataObject.email,
+            emailVerified: testDataObject.emailVerified,
+            role: testDataObject.role,
+          };
+          dispatch(restoreUserInfo(userInfo));
+        }
         // Restore token stored in `SecureStore` or any other encrypted storage
-        userToken = await SecureStore.getItemAsync("userToken");
-        console.log(userToken);
+        userToken = await JSON.parse(
+          JSON.stringify(SecureStore.getItemAsync("token"))
+        );
+        // setToken
+        setToken(userToken);
       } catch (e) {
         // Restoring token failed
       } finally {
         setIsLoading(false);
-      }
-      // After restoring token, we may need to validate it in production apps
-
-      // This will switch to the App screen or Auth screen and this loading
-      // screen will be unmounted and thrown away.
-      if (userToken) {
-        dispatch(restoreToken({ token: userToken }));
-        setUserToken(userToken);
       }
     };
     bootstrapAsync();
@@ -66,13 +60,13 @@ const StackNavigator = () => {
     <NativeBaseProvider theme={theme}>
       <NavigationContainer>
         <RootStack.Navigator>
-          {userToken == null ? (
+          {token == null ? (
             <>
               <RootStack.Screen
                 name="Login"
                 component={LoginScreen}
                 options={{ headerShown: true }}
-                initialParams={{ setUserToken }}
+                initialParams={{ setToken }}
               />
               <RootStack.Screen
                 name="Register"
@@ -86,7 +80,7 @@ const StackNavigator = () => {
                 name="Home"
                 component={HomeScreen}
                 options={{ title: "Homepage" }}
-                initialParams={{ setUserToken }}
+                initialParams={{ setToken }}
               />
             </>
           )}

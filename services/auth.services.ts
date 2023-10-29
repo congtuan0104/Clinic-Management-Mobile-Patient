@@ -1,24 +1,11 @@
-import { LoginInfo } from "../types";
 import { axiosClient } from "../utils/axios";
+import { ILoginRequest, ILoginResponse, IApiResponse } from "../types";
 
-export const loginService = async (data: LoginInfo) => {
-  return await axiosClient
-    .post(
-      "/auth/login",
-      {
-        email: data.username,
-        password: data.password,
-      },
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-      }
-    )
-    .then((response) => {
-      console.log(response.data);
-    })
-    .catch((error) => {
-      console.log(error);
+export const authApi = {
+  login(data: ILoginRequest): Promise<IApiResponse<ILoginResponse>> {
+    return axiosClient.post("/auth/login", {
+      email: data.email,
+      password: data.password,
     });
+  },
 };
