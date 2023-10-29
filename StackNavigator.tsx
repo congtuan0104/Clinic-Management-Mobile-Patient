@@ -72,6 +72,7 @@ const StackNavigator = () => {
                 name="Register"
                 component={RegisterScreen}
                 options={{ title: "Register" }}
+                initialParams={{ setToken }}
               />
             </>
           ) : (

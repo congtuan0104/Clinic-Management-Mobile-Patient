@@ -4,7 +4,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 export type RootNativeStackParamList = {
   // undefined: the route doesn't have params
   Login: { setToken: (token: string | null) => void };
-  Register: undefined;
+  Register: { setToken: (token: string | null) => void };
   Home: { setToken: (token: string | null) => void };
 };
 
@@ -44,13 +44,6 @@ export interface IRegisterRequest {
 export interface ILoginRequest {
   email: string;
   password: string;
-}
-
-// Comment soon
-export interface IRegisterInfo {
-  email: string;
-  password: string;
-  confirmPassword: string;
 }
 
 export interface ILoginResponse {

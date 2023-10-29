@@ -235,7 +235,9 @@ const Login: React.FC<LoginScreenProps> = ({
                 color: "info.600",
               },
             }}
-            onPress={() => navigation.navigate("Register")}
+            onPress={() =>
+              navigation.navigate("Register", { setToken: setToken })
+            }
           >
             Đăng ký
           </Link>
