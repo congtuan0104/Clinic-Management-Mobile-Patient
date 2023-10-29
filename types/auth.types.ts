@@ -6,6 +6,7 @@ export type RootNativeStackParamList = {
   Login: { setToken: (token: string | null) => void };
   Register: { setToken: (token: string | null) => void };
   Home: { setToken: (token: string | null) => void };
+  ValidateNotification: { setToken: (token: string | null) => void };
 };
 
 // Define type of props
@@ -21,6 +22,11 @@ export type RegisterScreenProps = NativeStackScreenProps<
 export type HomeScreenProps = NativeStackScreenProps<
   RootNativeStackParamList,
   "Home"
+>;
+
+export type ValidateNotificationProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "ValidateNotification"
 >;
 
 export interface IUserInfo {

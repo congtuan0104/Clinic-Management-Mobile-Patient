@@ -52,6 +52,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
 
   const onSubmit = (data: IRegisterRequest) => {
     console.log("Submitting with:", data);
+    navigation.navigate("ValidateNotification", { setToken: setToken });
   };
 
   return (

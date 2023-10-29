@@ -12,6 +12,7 @@ import HomeScreen from "./screens/Homepage/HomeScreen";
 import * as SecureStore from "expo-secure-store";
 import { useAppDispatch } from "./hooks";
 import { restoreUserInfo } from "./store";
+import ValidateNotification from "./screens/ValidateNotification/ValidateNotification";
 const StackNavigator = () => {
   // define userToken for validation
   const [isLoading, setIsLoading] = React.useState(true);
@@ -72,6 +73,12 @@ const StackNavigator = () => {
                 name="Register"
                 component={RegisterScreen}
                 options={{ title: "Register" }}
+                initialParams={{ setToken }}
+              />
+              <RootStack.Screen
+                name="ValidateNotification"
+                component={ValidateNotification}
+                options={{ title: "Validation Notification" }}
                 initialParams={{ setToken }}
               />
             </>
