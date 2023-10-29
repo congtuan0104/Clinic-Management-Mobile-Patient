@@ -5,10 +5,11 @@ const ValidateNotification: React.FC<ValidateNotificationProps> = ({
   navigation,
   route,
 }: ValidateNotificationProps) => {
-  const { setToken } = route.params;
+  const { setToken, email } = route.params;
   return (
     <View>
-      <Text>Hãy vào email của bạn để xác thực tài khoản</Text>
+      <Text>Một tin nhắn xác thực đã được gửi đến email {email}</Text>
+      <Text>Vui lòng xác thực tài khoản trước khi đăng nhập</Text>
       <Button
         onPress={() => {
           navigation.navigate("Login", { setToken: setToken });

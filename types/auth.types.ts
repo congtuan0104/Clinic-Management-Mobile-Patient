@@ -6,7 +6,10 @@ export type RootNativeStackParamList = {
   Login: { setToken: (token: string | null) => void };
   Register: { setToken: (token: string | null) => void };
   Home: { setToken: (token: string | null) => void };
-  ValidateNotification: { setToken: (token: string | null) => void };
+  ValidateNotification: {
+    email: string;
+    setToken: (token: string | null) => void;
+  };
 };
 
 // Define type of props
@@ -55,6 +58,14 @@ export interface ILoginRequest {
 export interface ILoginResponse {
   data: {
     token: string;
+    user: IUserInfo;
+  };
+  message: string;
+  status: string;
+}
+
+export interface IRegisterResponse {
+  data: {
     user: IUserInfo;
   };
   message: string;

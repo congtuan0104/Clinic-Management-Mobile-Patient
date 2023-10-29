@@ -21,6 +21,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { theme } from "../../theme";
 import { AntDesign } from "@expo/vector-icons";
+import { authApi } from "../../services";
 
 const schema = yup.object().shape({
   firstName: yup.string().required("Tên không được để trống"),
@@ -50,9 +51,25 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
     resolver: yupResolver(schema),
   });
 
-  const onSubmit = (data: IRegisterRequest) => {
+  const onSubmit = async (data: IRegisterRequest) => {
     console.log("Submitting with:", data);
-    navigation.navigate("ValidateNotification", { setToken: setToken });
+    // Send data to server
+    await authApi
+      .register(data)
+      .then(async (response) => {
+        if (response.data?.data) {
+          const data = response.data.data.user;
+          console.log(data);
+          navigation.navigate("ValidateNotification", {
+            email: data.email,
+            setToken: setToken,
+          });
+        }
+      })
+      .catch((error) => {
+        // Print error to the screen
+        console.log(error.response.data);
+      });
   };
 
   return (
