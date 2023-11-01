@@ -3,9 +3,15 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 // Create an object type with mappings for route name to the params of the route
 export type RootNativeStackParamList = {
   // undefined: the route doesn't have params
-  Login: undefined;
-  Register: undefined;
+  Login: { setToken: (token: string | null) => void };
+  Register: { setToken: (token: string | null) => void };
+  Home: { setToken: (token: string | null) => void };
+  ValidateNotification: {
+    email: string;
+    setToken: (token: string | null) => void;
+  };
 };
+
 // Define type of props
 export type LoginScreenProps = NativeStackScreenProps<
   RootNativeStackParamList,
@@ -16,21 +22,52 @@ export type RegisterScreenProps = NativeStackScreenProps<
   "Register"
 >;
 
+export type HomeScreenProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "Home"
+>;
+
+export type ValidateNotificationProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "ValidateNotification"
+>;
+
 export interface IUserInfo {
   id: string;
   email: string;
-  password: string;
   emailVerified: boolean;
   role: string;
+  // firstName: string;
+  // lastName: string;
+  // token: string;
+  // avatar: string;
 }
 
-export type LoginInfo = {
-  username: string;
-  password: string;
-};
-
-export type RegisterInfo = {
+export interface IRegisterRequest {
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
-  confirmPassword: string;
-};
+}
+
+export interface ILoginRequest {
+  email: string;
+  password: string;
+}
+
+export interface ILoginResponse {
+  data: {
+    token: string;
+    user: IUserInfo;
+  };
+  message: string;
+  status: string;
+}
+
+export interface IRegisterResponse {
+  data: {
+    user: IUserInfo;
+  };
+  message: string;
+  status: string;
+}

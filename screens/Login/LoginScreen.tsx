@@ -1,6 +1,9 @@
 import * as React from "react";
 import { Image } from "expo-image";
 import { StyleSheet } from "react-native";
+import { useAppSelector, useAppDispatch } from "../../hooks";
+import * as SecureStore from "expo-secure-store";
+
 import {
   Checkbox,
   Box,
@@ -16,13 +19,15 @@ import {
 } from "native-base";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { LoginInfo } from "../../types";
+import { ILoginRequest, ILoginResponse } from "../../types";
 import * as yup from "yup";
 import { LoginScreenProps } from "../../types";
+import { RootState, login } from "../../store";
+import { authApi } from "../../services/auth.services";
 
-const schema: yup.ObjectSchema<LoginInfo> = yup
+const schema: yup.ObjectSchema<ILoginRequest> = yup
   .object({
-    username: yup
+    email: yup
       .string()
       .required("Email không được để trống")
       .email("Email không hợp lệ"),
@@ -33,23 +38,49 @@ const schema: yup.ObjectSchema<LoginInfo> = yup
   })
   .required();
 
-const Login: React.FC<LoginScreenProps> = ({ navigation }) => {
+const Login: React.FC<LoginScreenProps> = ({
+  navigation,
+  route,
+}: LoginScreenProps) => {
   const [isChecked, setIsChecked] = React.useState(false);
 
   const {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginInfo>({
+  } = useForm<ILoginRequest>({
     defaultValues: {
-      username: "",
+      email: "",
       password: "",
     },
     resolver: yupResolver(schema),
   });
-  const onSubmit: SubmitHandler<LoginInfo> = (data) => {
-    console.log(data);
+
+  const { setToken } = route.params;
+  const dispatch = useAppDispatch();
+
+  const onSubmit: SubmitHandler<ILoginRequest> = async (
+    data: ILoginRequest
+  ) => {
     // call api...
+    // After call api: assume the API give token, we need to set token
+    await authApi
+      .login(data)
+      .then(async (response) => {
+        if (response.data?.data) {
+          dispatch(login(response.data?.data.user));
+          await SecureStore.setItemAsync("token", response.data?.data.token);
+          await SecureStore.setItemAsync(
+            "user",
+            JSON.stringify(response.data?.data.user)
+          );
+          setToken(response.data.data.token);
+        }
+      })
+      .catch((error) => {
+        // Print error to the screen
+        console.log(error.response.data);
+      });
   };
 
   return (
@@ -115,10 +146,10 @@ const Login: React.FC<LoginScreenProps> = ({ navigation }) => {
                     value={value}
                   />
                 )}
-                name="username"
+                name="email"
               />
-              {errors.username ? (
-                <Text style={{ color: "red" }}>{errors.username.message}</Text>
+              {errors.email ? (
+                <Text style={{ color: "red" }}>{errors.email.message}</Text>
               ) : null}
             </FormControl>
             <FormControl>
@@ -204,7 +235,9 @@ const Login: React.FC<LoginScreenProps> = ({ navigation }) => {
                 color: "info.600",
               },
             }}
-            onPress={() => navigation.navigate("Register")}
+            onPress={() =>
+              navigation.navigate("Register", { setToken: setToken })
+            }
           >
             Đăng ký
           </Link>
