@@ -27,6 +27,11 @@
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "scheme": "patient"
+    "scheme": "mycoolredirect",
+    "extra": {
+      "eas": {
+        "projectId": "cfdcaa5a-205a-4c17-87d3-f07957a50cc9"
+      }
+    }
   }
 }

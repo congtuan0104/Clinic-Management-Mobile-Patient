@@ -25,6 +25,7 @@ import { LoginScreenProps } from "../../types";
 import { RootState, login } from "../../store";
 import { authApi } from "../../services/auth.services";
 //android 632434206355-1iedigou2u3pk413aiknp8l4m6jpqvbj.apps.googleusercontent.com
+// web 632434206355-vfm5ujjc0opoure2epddcgi5t19tmdjd.apps.googleusercontent.com
 import * as WebBrowser from "expo-web-browser";
 import * as Google from "expo-auth-session/providers/google";
 WebBrowser.maybeCompleteAuthSession();
@@ -62,8 +63,9 @@ const Login: React.FC<LoginScreenProps> = ({
     resolver: yupResolver(schema),
   });
 
-  const [request, googleResponse, promptAsync] = Google.useAuthRequest({
+  const [request, response , promptAsync] = Google.useAuthRequest({
     androidClientId: "632434206355-1iedigou2u3pk413aiknp8l4m6jpqvbj.apps.googleusercontent.com",
+    //webClientId: "632434206355-vfm5ujjc0opoure2epddcgi5t19tmdjd.apps.googleusercontent.com",
   });
 
   const { setToken } = route.params;
@@ -76,35 +78,44 @@ const Login: React.FC<LoginScreenProps> = ({
     // After call api: assume the API give token, we need to set token
     await authApi
       .login(data)
-      .then(async (response) => {
-        if (response.data?.data) {
-          dispatch(login(response.data?.data.user));
-          await SecureStore.setItemAsync("token", response.data?.data.token);
+      .then(async (res) => {
+        if (res.data?.data) {
+          dispatch(login(res.data?.data.user));
+          await SecureStore.setItemAsync("token", res.data?.data.token);
           await SecureStore.setItemAsync(
             "user",
-            JSON.stringify(response.data?.data.user)
+            JSON.stringify(res.data?.data.user)
           );
-          setToken(response.data.data.token);
+          setToken(res.data.data.token);
         }
       })
       .catch((error) => {
         // Print error to the screen
-        console.log(error.response.data);
+        console.log(error.res.data);
       });
   };
 
   React.useEffect(() => {
     handleEffect();
-  }, [googleResponse, token]);
+  }, [response , token]);
 
   async function handleEffect() {
     const user = await getLocalUser();
     console.log("user", user);
     if (!user) {
-      if (googleResponse?.type === "success") {
-        setToken(googleResponse.authentication?.accessToken ?? 'defaultAccessToken');
-        getUserInfo(googleResponse.authentication?.accessToken ?? 'defaultAccessToken');
+      console.log('in here');
+      if (response ?.type === "success") {
+        if (response .authentication?.accessToken)
+        {
+          setToken(response .authentication?.accessToken)
+          getUserInfo(response .authentication?.accessToken);
+          setLoginToken(response .authentication?.accessToken)
+        }
+        else 
+          console.log("Khong nhan duoc accessToken tu google");
       }
+      else 
+      console.log(response )
     } else {
       setUserInfo(user);
       console.log("loaded locally");
@@ -120,15 +131,17 @@ const Login: React.FC<LoginScreenProps> = ({
   const getUserInfo = async (token:string) => {
     if (!token) return;
     try {
-      const response = await fetch(
+      console.log('acess token cuả google response: ', token);
+      const res = await fetch(
         "https://www.googleapis.com/userinfo/v2/me",
         {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
 
-      const user = await response.json();
+      const user = await res.json();
       await SecureStore.setItemAsync("user", JSON.stringify(user));
+      dispatch(login(user));
       setUserInfo(user);
     } catch (error) {
       // Add your own error handler here
