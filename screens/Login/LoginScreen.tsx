@@ -24,6 +24,10 @@ import * as yup from "yup";
 import { LoginScreenProps } from "../../types";
 import { RootState, login } from "../../store";
 import { authApi } from "../../services/auth.services";
+//android 632434206355-1iedigou2u3pk413aiknp8l4m6jpqvbj.apps.googleusercontent.com
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+WebBrowser.maybeCompleteAuthSession();
 
 const schema: yup.ObjectSchema<ILoginRequest> = yup
   .object({
@@ -43,6 +47,8 @@ const Login: React.FC<LoginScreenProps> = ({
   route,
 }: LoginScreenProps) => {
   const [isChecked, setIsChecked] = React.useState(false);
+  const [token, setLoginToken] = React.useState("");
+  const [userInfo, setUserInfo] = React.useState(null);
 
   const {
     control,
@@ -54,6 +60,10 @@ const Login: React.FC<LoginScreenProps> = ({
       password: "",
     },
     resolver: yupResolver(schema),
+  });
+
+  const [request, googleResponse, promptAsync] = Google.useAuthRequest({
+    androidClientId: "632434206355-1iedigou2u3pk413aiknp8l4m6jpqvbj.apps.googleusercontent.com",
   });
 
   const { setToken } = route.params;
@@ -81,6 +91,48 @@ const Login: React.FC<LoginScreenProps> = ({
         // Print error to the screen
         console.log(error.response.data);
       });
+  };
+
+  React.useEffect(() => {
+    handleEffect();
+  }, [googleResponse, token]);
+
+  async function handleEffect() {
+    const user = await getLocalUser();
+    console.log("user", user);
+    if (!user) {
+      if (googleResponse?.type === "success") {
+        setToken(googleResponse.authentication?.accessToken ?? 'defaultAccessToken');
+        getUserInfo(googleResponse.authentication?.accessToken ?? 'defaultAccessToken');
+      }
+    } else {
+      setUserInfo(user);
+      console.log("loaded locally");
+    }
+  }
+
+  const getLocalUser = async () => {
+    const data = await SecureStore.getItemAsync("user");
+    if (!data) return null;
+    return JSON.parse(data);
+  };
+
+  const getUserInfo = async (token:string) => {
+    if (!token) return;
+    try {
+      const response = await fetch(
+        "https://www.googleapis.com/userinfo/v2/me",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const user = await response.json();
+      await SecureStore.setItemAsync("user", JSON.stringify(user));
+      setUserInfo(user);
+    } catch (error) {
+      // Add your own error handler here
+    }
   };
 
   return (
@@ -201,6 +253,9 @@ const Login: React.FC<LoginScreenProps> = ({
               borderColor="gray.500" // Set the border color to gray
               borderRadius="md" // Set the border radius
               p={2} // Add padding to the button
+              onPress={() => {
+                promptAsync();
+              }}
             >
               <HStack space={2} alignItems="center">
                 <Image
