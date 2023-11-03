@@ -21,14 +21,21 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff",
-        "googleServicesFile": "./google-services.json"
-      }
+        "backgroundColor": "#ffffff"       
+      },
+      "googleServicesFile": "./google-services.json",
+      "package": "com.nhatminh287.Mobileapppatient"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
-   
-    "plugins": ["@react-native-google-signin/google-signin"]
+    "plugins": [
+      "@react-native-google-signin/google-signin"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "cfdcaa5a-205a-4c17-87d3-f07957a50cc9"
+      }
+    }
   }
 }
