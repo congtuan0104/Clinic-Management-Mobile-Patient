@@ -55,10 +55,32 @@ export interface ILoginRequest {
   password: string;
 }
 
+export interface ILoginWithGoogleRequest {
+  email: string;
+  firstName: string;
+  lastName: string;
+  picture: string;
+}
+
 export interface ILoginResponse {
   data: {
     token: string;
     user: IUserInfo;
+  };
+  message: string;
+  status: string;
+}
+
+export interface ILoginWithGoogleResponse {
+  data: {
+    user: {
+      email: string;
+      emailVerified: boolean;
+      id: string;
+      password: string;
+      role: string;
+    };
+    token: string;
   };
   message: string;
   status: string;

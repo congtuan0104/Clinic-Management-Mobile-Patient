@@ -22,7 +22,6 @@ const StackNavigator = () => {
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
-      let userToken: string;
       try {
         // Restore userInfo and dispatch to the store
         const testData = await SecureStore.getItemAsync("user");
@@ -36,12 +35,13 @@ const StackNavigator = () => {
           };
           dispatch(restoreUserInfo(userInfo));
         }
+        const tokenString = await SecureStore.getItemAsync("token");
+        if (tokenString) {
+          setToken(tokenString);
+        } else {
+          setToken(null);
+        }
         // Restore token stored in `SecureStore` or any other encrypted storage
-        userToken = await JSON.parse(
-          JSON.stringify(SecureStore.getItemAsync("token"))
-        );
-        // setToken
-        setToken(userToken);
       } catch (e) {
         // Restoring token failed
       } finally {
@@ -61,7 +61,7 @@ const StackNavigator = () => {
     <NativeBaseProvider theme={theme}>
       <NavigationContainer>
         <RootStack.Navigator>
-          {token == null ? (
+          {token === null ? (
             <>
               <RootStack.Screen
                 name="Login"

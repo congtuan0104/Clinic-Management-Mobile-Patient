@@ -5,6 +5,7 @@ import { useAppDispatch } from "../../hooks";
 import { logout } from "../../store";
 import * as SecureStore from "expo-secure-store";
 import { HomeScreenProps, IUserInfo } from "../../types";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
 
 export default function HomeScreen({ navigation, route }: HomeScreenProps) {
   const dispatch = useAppDispatch();
@@ -42,8 +43,11 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
       </Text>
       <Text>Token hien tai cua ban la: {tokenString}</Text>
       <Button
-        onPress={() => {
-          SecureStore.deleteItemAsync("userToken");
+        onPress={async () => {
+          // await GoogleSignin.revokeAccess();
+          // await GoogleSignin.signOut();
+          SecureStore.deleteItemAsync("user");
+          SecureStore.deleteItemAsync("token");
           dispatch(logout());
           setToken(null);
         }}
