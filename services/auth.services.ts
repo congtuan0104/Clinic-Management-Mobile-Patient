@@ -5,6 +5,8 @@ import {
   IApiResponse,
   IRegisterRequest,
   IRegisterResponse,
+  ILoginWithGoogleRequest,
+  ILoginWithGoogleResponse,
 } from "../types";
 
 export const authApi = {
@@ -21,5 +23,10 @@ export const authApi = {
       email: data.email,
       password: data.password,
     });
+  },
+  loginWithGoogle(
+    data: ILoginWithGoogleRequest
+  ): Promise<IApiResponse<ILoginWithGoogleResponse>> {
+    return axiosClient.post("/auth/account", data);
   },
 };

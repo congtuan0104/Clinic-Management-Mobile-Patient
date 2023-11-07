@@ -1,9 +1,9 @@
-import * as React from "react";
+import React, { useState, useEffect } from "react";
 import { Image } from "expo-image";
 import { StyleSheet } from "react-native";
 import { useAppSelector, useAppDispatch } from "../../hooks";
 import * as SecureStore from "expo-secure-store";
-
+import { ILoginWithGoogleRequest, IUserInfo } from "../../types";
 import {
   Checkbox,
   Box,
@@ -24,7 +24,24 @@ import * as yup from "yup";
 import { LoginScreenProps } from "../../types";
 import { RootState, login } from "../../store";
 import { authApi } from "../../services/auth.services";
+import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import auth from "@react-native-firebase/auth";
+import { firebase, FirebaseAuthTypes } from "@react-native-firebase/auth";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBwljKuHPNin6ODGe4EkG8UQL4QwuL-UoM",
+  authDomain: "login-6752e.firebaseapp.com",
+  databaseURL: "https://login-6752e.firebaseio.com",
+  projectId: "login-6752e",
+  storageBucket: "login-6752e.appspot.com",
+  messagingSenderId: "931199521045",
+  appId: "1:931199521045:android:f22b9362cda32f90e0d91c",
+};
+
+GoogleSignin.configure({
+  webClientId:
+    "931199521045-rn8i7um077q2b9pgpsrdejj90qj26fvv.apps.googleusercontent.com",
+});
 const schema: yup.ObjectSchema<ILoginRequest> = yup
   .object({
     email: yup
@@ -43,6 +60,9 @@ const Login: React.FC<LoginScreenProps> = ({
   route,
 }: LoginScreenProps) => {
   const [isChecked, setIsChecked] = React.useState(false);
+  // Set an initializing state whilst Firebase connects
+  const [initializing, setInitializing] = useState(true);
+  const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
 
   const {
     control,
@@ -55,19 +75,91 @@ const Login: React.FC<LoginScreenProps> = ({
     },
     resolver: yupResolver(schema),
   });
-
+  useEffect(() => {
+    // console.log(firebase.apps.length);
+    // console.log(firebase.apps);
+    if (!firebase.apps.length) {
+      // console.log("in init firebase apps");
+      firebase.initializeApp(firebaseConfig);
+    }
+    // Rest of your Login component code
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
   const { setToken } = route.params;
   const dispatch = useAppDispatch();
+  // Handle user state changes
+  function onAuthStateChanged(user: FirebaseAuthTypes.User | null) {
+    setUser(user);
+    if (initializing) setInitializing(false);
+  }
+
+  async function revokeGoogleAccess() {
+    try {
+      // await GoogleSignin.revokeAccess();
+      await GoogleSignin.signOut();
+      // Tiếp theo, thực hiện đăng nhập lại với Google
+      onGoogleButtonPress();
+    } catch (error) {
+      console.error("Không thể thu hồi quyền truy cập Google: ", error);
+    }
+  }
+
+  async function onGoogleButtonPress() {
+    // Check if your device supports Google Play
+    await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
+    // Get the users ID token
+    const { idToken } = await GoogleSignin.signIn();
+    // Create a Google credential with the token
+    const googleCredential = auth.GoogleAuthProvider.credential(idToken);
+    // Sign-in the user with the credential
+    const userSignIn = auth().signInWithCredential(googleCredential);
+    userSignIn
+      .then(async (user) => {
+        if (user.additionalUserInfo?.profile) {
+          // get Data to call api loginWithGoogle
+          const loginWithGoogleUser: ILoginWithGoogleRequest = {
+            email: user.additionalUserInfo?.profile.email,
+            firstName: user.additionalUserInfo?.profile.family_name,
+            lastName: user.additionalUserInfo?.profile.given_name,
+            picture: user.additionalUserInfo?.profile.picture,
+          };
+          // call API
+          await authApi
+            .loginWithGoogle(loginWithGoogleUser)
+            .then(async (response) => {
+              if (response.data?.data) {
+                dispatch(login(response.data?.data.user));
+                await SecureStore.setItemAsync(
+                  "token",
+                  response.data?.data.token
+                );
+                await SecureStore.setItemAsync(
+                  "user",
+                  JSON.stringify(response.data?.data.user)
+                );
+                setToken(response.data.data.token);
+              }
+            });
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   const onSubmit: SubmitHandler<ILoginRequest> = async (
     data: ILoginRequest
   ) => {
+    console.log("go here");
     // call api...
     // After call api: assume the API give token, we need to set token
     await authApi
       .login(data)
       .then(async (response) => {
+        console.log("api");
         if (response.data?.data) {
+          console.log("response.data?.data.user: ", response.data?.data.user);
           dispatch(login(response.data?.data.user));
           await SecureStore.setItemAsync("token", response.data?.data.token);
           await SecureStore.setItemAsync(
@@ -201,6 +293,7 @@ const Login: React.FC<LoginScreenProps> = ({
               borderColor="gray.500" // Set the border color to gray
               borderRadius="md" // Set the border radius
               p={2} // Add padding to the button
+              onPress={revokeGoogleAccess}
             >
               <HStack space={2} alignItems="center">
                 <Image
