@@ -16,6 +16,7 @@ import {
   Button,
   HStack,
   Center,
+  Modal,
 } from "native-base";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -59,6 +60,7 @@ const Login: React.FC<LoginScreenProps> = ({
   const [userIdFromProvider, setUserIdFromProvider] = useState<string>("");
   const [providerLogin, setProviderLogin] = useState<string>("");
   const [emailFromProvider, setEmailFromProvider] = useState<string | null>(""); // email được chọn để đăng ký tài khoản
+  const [showModal, setShowModal] = useState<boolean>(false);
 
   const {
     control,
@@ -132,6 +134,7 @@ const Login: React.FC<LoginScreenProps> = ({
           } else {
             setEmailFromProvider(userInfoFromProvider.user.email);
             // open modal here
+            setShowModal(true);
           }
           // call API
           // await authApi
@@ -344,6 +347,53 @@ const Login: React.FC<LoginScreenProps> = ({
             Đăng ký
           </Link>
         </HStack>
+        <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+          <Modal.Content maxWidth="400px">
+            <Modal.CloseButton />
+            <Modal.Header>
+              Tài khoản của bạn chưa được liên kết, vui lòng chọn email muốn
+              liên kết
+            </Modal.Header>
+            <Modal.Body>
+              <FormControl>
+                <FormControl.Label>
+                  Chọn Email để liên kết tài khoản
+                </FormControl.Label>
+                <Button
+                  onPress={() => {
+                    // Implement sending email here
+                  }}
+                >
+                  <Text>{emailFromProvider}</Text>
+                </Button>
+              </FormControl>
+              <FormControl mt="3">
+                <FormControl.Label>Hoặc nhập Email của bạn</FormControl.Label>
+                <Input placeholder="Nhập tài khoản bạn muốn liên kết" />
+              </FormControl>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button.Group space={2}>
+                <Button
+                  variant="ghost"
+                  colorScheme="blueGray"
+                  onPress={() => {
+                    setShowModal(false);
+                  }}
+                >
+                  Thoát
+                </Button>
+                <Button
+                  onPress={() => {
+                    setShowModal(false);
+                  }}
+                >
+                  Tiếp tục
+                </Button>
+              </Button.Group>
+            </Modal.Footer>
+          </Modal.Content>
+        </Modal>
       </Center>
     </Center>
   );
