@@ -29,4 +29,9 @@ export const authApi = {
   ): Promise<IApiResponse<ILoginWithGoogleResponse>> {
     return axiosClient.post("/auth/account", data);
   },
+  getUserByAccountId(accountId: string, provider: string): Promise<any> {
+    return axiosClient.get(
+      `/auth/account?key=${accountId}&provider=${provider}`
+    );
+  },
 };

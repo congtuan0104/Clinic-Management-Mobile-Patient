@@ -33,6 +33,8 @@ import { WEB_CLIENT_ID } from "../../constants";
 GoogleSignin.configure({
   webClientId: WEB_CLIENT_ID,
 });
+let providerStr: string = "";
+
 const schema: yup.ObjectSchema<ILoginRequest> = yup
   .object({
     email: yup
@@ -54,6 +56,9 @@ const Login: React.FC<LoginScreenProps> = ({
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [userIdFromProvider, setUserIdFromProvider] = useState<string>("");
+  const [providerLogin, setProviderLogin] = useState<string>("");
+  const [emailFromProvider, setEmailFromProvider] = useState<string | null>(""); // email được chọn để đăng ký tài khoản
 
   const {
     control,
@@ -95,6 +100,7 @@ const Login: React.FC<LoginScreenProps> = ({
   }
 
   async function onGoogleButtonPress() {
+    providerStr = "google";
     // Check if your device supports Google Play
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     // Get the users ID token
@@ -104,10 +110,29 @@ const Login: React.FC<LoginScreenProps> = ({
     // Sign-in the user with the credential
     const userSignIn = auth().signInWithCredential(googleCredential);
     userSignIn
-      .then(async (user) => {
-        if (user) {
-          // get Data to call api loginWithGoogle
-          console.log(user);
+      .then(async (userInfoFromProvider) => {
+        if (userInfoFromProvider) {
+          setUserIdFromProvider(userInfoFromProvider.user.uid);
+          setProviderLogin(providerStr);
+          // kiểm tra account có tồn tại, nếu có thì lưu thông tin user và token
+          const res = await authApi.getUserByAccountId(
+            userInfoFromProvider.user.uid,
+            providerStr
+          );
+          console.log(`userAccount: `, res.data.user);
+          if (res.data.user) {
+            await SecureStore.setItemAsync("token", res.data.token);
+            await SecureStore.setItemAsync(
+              "user",
+              JSON.stringify(res.data.user)
+            );
+            dispatch(login(res.data.user));
+            // Show notification here
+            // Auto-navigate to Home
+          } else {
+            setEmailFromProvider(userInfoFromProvider.user.email);
+            // open modal here
+          }
           // call API
           // await authApi
           //   .loginWithGoogle(loginWithGoogleUser)
@@ -142,7 +167,7 @@ const Login: React.FC<LoginScreenProps> = ({
       .login(data)
       .then(async (response) => {
         console.log("api");
-        if (response.data?.data) {
+        if (response.data) {
           console.log("response.data?.data.user: ", response.data?.data.user);
           dispatch(login(response.data?.data.user));
           await SecureStore.setItemAsync("token", response.data?.data.token);
