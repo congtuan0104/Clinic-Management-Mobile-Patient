@@ -34,4 +34,13 @@ export const authApi = {
       `/auth/account?key=${accountId}&provider=${provider}`
     );
   },
+  sendEmailVerifyUser(data: {
+    email: string;
+    key: string;
+    provider: string;
+  }): Promise<any> {
+    return axiosClient.get("/auth/user/send-email-verify-user", {
+      params: data,
+    });
+  },
 };

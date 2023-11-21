@@ -61,6 +61,7 @@ const Login: React.FC<LoginScreenProps> = ({
   const [providerLogin, setProviderLogin] = useState<string>("");
   const [emailFromProvider, setEmailFromProvider] = useState<string | null>(""); // email được chọn để đăng ký tài khoản
   const [showModal, setShowModal] = useState<boolean>(false);
+  const [emailChoose, setEmailChoose] = useState<string>(""); // email được chọn để đăng ký tài khoản
 
   const {
     control,
@@ -159,6 +160,27 @@ const Login: React.FC<LoginScreenProps> = ({
         console.log(err);
       });
   }
+
+  const sendEmailVerifyLinkAccount = async (email: string) => {
+    try {
+      console.log(`Gửi mail xác thực đến  `, email);
+      const res = await authApi.sendEmailVerifyUser({
+        email,
+        key: userIdFromProvider,
+        provider: providerLogin,
+      });
+      if (res.status) {
+        navigation.navigate("ValidateNotification", {
+          email: email,
+          setToken: setToken,
+        });
+        setShowModal(false);
+      }
+      setEmailChoose("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const onSubmit: SubmitHandler<ILoginRequest> = async (
     data: ILoginRequest
@@ -362,6 +384,10 @@ const Login: React.FC<LoginScreenProps> = ({
                 <Button
                   onPress={() => {
                     // Implement sending email here
+                    if (emailFromProvider) {
+                      setEmailChoose(emailFromProvider);
+                      sendEmailVerifyLinkAccount(emailFromProvider);
+                    }
                   }}
                 >
                   <Text>{emailFromProvider}</Text>
@@ -369,7 +395,13 @@ const Login: React.FC<LoginScreenProps> = ({
               </FormControl>
               <FormControl mt="3">
                 <FormControl.Label>Hoặc nhập Email của bạn</FormControl.Label>
-                <Input placeholder="Nhập tài khoản bạn muốn liên kết" />
+                <Input
+                  placeholder="Nhập tài khoản bạn muốn liên kết"
+                  value={emailChoose}
+                  onChangeText={(emailChoose) => {
+                    setEmailChoose(emailChoose);
+                  }}
+                />
               </FormControl>
             </Modal.Body>
             <Modal.Footer>
@@ -386,6 +418,7 @@ const Login: React.FC<LoginScreenProps> = ({
                 <Button
                   onPress={() => {
                     setShowModal(false);
+                    sendEmailVerifyLinkAccount(emailChoose);
                   }}
                 >
                   Tiếp tục
