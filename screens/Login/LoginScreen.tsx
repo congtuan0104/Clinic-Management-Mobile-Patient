@@ -16,6 +16,7 @@ import {
   Button,
   HStack,
   Center,
+  Modal,
 } from "native-base";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -27,21 +28,14 @@ import { authApi } from "../../services/auth.services";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import { firebase, FirebaseAuthTypes } from "@react-native-firebase/auth";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBwljKuHPNin6ODGe4EkG8UQL4QwuL-UoM",
-  authDomain: "login-6752e.firebaseapp.com",
-  databaseURL: "https://login-6752e.firebaseio.com",
-  projectId: "login-6752e",
-  storageBucket: "login-6752e.appspot.com",
-  messagingSenderId: "931199521045",
-  appId: "1:931199521045:android:f22b9362cda32f90e0d91c",
-};
+import { firebaseConfig } from "../../config/firebase";
+import { WEB_CLIENT_ID } from "../../constants";
 
 GoogleSignin.configure({
-  webClientId:
-    "931199521045-rn8i7um077q2b9pgpsrdejj90qj26fvv.apps.googleusercontent.com",
+  webClientId: WEB_CLIENT_ID,
 });
+let providerStr: string = "";
+
 const schema: yup.ObjectSchema<ILoginRequest> = yup
   .object({
     email: yup
@@ -63,6 +57,11 @@ const Login: React.FC<LoginScreenProps> = ({
   // Set an initializing state whilst Firebase connects
   const [initializing, setInitializing] = useState(true);
   const [user, setUser] = useState<FirebaseAuthTypes.User | null>(null);
+  const [userIdFromProvider, setUserIdFromProvider] = useState<string>("");
+  const [providerLogin, setProviderLogin] = useState<string>("");
+  const [emailFromProvider, setEmailFromProvider] = useState<string | null>(""); // email được chọn để đăng ký tài khoản
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [emailChoose, setEmailChoose] = useState<string>(""); // email được chọn để đăng ký tài khoản
 
   const {
     control,
@@ -76,12 +75,10 @@ const Login: React.FC<LoginScreenProps> = ({
     resolver: yupResolver(schema),
   });
   useEffect(() => {
-    // console.log(firebase.apps.length);
-    // console.log(firebase.apps);
     if (!firebase.apps.length) {
-      // console.log("in init firebase apps");
       firebase.initializeApp(firebaseConfig);
     }
+
     // Rest of your Login component code
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
@@ -106,6 +103,7 @@ const Login: React.FC<LoginScreenProps> = ({
   }
 
   async function onGoogleButtonPress() {
+    providerStr = "google";
     // Check if your device supports Google Play
     await GoogleSignin.hasPlayServices({ showPlayServicesUpdateDialog: true });
     // Get the users ID token
@@ -115,38 +113,74 @@ const Login: React.FC<LoginScreenProps> = ({
     // Sign-in the user with the credential
     const userSignIn = auth().signInWithCredential(googleCredential);
     userSignIn
-      .then(async (user) => {
-        if (user.additionalUserInfo?.profile) {
-          // get Data to call api loginWithGoogle
-          const loginWithGoogleUser: ILoginWithGoogleRequest = {
-            email: user.additionalUserInfo?.profile.email,
-            firstName: user.additionalUserInfo?.profile.family_name,
-            lastName: user.additionalUserInfo?.profile.given_name,
-            picture: user.additionalUserInfo?.profile.picture,
-          };
+      .then(async (userInfoFromProvider) => {
+        if (userInfoFromProvider) {
+          setUserIdFromProvider(userInfoFromProvider.user.uid);
+          setProviderLogin(providerStr);
+          // kiểm tra account có tồn tại, nếu có thì lưu thông tin user và token
+          const res = await authApi.getUserByAccountId(
+            userInfoFromProvider.user.uid,
+            providerStr
+          );
+          console.log(`userAccount: `, res.data.user);
+          if (res.data.user) {
+            await SecureStore.setItemAsync("token", res.data.token);
+            await SecureStore.setItemAsync(
+              "user",
+              JSON.stringify(res.data.user)
+            );
+            dispatch(login(res.data.user));
+            // Show notification here
+            // Auto-navigate to Home
+          } else {
+            setEmailFromProvider(userInfoFromProvider.user.email);
+            // open modal here
+            setShowModal(true);
+          }
           // call API
-          await authApi
-            .loginWithGoogle(loginWithGoogleUser)
-            .then(async (response) => {
-              if (response.data?.data) {
-                dispatch(login(response.data?.data.user));
-                await SecureStore.setItemAsync(
-                  "token",
-                  response.data?.data.token
-                );
-                await SecureStore.setItemAsync(
-                  "user",
-                  JSON.stringify(response.data?.data.user)
-                );
-                setToken(response.data.data.token);
-              }
-            });
+          // await authApi
+          //   .loginWithGoogle(loginWithGoogleUser)
+          //   .then(async (response) => {
+          //     if (response.data?.data) {
+          //       dispatch(login(response.data?.data.user));
+          //       await SecureStore.setItemAsync(
+          //         "token",
+          //         response.data?.data.token
+          //       );
+          //       await SecureStore.setItemAsync(
+          //         "user",
+          //         JSON.stringify(response.data?.data.user)
+          //       );
+          //       setToken(response.data.data.token);
+          //     }
+          //   });
         }
       })
       .catch((err) => {
         console.log(err);
       });
   }
+
+  const sendEmailVerifyLinkAccount = async (email: string) => {
+    try {
+      console.log(`Gửi mail xác thực đến  `, email);
+      const res = await authApi.sendEmailVerifyUser({
+        email,
+        key: userIdFromProvider,
+        provider: providerLogin,
+      });
+      if (res.status) {
+        navigation.navigate("ValidateNotification", {
+          email: email,
+          setToken: setToken,
+        });
+        setShowModal(false);
+      }
+      setEmailChoose("");
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const onSubmit: SubmitHandler<ILoginRequest> = async (
     data: ILoginRequest
@@ -158,7 +192,7 @@ const Login: React.FC<LoginScreenProps> = ({
       .login(data)
       .then(async (response) => {
         console.log("api");
-        if (response.data?.data) {
+        if (response.data) {
           console.log("response.data?.data.user: ", response.data?.data.user);
           dispatch(login(response.data?.data.user));
           await SecureStore.setItemAsync("token", response.data?.data.token);
@@ -335,6 +369,64 @@ const Login: React.FC<LoginScreenProps> = ({
             Đăng ký
           </Link>
         </HStack>
+        <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+          <Modal.Content maxWidth="400px">
+            <Modal.CloseButton />
+            <Modal.Header>
+              Tài khoản của bạn chưa được liên kết, vui lòng chọn email muốn
+              liên kết
+            </Modal.Header>
+            <Modal.Body>
+              <FormControl>
+                <FormControl.Label>
+                  Chọn Email để liên kết tài khoản
+                </FormControl.Label>
+                <Button
+                  onPress={() => {
+                    // Implement sending email here
+                    if (emailFromProvider) {
+                      setEmailChoose(emailFromProvider);
+                      sendEmailVerifyLinkAccount(emailFromProvider);
+                    }
+                  }}
+                >
+                  <Text>{emailFromProvider}</Text>
+                </Button>
+              </FormControl>
+              <FormControl mt="3">
+                <FormControl.Label>Hoặc nhập Email của bạn</FormControl.Label>
+                <Input
+                  placeholder="Nhập tài khoản bạn muốn liên kết"
+                  value={emailChoose}
+                  onChangeText={(emailChoose) => {
+                    setEmailChoose(emailChoose);
+                  }}
+                />
+              </FormControl>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button.Group space={2}>
+                <Button
+                  variant="ghost"
+                  colorScheme="blueGray"
+                  onPress={() => {
+                    setShowModal(false);
+                  }}
+                >
+                  Thoát
+                </Button>
+                <Button
+                  onPress={() => {
+                    setShowModal(false);
+                    sendEmailVerifyLinkAccount(emailChoose);
+                  }}
+                >
+                  Tiếp tục
+                </Button>
+              </Button.Group>
+            </Modal.Footer>
+          </Modal.Content>
+        </Modal>
       </Center>
     </Center>
   );
