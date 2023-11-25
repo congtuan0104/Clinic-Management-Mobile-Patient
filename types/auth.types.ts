@@ -10,6 +10,7 @@ export type RootNativeStackParamList = {
     email: string;
     setToken: (token: string | null) => void;
   };
+  UserProfile: undefined;
 };
 
 // Define type of props
@@ -27,6 +28,11 @@ export type HomeScreenProps = NativeStackScreenProps<
   "Home"
 >;
 
+export type UserProfileScreenProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "UserProfile"
+>;
+
 export type ValidateNotificationProps = NativeStackScreenProps<
   RootNativeStackParamList,
   "ValidateNotification"
@@ -37,10 +43,7 @@ export interface IUserInfo {
   email: string;
   emailVerified: boolean;
   role: string;
-  // firstName: string;
-  // lastName: string;
-  // token: string;
-  // avatar: string;
+  token: string;
 }
 
 export interface IRegisterRequest {
@@ -71,6 +74,11 @@ export interface ILoginResponse {
   status: string;
 }
 
+export interface ILoginResponseData {
+  token: string;
+  user: IUserInfo;
+}
+
 export interface ILoginWithGoogleResponse {
   data: {
     user: {
@@ -92,4 +100,13 @@ export interface IRegisterResponse {
   };
   message: string;
   status: string;
+}
+
+export interface ILinkAccountRequest {
+  key: string | null;
+  userId: string | null | undefined;
+  firstName: string | null;
+  lastName: string | null;
+  picture: string | null;
+  provider: string | null;
 }

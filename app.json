@@ -30,7 +30,15 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "@react-native-google-signin/google-signin"
+      "@react-native-google-signin/google-signin",
+      [
+        "react-native-fbsdk-next",
+      {
+        "appID": "246416061448702",
+        "clientToken": "6b9ac107583746e675bbba995b377e66",
+        "displayName": "CLINUS"
+      }
+    ]
     ],
     "extra": {
       "eas": {

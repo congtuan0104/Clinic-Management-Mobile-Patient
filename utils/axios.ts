@@ -1,10 +1,10 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse } from "axios";
-import * as SecureStore from "expo-secure-store";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const REQUEST_TIMEOUT = 30000;
 
 // generate with ngrok
-const baseUrl = "http://clinusapi.live/api/";
+const baseUrl = "https://ca02-2405-4800-5716-5eaf-f06f-842a-5a3f-2ba8.ngrok-free.app/api";
 export const axiosClient = axios.create({
   baseURL: baseUrl, // Set the base URL for all requests
   timeout: 30000, // Set the default timeout for requests
@@ -12,16 +12,15 @@ export const axiosClient = axios.create({
   // Set default headers if needed
   headers: {
     common: {
-      Authorization: "Bearer YOUR_ACCESS_TOKEN",
+      authorization: "Bearer YOUR_ACCESS_TOKEN",
       "Content-Type": "application/json",
     },
   },
 });
 
 const InterceptorsRequest = async (config: AxiosRequestConfig) => {
-  // lấy token từ cookie và gắn vào header trước khi gửi request
-  const token = await SecureStore.getItemAsync("token");
-
+  // lấy token từ store và gắn vào header trước khi gửi request
+  const token = await AsyncStorage.getItem("token");
   if (token === undefined) {
     return config;
   }
@@ -41,9 +40,13 @@ const InterceptorsRequest = async (config: AxiosRequestConfig) => {
 };
 
 const InterceptorsError = (error: AxiosError) => {
-  // thông báo lỗi khi không gửi hay nhận được request
-  // eslint-disable-next-line no-console
   console.error("Lỗi: ", error);
+  if (error.config) {
+    console.log('Request:', error.config);
+  }
+  if (error.response) {
+    console.log('Response:', error.response);
+  }
   return Promise.reject(error);
 };
 
