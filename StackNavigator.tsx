@@ -9,39 +9,28 @@ import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
 import SplashScreen from "./screens/SplashScreen/SplashScreen";
 import HomeScreen from "./screens/Homepage/HomeScreen";
-import * as SecureStore from "expo-secure-store";
-import { useAppDispatch } from "./hooks";
+import UserProfileScreen from "./screens/UserProfile/UserProfileScreen";
+import { userInfoSelector } from './store';
+import { useAppDispatch, useAppSelector } from "./hooks";
 import { restoreUserInfo } from "./store";
 import ValidateNotification from "./screens/ValidateNotification/ValidateNotification";
 const StackNavigator = () => {
   // define userToken for validation
   const [isLoading, setIsLoading] = React.useState(true);
   const [token, setToken] = React.useState<string | null>(null);
+  const userInfo = useAppSelector(userInfoSelector);
   const dispatch = useAppDispatch();
 
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
       try {
-        // Restore userInfo and dispatch to the store
-        const testData = await SecureStore.getItemAsync("user");
-        if (testData) {
-          const testDataObject = JSON.parse(testData);
-          const userInfo: IUserInfo = {
-            id: testDataObject.id,
-            email: testDataObject.email,
-            emailVerified: testDataObject.emailVerified,
-            role: testDataObject.role,
-          };
-          dispatch(restoreUserInfo(userInfo));
-        }
-        const tokenString = await SecureStore.getItemAsync("token");
+        const tokenString = userInfo?.token;
         if (tokenString) {
           setToken(tokenString);
         } else {
           setToken(null);
         }
-        // Restore token stored in `SecureStore` or any other encrypted storage
       } catch (e) {
         // Restoring token failed
       } finally {
@@ -89,6 +78,11 @@ const StackNavigator = () => {
                 component={HomeScreen}
                 options={{ title: "Homepage" }}
                 initialParams={{ setToken }}
+              />
+              <RootStack.Screen
+                name="UserProfile"
+                component={UserProfileScreen}
+                options={{ title: 'User Profile' }}
               />
             </>
           )}
