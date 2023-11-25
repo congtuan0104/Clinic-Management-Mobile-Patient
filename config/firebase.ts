@@ -1,3 +1,7 @@
+import firebase from 'firebase/compat/app'
+import 'firebase/compat/auth'
+import 'firebase/compat/firestore'
+
 export const firebaseConfig = {
   apiKey: "AIzaSyBwljKuHPNin6ODGe4EkG8UQL4QwuL-UoM",
   authDomain: "login-6752e.firebaseapp.com",
@@ -7,3 +11,9 @@ export const firebaseConfig = {
   messagingSenderId: "931199521045",
   appId: "1:931199521045:android:f22b9362cda32f90e0d91c",
 };
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+
+export { firebase}

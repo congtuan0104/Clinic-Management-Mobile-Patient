@@ -37,3 +37,4 @@ export const { login, restoreUserInfo, logout } = AuthSlice.actions;
 // export const selectCount = (state: RootState) => state.
 
 export const authReducer = AuthSlice.reducer;
+export const userInfoSelector = (state: RootState) => state?.authReducer?.user;

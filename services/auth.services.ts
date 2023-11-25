@@ -7,14 +7,33 @@ import {
   IRegisterResponse,
   ILoginWithGoogleRequest,
   ILoginWithGoogleResponse,
+  ILoginResponseData,
+  ILinkAccountRequest
 } from "../types";
 
 export const authApi = {
-  login(data: ILoginRequest): Promise<IApiResponse<ILoginResponse>> {
-    return axiosClient.post("/auth/login", {
+  async login(data: ILoginRequest): Promise<ILoginResponseData> {
+    // Log thông tin request trước khi gửi đi
+    console.log('Login Request:', {
       email: data.email,
       password: data.password,
     });
+
+    // Gửi request và nhận response từ server
+    return axiosClient.post("/auth/login", {
+      email: data.email,
+      password: data.password,
+    })
+      .then(response => {
+        // Log thông tin response khi nhận được từ server
+        console.log('Login Response:', response);
+        return response.data; // Trả về dữ liệu từ response
+      })
+      .catch(error => {
+        // Xử lý và log lỗi khi gọi API
+        console.error('Login Error:', error);
+        throw error; // Ném lại error để xử lý ở phần gọi API
+      });
   },
   register(data: IRegisterRequest): Promise<IApiResponse<IRegisterResponse>> {
     return axiosClient.post("/auth/register", {
@@ -43,4 +62,16 @@ export const authApi = {
       params: data,
     });
   },
+
+  linkAccount(data: ILinkAccountRequest): Promise<any> {
+    return axiosClient.post('/auth/link-account', data);
+  },
+
+  geLinkAccount(userId: string): Promise<any> {
+    return axiosClient.get(`/auth/${userId}/accounts`);
+  },
+  
+  disConnectLinkAccount(userId: string, accountId: string): Promise<any> {
+    return axiosClient.delete(`/auth/${userId}/accounts/${accountId}`);
+  }
 };

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Image } from "expo-image";
 import { StyleSheet } from "react-native";
 import { useAppSelector, useAppDispatch } from "../../hooks";
-import * as SecureStore from "expo-secure-store";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ILoginWithGoogleRequest, IUserInfo } from "../../types";
 import {
   Checkbox,
@@ -79,7 +79,6 @@ const Login: React.FC<LoginScreenProps> = ({
       firebase.initializeApp(firebaseConfig);
     }
 
-    // Rest of your Login component code
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
@@ -93,7 +92,6 @@ const Login: React.FC<LoginScreenProps> = ({
 
   async function revokeGoogleAccess() {
     try {
-      // await GoogleSignin.revokeAccess();
       await GoogleSignin.signOut();
       // Tiếp theo, thực hiện đăng nhập lại với Google
       onGoogleButtonPress();
@@ -124,13 +122,9 @@ const Login: React.FC<LoginScreenProps> = ({
           );
           console.log(`userAccount: `, res.data.user);
           if (res.data.user) {
-            await SecureStore.setItemAsync("token", res.data.token);
-            await SecureStore.setItemAsync(
-              "user",
-              JSON.stringify(res.data.user)
-            );
+            await AsyncStorage.setItem('token', res.data.token);
+            await AsyncStorage.setItem('user', JSON.stringify(res.data.user));
             dispatch(login(res.data.user));
-            // Show notification here
             // Auto-navigate to Home
           } else {
             setEmailFromProvider(userInfoFromProvider.user.email);
@@ -186,26 +180,22 @@ const Login: React.FC<LoginScreenProps> = ({
     data: ILoginRequest
   ) => {
     console.log("go here");
-    // call api...
-    // After call api: assume the API give token, we need to set token
+    console.log(data)
     await authApi
       .login(data)
-      .then(async (response) => {
-        console.log("api");
-        if (response.data) {
-          console.log("response.data?.data.user: ", response.data?.data.user);
-          dispatch(login(response.data?.data.user));
-          await SecureStore.setItemAsync("token", response.data?.data.token);
-          await SecureStore.setItemAsync(
-            "user",
-            JSON.stringify(response.data?.data.user)
-          );
-          setToken(response.data.data.token);
+      .then(async (res) => {
+        console.log('api login:', res)
+        if (res) {
+          
+          dispatch(login({id: res.user.id, email: res.user.email, emailVerified: res.user.emailVerified, role: res.user.role, token: res.user.token}));
+          
+          await AsyncStorage.setItem('token', res.token);
+          await AsyncStorage.setItem('user', JSON.stringify(res.user));
+          setToken(res.token);
         }
       })
       .catch((error) => {
-        // Print error to the screen
-        console.log(error.response.data);
+        console.log(error);
       });
   };
 
