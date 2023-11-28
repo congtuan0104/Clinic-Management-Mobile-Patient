@@ -25,7 +25,7 @@ const StackNavigator = () => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
       try {
-        const tokenString = userInfo?.token;
+        const tokenString = null;
         if (tokenString) {
           setToken(tokenString);
         } else {

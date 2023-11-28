@@ -1,4 +1,4 @@
-import { Text, Button, View } from "native-base";
+import { Text, Button, View, Box } from "native-base";
 import { ValidateNotificationProps } from "../../types";
 
 const ValidateNotification: React.FC<ValidateNotificationProps> = ({
@@ -7,17 +7,19 @@ const ValidateNotification: React.FC<ValidateNotificationProps> = ({
 }: ValidateNotificationProps) => {
   const { setToken, email } = route.params;
   return (
-    <View>
-      <Text>Một tin nhắn xác thực đã được gửi đến email {email}</Text>
-      <Text>Vui lòng xác thực tài khoản trước khi đăng nhập</Text>
-      <Button
-        onPress={() => {
-          navigation.navigate("Login", { setToken: setToken });
-        }}
-      >
-        Quay lại trang đăng nhập
-      </Button>
-    </View>
+    <Box safeArea>
+      <View>
+        <Text>Một tin nhắn xác thực đã được gửi đến email {email}</Text>
+        <Text>Vui lòng xác thực tài khoản trước khi đăng nhập</Text>
+        <Button
+          onPress={() => {
+            navigation.navigate("Login", { setToken: setToken });
+          }}
+        >
+          Quay lại trang đăng nhập
+        </Button>
+      </View>
+    </Box>
   );
 };
 

@@ -74,20 +74,18 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
   });
 
   const onSubmit = async (data: IRegisterFormData) => {
-    const { confirmPassword, ...registerData } = data; // xóa thông tin xác nhận mật khẩu trước khi gửi api
-    console.log("Submitting with:", data);
+    const { confirmPassword, ...registerData } = data;
+    console.log(registerData);
     // Send data to server
     await authApi
       .register(registerData)
       .then(async (response) => {
-        if (response.data?.data) {
-          const data = response.data.data.user;
-          console.log(data);
+        if (response.data)
+          // Redirect đến trang Validate
           navigation.navigate("ValidateNotification", {
-            email: data.email,
+            email: response.data?.user.email,
             setToken: setToken,
           });
-        }
       })
       .catch((error) => {
         // Print error to the screen

@@ -41,16 +41,9 @@ export type ValidateNotificationProps = NativeStackScreenProps<
 export interface IUserInfo {
   id: string;
   email: string;
+  isInputPassword: boolean;
   emailVerified: boolean;
   role: string;
-  token: string;
-}
-
-export interface IRegisterRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
 }
 
 export interface ILoginRequest {
@@ -94,12 +87,18 @@ export interface ILoginWithGoogleResponse {
   status: string;
 }
 
+// Register
+
+export interface IRegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: string;
+}
+
 export interface IRegisterResponse {
-  data: {
-    user: IUserInfo;
-  };
-  message: string;
-  status: string;
+  user: IUserInfo;
 }
 
 export interface ILinkAccountRequest {
