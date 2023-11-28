@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Image } from "expo-image";
 import { StyleSheet } from "react-native";
 import { useAppSelector, useAppDispatch } from "../../hooks";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ILoginWithGoogleRequest, IUserInfo } from "../../types";
 import {
   Checkbox,
@@ -17,7 +17,10 @@ import {
   HStack,
   Center,
   Modal,
+  Icon,
 } from "native-base";
+import { Entypo } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ILoginRequest, ILoginResponse } from "../../types";
@@ -122,8 +125,8 @@ const Login: React.FC<LoginScreenProps> = ({
           );
           console.log(`userAccount: `, res.data.user);
           if (res.data.user) {
-            await AsyncStorage.setItem('token', res.data.token);
-            await AsyncStorage.setItem('user', JSON.stringify(res.data.user));
+            await AsyncStorage.setItem("token", res.data.token);
+            await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
             dispatch(login(res.data.user));
             // Auto-navigate to Home
           } else {
@@ -131,23 +134,6 @@ const Login: React.FC<LoginScreenProps> = ({
             // open modal here
             setShowModal(true);
           }
-          // call API
-          // await authApi
-          //   .loginWithGoogle(loginWithGoogleUser)
-          //   .then(async (response) => {
-          //     if (response.data?.data) {
-          //       dispatch(login(response.data?.data.user));
-          //       await SecureStore.setItemAsync(
-          //         "token",
-          //         response.data?.data.token
-          //       );
-          //       await SecureStore.setItemAsync(
-          //         "user",
-          //         JSON.stringify(response.data?.data.user)
-          //       );
-          //       setToken(response.data.data.token);
-          //     }
-          //   });
         }
       })
       .catch((err) => {
@@ -180,17 +166,24 @@ const Login: React.FC<LoginScreenProps> = ({
     data: ILoginRequest
   ) => {
     console.log("go here");
-    console.log(data)
+    console.log(data);
     await authApi
       .login(data)
       .then(async (res) => {
-        console.log('api login:', res)
+        console.log("api login:", res);
         if (res) {
-          
-          dispatch(login({id: res.user.id, email: res.user.email, emailVerified: res.user.emailVerified, role: res.user.role, token: res.user.token}));
-          
-          await AsyncStorage.setItem('token', res.token);
-          await AsyncStorage.setItem('user', JSON.stringify(res.user));
+          dispatch(
+            login({
+              id: res.user.id,
+              email: res.user.email,
+              emailVerified: res.user.emailVerified,
+              role: res.user.role,
+              token: res.user.token,
+            })
+          );
+
+          await AsyncStorage.setItem("token", res.token);
+          await AsyncStorage.setItem("user", JSON.stringify(res.user));
           setToken(res.token);
         }
       })
@@ -222,7 +215,7 @@ const Login: React.FC<LoginScreenProps> = ({
             fontWeight="medium"
             size="xs"
           >
-            <HStack mt="6" justifyContent="center">
+            {/* <HStack mt="6" justifyContent="center">
               <Text
                 fontSize="18"
                 color="black"
@@ -234,13 +227,29 @@ const Login: React.FC<LoginScreenProps> = ({
               </Text>
               <Link
                 _text={{
-                  color: "#1890ff",
+                  color: "primary.300",
                   fontWeight: "medium",
                   fontSize: "18",
                 }}
-                href="#"
+                href="http://example.com"
               >
                 Tạo mới tài khoản
+              </Link>
+            </HStack> */}
+            <HStack space={1} alignItems="center" justifyContent="center">
+              <Text>hoặc</Text>
+              <Link
+                isUnderlined={false}
+                _text={{
+                  _light: {
+                    color: "primary.300",
+                  },
+                }}
+                onPress={() =>
+                  navigation.navigate("Register", { setToken: setToken })
+                }
+              >
+                Tạo tài khoản mới
               </Link>
             </HStack>
           </Heading>
@@ -256,16 +265,20 @@ const Login: React.FC<LoginScreenProps> = ({
                 }
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
-                    placeholder="Email"
+                    placeholder="Nhập địa chỉ Email"
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
+                    fontSize={13}
+                    InputLeftElement={
+                      <Icon as={<Entypo name="email" />} ml="3" />
+                    }
                   />
                 )}
                 name="email"
               />
               {errors.email ? (
-                <Text style={{ color: "red" }}>{errors.email.message}</Text>
+                <Text color="error.400">{errors.email.message}</Text>
               ) : null}
             </FormControl>
             <FormControl>
@@ -276,89 +289,128 @@ const Login: React.FC<LoginScreenProps> = ({
                 }}
                 render={({ field: { onChange, onBlur, value } }) => (
                   <Input
-                    placeholder="Password"
+                    placeholder="Nhập mật khẩu"
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
                     secureTextEntry
+                    fontSize={13}
+                    InputLeftElement={
+                      <Icon as={<AntDesign name="lock" />} ml="3" />
+                    }
                   />
                 )}
                 name="password"
               />
               {errors.password ? (
-                <Text style={{ color: "red" }}>{errors.password.message}</Text>
+                <Text color="error.400">{errors.password.message}</Text>
               ) : null}
             </FormControl>
-            <Checkbox
-              value="one"
-              isChecked={isChecked}
-              onChange={() => setIsChecked(!isChecked)}
-              my={2}
-              colorScheme="blue"
-            >
-              Ghi nhớ thông tin đăng nhập
-            </Checkbox>
+            <HStack justifyContent="space-between">
+              <Checkbox
+                value="one"
+                isChecked={isChecked}
+                onChange={() => setIsChecked(!isChecked)}
+                _text={{
+                  fontSize: "14px",
+                  ml: "0",
+                }}
+              >
+                Lưu thông tin đăng nhập
+              </Checkbox>
+              <Link
+                _text={{
+                  fontSize: "14",
+                  fontWeight: "500",
+                  color: "primary.300",
+                }}
+                alignSelf="center"
+              >
+                Quên mật khẩu?
+              </Link>
+            </HStack>
             <Button
               mt="2"
-              colorScheme="indigo"
-              style={styles.buttonStyle}
+              color="primary.300"
+              bgColor="primary.300"
               onPress={handleSubmit(onSubmit)}
+              isHovered
             >
               <Text ml={2} fontWeight="medium" style={{ color: "white" }}>
                 Đăng nhập
               </Text>
             </Button>
-            <Button
-              mt="2"
-              justifyContent="center"
-              alignItems="center"
-              bg="white" // Set the background color to white
-              borderWidth={1} // Set the border width
-              borderColor="gray.500" // Set the border color to gray
-              borderRadius="md" // Set the border radius
-              p={2} // Add padding to the button
-              onPress={revokeGoogleAccess}
+            <Text
+              fontSize="14"
+              color="black"
+              alignSelf="center"
+              _dark={{
+                color: "warmGray.200",
+              }}
             >
-              <HStack space={2} alignItems="center">
-                <Image
-                  style={styles.logoIcon}
-                  contentFit="cover"
-                  source={require("../../assets/logo.png")}
-                />
-                <Text ml={2} fontWeight="regular">
-                  Đăng nhập với Google
-                </Text>
-              </HStack>
-            </Button>
+              Hoặc đăng nhập bằng tài khoản
+            </Text>
+            <HStack space={5} alignItems="center" justifyContent="center">
+              <Button
+                height={50}
+                width={50}
+                justifyContent="center"
+                alignItems="center"
+                bg="white" // Set the background color to white
+                borderWidth={1} // Set the border width
+                borderColor="primary.300" // Set the border color to gray
+                borderRadius="full" // Set the border radius
+                onPress={revokeGoogleAccess}
+              >
+                <HStack space={2} alignItems="center">
+                  <Image
+                    style={styles.logoIcon}
+                    contentFit="cover"
+                    source={require("../../assets/google.png")}
+                  />
+                </HStack>
+              </Button>
+              <Button
+                height={50}
+                width={50}
+                justifyContent="center"
+                alignItems="center"
+                bg="white" // Set the background color to white
+                borderWidth={1} // Set the border width
+                borderColor="primary.300" // Set the border color to gray
+                borderRadius="full" // Set the border radius
+                onPress={revokeGoogleAccess}
+              >
+                <HStack space={2} alignItems="center">
+                  <Image
+                    style={styles.logoIcon}
+                    contentFit="cover"
+                    source={require("../../assets/facebook.png")}
+                  />
+                </HStack>
+              </Button>
+              <Button
+                height={50}
+                width={50}
+                justifyContent="center"
+                alignItems="center"
+                bg="white" // Set the background color to white
+                borderWidth={1} // Set the border width
+                borderColor="primary.300" // Set the border color to gray
+                borderRadius="full" // Set the border radius
+                onPress={revokeGoogleAccess}
+              >
+                <HStack alignItems="center" justifyContent="center">
+                  <Image
+                    style={styles.logoIcon}
+                    contentFit="cover"
+                    source={require("../../assets/microsoft.png")}
+                  />
+                </HStack>
+              </Button>
+            </HStack>
           </VStack>
-          <Link
-            _text={{
-              fontSize: "14",
-              fontWeight: "500",
-              color: "#1890ff",
-            }}
-            alignSelf="center"
-            mt="3"
-          >
-            Quên mật khẩu?
-          </Link>
         </Box>
-        <HStack space={1} alignItems="center" justifyContent="center">
-          <Text>Chưa có tài khoản?</Text>
-          <Link
-            isUnderlined={false}
-            _text={{
-              _light: {
-                color: "info.600",
-              },
-            }}
-            onPress={() =>
-              navigation.navigate("Register", { setToken: setToken })
-            }
-          >
-            Đăng ký
-          </Link>
-        </HStack>
         <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
           <Modal.Content maxWidth="400px">
             <Modal.CloseButton />
@@ -426,12 +478,6 @@ const styles = StyleSheet.create({
   logoIcon: {
     width: 20,
     height: 20,
-    marginLeft: 10,
-  },
-  buttonStyle: {
-    backgroundColor: "#1890ff",
-    fontWeight: "bold",
-    color: "white",
   },
 });
 

@@ -10,7 +10,7 @@ import { theme } from "./theme";
 import SplashScreen from "./screens/SplashScreen/SplashScreen";
 import HomeScreen from "./screens/Homepage/HomeScreen";
 import UserProfileScreen from "./screens/UserProfile/UserProfileScreen";
-import { userInfoSelector } from './store';
+import { userInfoSelector } from "./store";
 import { useAppDispatch, useAppSelector } from "./hooks";
 import { restoreUserInfo } from "./store";
 import ValidateNotification from "./screens/ValidateNotification/ValidateNotification";
@@ -55,19 +55,19 @@ const StackNavigator = () => {
               <RootStack.Screen
                 name="Login"
                 component={LoginScreen}
-                options={{ headerShown: true }}
+                options={{ headerShown: false }}
                 initialParams={{ setToken }}
               />
               <RootStack.Screen
                 name="Register"
                 component={RegisterScreen}
-                options={{ title: "Register" }}
+                options={{ headerShown: false }}
                 initialParams={{ setToken }}
               />
               <RootStack.Screen
                 name="ValidateNotification"
                 component={ValidateNotification}
-                options={{ title: "Validation Notification" }}
+                options={{ headerShown: false }}
                 initialParams={{ setToken }}
               />
             </>
@@ -82,7 +82,7 @@ const StackNavigator = () => {
               <RootStack.Screen
                 name="UserProfile"
                 component={UserProfileScreen}
-                options={{ title: 'User Profile' }}
+                options={{ title: "User Profile" }}
               />
             </>
           )}

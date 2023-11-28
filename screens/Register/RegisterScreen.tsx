@@ -23,19 +23,31 @@ import { theme } from "../../theme";
 import { AntDesign } from "@expo/vector-icons";
 import { authApi } from "../../services";
 
+interface IRegisterFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+  role: string;
+}
+
 const schema = yup.object().shape({
-  firstName: yup.string().required("Tên không được để trống"),
-  lastName: yup.string().required("Họ không được để trống"),
-  email: yup.string().required("Email còn trống").email("Email không hợp lệ"),
+  firstName: yup.string().required("Bạn chưa nhập tên"),
+  lastName: yup.string().required("Bạn chưa nhập họ"),
+  email: yup
+    .string()
+    .required("Thông tin email là bắt buộc")
+    .email("Email không hợp lệ"),
   password: yup
     .string()
-    .required("Mật khẩu còn trống")
-    .min(8, "Mật khẩu tối thiểu 8 kí tự"),
-  // confirmPassword: yup
-  //   .string()
-  //   .required("Xác nhận mật khẩu còn trống")
-  //   .min(8, "Mật khẩu tối thiểu 8 kí tự")
-  //   .oneOf([yup.ref("password")], "Xác nhận mật khẩu không trùng khớp"),
+    .required("Bạn chưa nhập mật khẩu")
+    .min(8, "Mật khẩu phải có tối thiểu 8 ký tự"),
+  confirmPassword: yup
+    .string()
+    .required("Vui lòng xác nhận lại mật khẩu")
+    .oneOf([yup.ref("password"), ""], "Không trùng với mật khẩu đã nhập"),
+  role: yup.string().required(),
 });
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({
@@ -47,15 +59,26 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<IRegisterRequest>({
+  } = useForm<IRegisterFormData>({
     resolver: yupResolver(schema),
+    defaultValues: {
+      // giá trị mặc định của các field
+      firstName: "",
+      lastName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      role: "user",
+      // emailVerified: false,
+    },
   });
 
-  const onSubmit = async (data: IRegisterRequest) => {
+  const onSubmit = async (data: IRegisterFormData) => {
+    const { confirmPassword, ...registerData } = data; // xóa thông tin xác nhận mật khẩu trước khi gửi api
     console.log("Submitting with:", data);
     // Send data to server
     await authApi
-      .register(data)
+      .register(registerData)
       .then(async (response) => {
         if (response.data?.data) {
           const data = response.data.data.user;
@@ -80,80 +103,106 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
             style={{ fontWeight: "bold" }}
             size="lg"
             color="muted.900"
-            my="5"
+            my="3"
           >
             Đăng ký
           </Heading>
-
-          <Button
-            variant="outline"
-            colorScheme="info"
-            leftIcon={<Icon as={AntDesign} name="google" size="sm" />}
-            style={{ borderColor: "#0284c7" }}
-            bg="light.50"
+          <HStack
+            mb="3"
+            space={1}
+            alignItems="center"
+            justifyContent="flex-start"
           >
-            Đăng nhập với Google
-          </Button>
-          <Heading size="sm" color="muted.400" mt="3" mx="auto">
-            Hoặc
-          </Heading>
+            <Text>Đã có tài khoản?</Text>
+            <Link
+              isUnderlined={false}
+              _text={{
+                _light: {
+                  color: "primary.300",
+                },
+              }}
+              onPress={() =>
+                navigation.navigate("Login", { setToken: setToken })
+              }
+            >
+              Đăng nhập
+            </Link>
+          </HStack>
           <VStack space={2}>
-            {/******************************Last Name ********************************/}
-            <FormControl isRequired isInvalid={errors.lastName ? true : false}>
-              <FormControl.Label
-                _text={{ color: "muted.700", fontSize: "sm", fontWeight: 600 }}
+            <HStack space={2} justifyContent="center" alignItems="flex-start">
+              {/******************************Last Name ********************************/}
+              <FormControl
+                flex={1}
+                isRequired
+                isInvalid={errors.lastName ? true : false}
               >
-                Họ
-              </FormControl.Label>
-              <Controller
-                control={control}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <Input
-                    type="text"
-                    placeholder="Họ"
-                    onChangeText={onChange}
-                    value={value}
-                    onBlur={onBlur}
-                    bg="light.50"
-                  />
-                )}
-                name="lastName"
-                defaultValue=""
-              />
-              <FormControl.ErrorMessage
-                leftIcon={<WarningOutlineIcon size="xs" />}
+                <FormControl.Label
+                  _text={{
+                    color: "muted.700",
+                    fontSize: "sm",
+                    fontWeight: 600,
+                  }}
+                >
+                  Họ
+                </FormControl.Label>
+                <Controller
+                  control={control}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <Input
+                      type="text"
+                      placeholder="Họ"
+                      onChangeText={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      bg="light.50"
+                    />
+                  )}
+                  name="lastName"
+                  defaultValue=""
+                />
+                <FormControl.ErrorMessage
+                  leftIcon={<WarningOutlineIcon size="xs" />}
+                >
+                  {errors.lastName && <Text>{errors.lastName.message}</Text>}
+                </FormControl.ErrorMessage>
+              </FormControl>
+              {/******************************First Name ********************************/}
+              <FormControl
+                flex={1}
+                isRequired
+                isInvalid={errors.firstName ? true : false}
               >
-                {errors.lastName && <Text>{errors.lastName.message}</Text>}
-              </FormControl.ErrorMessage>
-            </FormControl>
-            {/******************************First Name ********************************/}
-            <FormControl isRequired isInvalid={errors.firstName ? true : false}>
-              <FormControl.Label
-                _text={{ color: "muted.700", fontSize: "sm", fontWeight: 600 }}
-              >
-                Tên
-              </FormControl.Label>
-              <Controller
-                control={control}
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <Input
-                    type="text"
-                    placeholder="Tên"
-                    onChangeText={onChange}
-                    value={value}
-                    onBlur={onBlur}
-                    bg="light.50"
-                  />
-                )}
-                name="firstName"
-                defaultValue=""
-              />
-              <FormControl.ErrorMessage
-                leftIcon={<WarningOutlineIcon size="xs" />}
-              >
-                {errors.firstName && <Text>{errors.firstName.message}</Text>}
-              </FormControl.ErrorMessage>
-            </FormControl>
+                <FormControl.Label
+                  _text={{
+                    color: "muted.700",
+                    fontSize: "sm",
+                    fontWeight: 600,
+                  }}
+                >
+                  Tên
+                </FormControl.Label>
+                <Controller
+                  control={control}
+                  render={({ field: { onChange, onBlur, value } }) => (
+                    <Input
+                      type="text"
+                      placeholder="Tên"
+                      onChangeText={onChange}
+                      value={value}
+                      onBlur={onBlur}
+                      bg="light.50"
+                    />
+                  )}
+                  name="firstName"
+                  defaultValue=""
+                />
+                <FormControl.ErrorMessage
+                  leftIcon={<WarningOutlineIcon size="xs" />}
+                >
+                  {errors.firstName && <Text>{errors.firstName.message}</Text>}
+                </FormControl.ErrorMessage>
+              </FormControl>
+            </HStack>
             {/******************************Email ********************************/}
             <FormControl isRequired isInvalid={errors.email ? true : false}>
               <FormControl.Label
@@ -210,7 +259,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
                 {errors.password && <Text>{errors.password.message}</Text>}
               </FormControl.ErrorMessage>
             </FormControl>
-            {/* <FormControl
+            <FormControl
               isRequired
               isInvalid={errors.confirmPassword ? true : false}
             >
@@ -241,7 +290,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
                   <Text>{errors.confirmPassword.message}</Text>
                 )}
               </FormControl.ErrorMessage>
-            </FormControl> */}
+            </FormControl>
             <VStack space={2} mt={5}>
               <Button
                 onPress={handleSubmit(onSubmit)}
@@ -252,22 +301,6 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
               >
                 Đăng kí
               </Button>
-              <HStack space={1} alignItems="center" justifyContent="center">
-                <Text>Đã có tài khoản?</Text>
-                <Link
-                  isUnderlined={false}
-                  _text={{
-                    _light: {
-                      color: "info.600",
-                    },
-                  }}
-                  onPress={() =>
-                    navigation.navigate("Login", { setToken: setToken })
-                  }
-                >
-                  Đăng nhập
-                </Link>
-              </HStack>
             </VStack>
           </VStack>
         </VStack>
