@@ -12,29 +12,9 @@ import {
 } from "../types";
 
 export const authApi = {
-  async login(data: ILoginRequest): Promise<ILoginResponseData> {
-    // Log thông tin request trước khi gửi đi
-    console.log("Login Request:", {
-      email: data.email,
-      password: data.password,
-    });
-
+  async login(data: ILoginRequest): Promise<IApiResponse<ILoginResponse>> {
     // Gửi request và nhận response từ server
-    return axiosClient
-      .post("/auth/login", {
-        email: data.email,
-        password: data.password,
-      })
-      .then((response) => {
-        // Log thông tin response khi nhận được từ server
-        console.log("Login Response:", response);
-        return response.data; // Trả về dữ liệu từ response
-      })
-      .catch((error) => {
-        // Xử lý và log lỗi khi gọi API
-        console.error("Login Error:", error);
-        throw error; // Ném lại error để xử lý ở phần gọi API
-      });
+    return axiosClient.post("/auth/login", data);
   },
   register(data: IRegisterRequest): Promise<IApiResponse<IRegisterResponse>> {
     return axiosClient.post("/auth/register", {

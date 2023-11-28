@@ -38,6 +38,8 @@ export type ValidateNotificationProps = NativeStackScreenProps<
   "ValidateNotification"
 >;
 
+// Interface cho thông tin người dùng
+
 export interface IUserInfo {
   id: string;
   email: string;
@@ -46,9 +48,16 @@ export interface IUserInfo {
   role: string;
 }
 
+// Interface xử lí đăng nhập
+
 export interface ILoginRequest {
   email: string;
   password: string;
+}
+
+export interface ILoginResponse {
+  user: IUserInfo;
+  token: string;
 }
 
 export interface ILoginWithGoogleRequest {
@@ -56,15 +65,6 @@ export interface ILoginWithGoogleRequest {
   firstName: string;
   lastName: string;
   picture: string;
-}
-
-export interface ILoginResponse {
-  data: {
-    token: string;
-    user: IUserInfo;
-  };
-  message: string;
-  status: string;
 }
 
 export interface ILoginResponseData {

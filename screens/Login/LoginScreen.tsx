@@ -165,26 +165,18 @@ const Login: React.FC<LoginScreenProps> = ({
   const onSubmit: SubmitHandler<ILoginRequest> = async (
     data: ILoginRequest
   ) => {
-    console.log("go here");
-    console.log(data);
     await authApi
       .login(data)
       .then(async (res) => {
-        console.log("api login:", res);
-        if (res) {
-          dispatch(
-            login({
-              id: res.user.id,
-              email: res.user.email,
-              emailVerified: res.user.emailVerified,
-              role: res.user.role,
-              token: res.user.token,
-            })
-          );
-
-          await AsyncStorage.setItem("token", res.token);
-          await AsyncStorage.setItem("user", JSON.stringify(res.user));
-          setToken(res.token);
+        console.log("Response: ", res);
+        if (res.status && res.data) {
+          // Dispatch dữ liệu lên reducer
+          dispatch(login(res.data));
+          // Gắn dữ liệu vào async storage
+          await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
+          await AsyncStorage.setItem("token", JSON.stringify(res.data.token));
+          // Set lại token để vào trang homepage
+          setToken(res.data.token);
         }
       })
       .catch((error) => {

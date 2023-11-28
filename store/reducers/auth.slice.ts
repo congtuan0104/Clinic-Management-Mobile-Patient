@@ -1,17 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 import type { PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../store";
-import { IUserInfo } from "../../types";
+import { ILoginResponse, IUserInfo } from "../../types";
 
 // Define a type for slice state
 // In this case, test with token
 interface AuthState {
   user: IUserInfo | null;
+  token: string | null;
 }
 
 // define initial state
 const initialState: AuthState = {
   user: null,
+  token: null,
 };
 
 export const AuthSlice = createSlice({
@@ -19,14 +21,15 @@ export const AuthSlice = createSlice({
   initialState,
   reducers: {
     // Use the PayloadAction type to declare the contents of `action.payload`
-    login: (state, action: PayloadAction<IUserInfo>) => {
-      state.user = action.payload;
+    login: (state, action: PayloadAction<ILoginResponse>) => {
+      (state.user = action.payload.user), (state.token = action.payload.token);
     },
     restoreUserInfo: (state, action: PayloadAction<IUserInfo>) => {
       state.user = action.payload;
     },
     logout: (state) => {
       state.user = null;
+      state.token = null;
     },
   },
 });
@@ -38,3 +41,5 @@ export const { login, restoreUserInfo, logout } = AuthSlice.actions;
 
 export const authReducer = AuthSlice.reducer;
 export const userInfoSelector = (state: RootState) => state?.authReducer?.user;
+export const tokenInfoSelector = (state: RootState) =>
+  state?.authReducer?.token;
