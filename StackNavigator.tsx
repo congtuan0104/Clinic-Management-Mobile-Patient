@@ -1,51 +1,57 @@
-import { StyleSheet, Text, View } from "react-native";
+import { LogBox, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/Login/LoginScreen";
 import RegisterScreen from "./screens/Register/RegisterScreen";
-import { IUserInfo, RootNativeStackParamList } from "./types";
+import { RootNativeStackParamList } from "./types";
 import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
-import SplashScreen from "./screens/SplashScreen/SplashScreen";
 import HomeScreen from "./screens/Homepage/HomeScreen";
 import UserProfileScreen from "./screens/UserProfile/UserProfileScreen";
-import { userInfoSelector } from "./store";
-import { useAppDispatch, useAppSelector } from "./hooks";
-import { restoreUserInfo } from "./store";
 import ValidateNotification from "./screens/ValidateNotification/ValidateNotification";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { initializeState } from "./store";
+import SplashScreen from "./screens/SplashScreen/SplashScreen";
+
 const StackNavigator = () => {
   // define userToken for validation
-  const [isLoading, setIsLoading] = React.useState(true);
   const [token, setToken] = React.useState<string | null>(null);
-  const userInfo = useAppSelector(userInfoSelector);
-  const dispatch = useAppDispatch();
+  const [isReduxInitialized, setReduxInitialized] = React.useState(false);
+  const RootStack = createNativeStackNavigator<RootNativeStackParamList>();
+  // Telling out navigator use it
 
   React.useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
-    const bootstrapAsync = async () => {
-      try {
-        const tokenString = null;
-        if (tokenString) {
-          setToken(tokenString);
-        } else {
-          setToken(null);
-        }
-      } catch (e) {
-        // Restoring token failed
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    bootstrapAsync();
+    LogBox.ignoreLogs([
+      "In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.",
+    ]);
+    LogBox.ignoreLogs([
+      "Non-serializable values were found in the navigation state",
+    ]);
   }, []);
 
-  if (isLoading) {
-    // We haven't finished checking for the token yet
+  React.useEffect(() => {
+    const bootstrapAsync = async () => {
+      // Khởi tạo token
+      console.log("Initialzied token");
+      const tokenInfo = await AsyncStorage.getItem("token");
+      if (tokenInfo) {
+        setToken(tokenInfo);
+      } else {
+        setToken(null);
+      }
+      // Khởi tạo redux
+      console.log("Initialized redux");
+      await initializeState();
+      setReduxInitialized(true);
+    };
+    bootstrapAsync();
+  });
+
+  if (!isReduxInitialized) {
+    console.log("Redux not initialzed");
     return <SplashScreen />;
-  }
-  // Telling out navigator use it
-  const RootStack = createNativeStackNavigator<RootNativeStackParamList>();
+  } else console.log("Redux was initialized");
   return (
     <NativeBaseProvider theme={theme}>
       <NavigationContainer>

@@ -40,7 +40,6 @@ const InterceptorsRequest = async (config: AxiosRequestConfig) => {
 };
 
 const InterceptorsError = (error: AxiosError) => {
-  console.error("Lỗi: ", error);
   if (error.config) {
     // console.log("Request:", error.config);
   }

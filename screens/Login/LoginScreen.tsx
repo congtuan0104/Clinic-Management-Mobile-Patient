@@ -180,7 +180,7 @@ const Login: React.FC<LoginScreenProps> = ({
         }
       })
       .catch((error) => {
-        console.log(error);
+        console.log(error.response);
       });
   };
 
