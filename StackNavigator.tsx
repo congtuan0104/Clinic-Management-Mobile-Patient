@@ -2,16 +2,16 @@ import { LogBox, StyleSheet, Text, View } from "react-native";
 import React from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginScreen from "./screens/Login/LoginScreen";
-import RegisterScreen from "./screens/Register/RegisterScreen";
+import LoginScreen from "./screens/AuthenticationScreen/Login/LoginScreen";
+import RegisterScreen from "./screens/AuthenticationScreen/Register/RegisterScreen";
 import { RootNativeStackParamList } from "./types";
 import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
 import UserScreen from "./screens/UserScreen/UserScreen";
-import ValidateNotification from "./screens/ValidateNotification/ValidateNotification";
+import ValidateNotification from "./screens/AuthenticationScreen/ValidateNotification/ValidateNotification";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { initializeState, userInfoSelector } from "./store";
-import SplashScreen from "./screens/SplashScreen/SplashScreen";
+import { initializeState } from "./store";
+import SplashScreen from "./screens/AuthenticationScreen/SplashScreen/SplashScreen";
 import { ReactNavigationTheme } from "./config/react-navigation.theme";
 import DoctorScreen from "./screens/DoctorScreen/DoctorScreen";
 
@@ -32,11 +32,20 @@ const StackNavigator = () => {
     ]);
   }, []);
 
+  const userInfo = {
+    id: "adsfadfadsfdaf",
+    email: "asdfadfadfadfs ",
+    isInputPassword: false,
+    emailVerified: false,
+    // Sửa role ở đây để thay đổi render
+    role: "user",
+  };
   React.useEffect(() => {
     const bootstrapAsync = async () => {
       // Khởi tạo token
       console.log("Initialzied token");
       const tokenInfo = await AsyncStorage.getItem("token");
+
       if (tokenInfo) {
         setToken(tokenInfo);
       } else {
@@ -79,7 +88,7 @@ const StackNavigator = () => {
                 initialParams={{ setToken }}
               />
             </>
-          ) : (
+          ) : userInfo.role === "doctor" ? (
             <>
               <RootStack.Screen
                 name="DoctorScreen"
@@ -88,7 +97,16 @@ const StackNavigator = () => {
                 initialParams={{ setToken }}
               />
             </>
-          )}
+          ) : userInfo.role === "user" ? (
+            <>
+              <RootStack.Screen
+                name="UserScreen"
+                component={UserScreen}
+                options={{ headerShown: false }}
+                initialParams={{ setToken }}
+              />
+            </>
+          ) : null}
         </RootStack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>

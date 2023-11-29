@@ -1,5 +1,5 @@
 import React from "react";
-import { RegisterScreenProps } from "../../types/auth.types";
+import { RegisterScreenProps } from "../../../types/auth.types";
 import {
   Box,
   Heading,
@@ -16,12 +16,12 @@ import {
 } from "native-base";
 
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { IRegisterRequest } from "../../types";
+import { IRegisterRequest } from "../../../types";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { theme } from "../../theme";
+import { theme } from "../../../theme";
 import { AntDesign } from "@expo/vector-icons";
-import { authApi } from "../../services";
+import { authApi } from "../../../services";
 
 interface IRegisterFormData {
   firstName: string;

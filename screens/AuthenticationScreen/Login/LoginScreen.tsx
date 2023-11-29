@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Image } from "expo-image";
 import { StyleSheet } from "react-native";
-import { useAppSelector, useAppDispatch } from "../../hooks";
+import { useAppSelector, useAppDispatch } from "../../../hooks";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ILoginWithGoogleRequest, IUserInfo } from "../../types";
+import { ILoginWithGoogleRequest, IUserInfo } from "../../../types";
 import {
   Checkbox,
   Box,
@@ -23,16 +23,16 @@ import { Entypo } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { ILoginRequest, ILoginResponse } from "../../types";
+import { ILoginRequest, ILoginResponse } from "../../../types";
 import * as yup from "yup";
-import { LoginScreenProps } from "../../types";
-import { RootState, login } from "../../store";
-import { authApi } from "../../services/auth.services";
+import { LoginScreenProps } from "../../../types";
+import { RootState, login } from "../../../store";
+import { authApi } from "../../../services/auth.services";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import { firebase, FirebaseAuthTypes } from "@react-native-firebase/auth";
-import { firebaseConfig } from "../../config/firebase";
-import { WEB_CLIENT_ID } from "../../constants";
+import { firebaseConfig } from "../../../config/firebase";
+import { WEB_CLIENT_ID } from "../../../constants";
 
 GoogleSignin.configure({
   webClientId: WEB_CLIENT_ID,
@@ -358,7 +358,7 @@ const Login: React.FC<LoginScreenProps> = ({
                   <Image
                     style={styles.logoIcon}
                     contentFit="cover"
-                    source={require("../../assets/google.png")}
+                    source={require("../../../assets/google.png")}
                   />
                 </HStack>
               </Button>
@@ -377,7 +377,7 @@ const Login: React.FC<LoginScreenProps> = ({
                   <Image
                     style={styles.logoIcon}
                     contentFit="cover"
-                    source={require("../../assets/facebook.png")}
+                    source={require("../../../assets/facebook.png")}
                   />
                 </HStack>
               </Button>
@@ -396,7 +396,7 @@ const Login: React.FC<LoginScreenProps> = ({
                   <Image
                     style={styles.logoIcon}
                     contentFit="cover"
-                    source={require("../../assets/microsoft.png")}
+                    source={require("../../../assets/microsoft.png")}
                   />
                 </HStack>
               </Button>
