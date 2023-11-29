@@ -5,7 +5,7 @@ import { store } from "./store/store";
 import StackNavigator from "./StackNavigator";
 import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
-// import "react-native-gesture-handler";
+import "react-native-gesture-handler";
 
 export default function App() {
   return (

@@ -7,19 +7,20 @@ import RegisterScreen from "./screens/Register/RegisterScreen";
 import { RootNativeStackParamList } from "./types";
 import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
-import HomeScreen from "./screens/Homepage/HomeScreen";
-import UserProfileScreen from "./screens/UserProfile/UserProfileScreen";
+import UserScreen from "./screens/UserScreen/UserScreen";
 import ValidateNotification from "./screens/ValidateNotification/ValidateNotification";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { initializeState } from "./store";
+import { initializeState, userInfoSelector } from "./store";
 import SplashScreen from "./screens/SplashScreen/SplashScreen";
 import { ReactNavigationTheme } from "./config/react-navigation.theme";
+import DoctorScreen from "./screens/DoctorScreen/DoctorScreen";
 
 const StackNavigator = () => {
   // define userToken for validation
   const [token, setToken] = React.useState<string | null>(null);
   const [isReduxInitialized, setReduxInitialized] = React.useState(false);
   const RootStack = createNativeStackNavigator<RootNativeStackParamList>();
+
   // Telling out navigator use it
 
   React.useEffect(() => {
@@ -81,15 +82,10 @@ const StackNavigator = () => {
           ) : (
             <>
               <RootStack.Screen
-                name="Home"
-                component={HomeScreen}
-                options={{ title: "Homepage" }}
+                name="DoctorScreen"
+                component={DoctorScreen}
+                options={{ headerShown: false }}
                 initialParams={{ setToken }}
-              />
-              <RootStack.Screen
-                name="UserProfile"
-                component={UserProfileScreen}
-                options={{ title: "User Profile" }}
               />
             </>
           )}

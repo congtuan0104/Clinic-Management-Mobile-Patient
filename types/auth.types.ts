@@ -5,12 +5,12 @@ export type RootNativeStackParamList = {
   // undefined: the route doesn't have params
   Login: { setToken: (token: string | null) => void };
   Register: { setToken: (token: string | null) => void };
-  Home: { setToken: (token: string | null) => void };
+  UserScreen: { setToken: (token: string | null) => void };
+  DoctorScreen: { setToken: (token: string | null) => void };
   ValidateNotification: {
     email: string;
     setToken: (token: string | null) => void;
   };
-  UserProfile: undefined;
 };
 
 // Define type of props
@@ -23,14 +23,14 @@ export type RegisterScreenProps = NativeStackScreenProps<
   "Register"
 >;
 
-export type HomeScreenProps = NativeStackScreenProps<
+export type UserScreenProps = NativeStackScreenProps<
   RootNativeStackParamList,
-  "Home"
+  "UserScreen"
 >;
 
-export type UserProfileScreenProps = NativeStackScreenProps<
+export type DoctorScreenProps = NativeStackScreenProps<
   RootNativeStackParamList,
-  "UserProfile"
+  "DoctorScreen"
 >;
 
 export type ValidateNotificationProps = NativeStackScreenProps<
