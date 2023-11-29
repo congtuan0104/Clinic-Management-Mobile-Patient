@@ -1,6 +1,6 @@
 import { LogBox, StyleSheet, Text, View } from "react-native";
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/Login/LoginScreen";
 import RegisterScreen from "./screens/Register/RegisterScreen";
@@ -13,6 +13,7 @@ import ValidateNotification from "./screens/ValidateNotification/ValidateNotific
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { initializeState } from "./store";
 import SplashScreen from "./screens/SplashScreen/SplashScreen";
+import { ReactNavigationTheme } from "./config/react-navigation.theme";
 
 const StackNavigator = () => {
   // define userToken for validation
@@ -54,7 +55,7 @@ const StackNavigator = () => {
   } else console.log("Redux was initialized");
   return (
     <NativeBaseProvider theme={theme}>
-      <NavigationContainer>
+      <NavigationContainer theme={ReactNavigationTheme}>
         <RootStack.Navigator>
           {token === null ? (
             <>

@@ -187,7 +187,7 @@ const Login: React.FC<LoginScreenProps> = ({
   return (
     <Center flex="1" px="3">
       <Center w="100%">
-        <Box safeArea p="2" py="8" w="100%" /* maxW="500" */>
+        <Box safeArea p="2" py="8" w="100%">
           <Heading
             size="xl"
             fontWeight="bold"

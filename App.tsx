@@ -1,16 +1,18 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet } from 'react-native';
-import { Provider } from 'react-redux';
-import { store } from './store/store';
+import { StatusBar } from "expo-status-bar";
+import { StyleSheet } from "react-native";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
 import StackNavigator from "./StackNavigator";
 import { NativeBaseProvider } from "native-base";
+import { theme } from "./theme";
+// import "react-native-gesture-handler";
 
 export default function App() {
   return (
-    <NativeBaseProvider>
+    <NativeBaseProvider theme={theme}>
       <Provider store={store}>
-          <StackNavigator />
-          <StatusBar style="auto" />
+        <StackNavigator />
+        <StatusBar style="auto" />
       </Provider>
     </NativeBaseProvider>
   );
@@ -19,8 +21,8 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
