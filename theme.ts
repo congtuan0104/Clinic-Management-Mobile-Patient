@@ -1,5 +1,12 @@
 import { extendTheme } from "native-base";
 
+// Custom export
+export const appColor = {
+  background: "#F0F2FD",
+  title: "#343C6A",
+  primary: "#6964FF",
+  backgroundPrimary: "#605BFF",
+};
 export const theme = extendTheme({
   fontConfig: {
     Roboto: {
@@ -26,18 +33,6 @@ export const theme = extendTheme({
         normal: "Roboto",
         italic: "Roboto",
       },
-      // Add more variants
-      //   700: {
-      //     normal: 'Roboto-Bold',
-      //   },
-      //   800: {
-      //     normal: 'Roboto-Bold',
-      //     italic: 'Roboto-BoldItalic',
-      //   },
-      //   900: {
-      //     normal: 'Roboto-Bold',
-      //     italic: 'Roboto-BoldItalic',
-      //   },
     },
   },
 

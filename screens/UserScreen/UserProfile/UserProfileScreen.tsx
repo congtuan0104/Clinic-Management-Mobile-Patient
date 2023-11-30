@@ -46,18 +46,23 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
   // Kiểm tra và lấy danh sách tài khoản  liên kết
   useEffect(() => {
     if (userInfo?.id) {
-      authApi.geLinkAccount(userInfo.id).then((res) => {
-        res.data.forEach((item: any) => {
-          if (item.provider === "google") {
-            setgoogleAccoutId(item.id);
-            setisGoogleLink(true);
-          }
-          if (item.provider === "facebook") {
-            setfbAccoutId(item.id);
-            setisFacebookLink(true);
-          }
+      authApi
+        .geLinkAccount(userInfo.id)
+        .then((res) => {
+          res.data.forEach((item: any) => {
+            if (item.provider === "google") {
+              setgoogleAccoutId(item.id);
+              setisGoogleLink(true);
+            }
+            if (item.provider === "facebook") {
+              setfbAccoutId(item.id);
+              setisFacebookLink(true);
+            }
+          });
+        })
+        .catch((error) => {
+          console.log(error);
         });
-      });
     }
   }, [isGoogleLink, isFacebookLink, isRender]);
 
@@ -128,7 +133,7 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
             <Text style={{ fontWeight: "bold", fontSize: 18 }}>Facebook</Text>
             {isFacebookLink ? (
               <Button
-                variant="subtle"
+                variant="solid"
                 style={styles.socialButtons}
                 onPress={disConnectFacebook}
               >
@@ -136,7 +141,7 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
               </Button>
             ) : (
               <Button
-                variant="subtle"
+                variant="solid"
                 style={styles.socialButtons}
                 onPress={connectFacebook}
               >
@@ -151,7 +156,7 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
             <Text style={{ fontWeight: "bold", fontSize: 18 }}>Google</Text>
             {isGoogleLink ? (
               <Button
-                variant="subtle"
+                variant="solid"
                 style={styles.socialButtons}
                 onPress={disConnectGoogle}
               >
@@ -159,7 +164,7 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
               </Button>
             ) : (
               <Button
-                variant="subtle"
+                variant="solid"
                 style={styles.socialButtons}
                 onPress={connectGoogle}
               >
@@ -192,7 +197,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#fff",
   },
   heading: {
     fontSize: 24,

@@ -1,7 +1,7 @@
 import * as React from "react";
 import { DoctorScreenProps } from "../../types";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import UserProfile from "../UserProfile/UserProfileScreen";
+import UserProfile from "../DoctorScreen/UserProfile/UserProfileScreen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import AppointmentScreen from "./AppointmentScreen/AppointmentScreen";
 export type RootNativeDrawerParamList = {

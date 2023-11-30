@@ -6,22 +6,22 @@ import {
   StyleSheet,
   Platform,
 } from "react-native";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { logout, userInfoSelector } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../../hooks";
+import { logout, userInfoSelector } from "../../../store";
 import {
   getAuth,
   FacebookAuthProvider,
   signInWithCredential,
 } from "firebase/auth";
-import { firebase } from "../../config/firebase";
+import { firebase } from "../../../config/firebase";
 import { useState, useEffect } from "react";
-import { useAuth } from "../../hooks/auth";
+import { useAuth } from "../../../hooks/auth";
 import { Button } from "native-base";
 import FlashMessage, { showMessage } from "react-native-flash-message";
-import { authApi } from "../../services/auth.services";
+import { authApi } from "../../../services/auth.services";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { UserProfileScreenProps } from "../UserScreen/UserScreen";
+import { UserProfileScreenProps } from "../DoctorScreen";
 
 GoogleSignin.configure({
   webClientId:
@@ -46,18 +46,23 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
   // Kiểm tra và lấy danh sách tài khoản  liên kết
   useEffect(() => {
     if (userInfo?.id) {
-      authApi.geLinkAccount(userInfo.id).then((res) => {
-        res.data.forEach((item: any) => {
-          if (item.provider === "google") {
-            setgoogleAccoutId(item.id);
-            setisGoogleLink(true);
-          }
-          if (item.provider === "facebook") {
-            setfbAccoutId(item.id);
-            setisFacebookLink(true);
-          }
+      authApi
+        .geLinkAccount(userInfo.id)
+        .then((res) => {
+          res.data.forEach((item: any) => {
+            if (item.provider === "google") {
+              setgoogleAccoutId(item.id);
+              setisGoogleLink(true);
+            }
+            if (item.provider === "facebook") {
+              setfbAccoutId(item.id);
+              setisFacebookLink(true);
+            }
+          });
+        })
+        .catch((error) => {
+          console.log(error);
         });
-      });
     }
   }, [isGoogleLink, isFacebookLink, isRender]);
 
