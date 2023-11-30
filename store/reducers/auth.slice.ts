@@ -15,33 +15,33 @@ const initialState: AuthState = {
   token: null,
 };
 
-const fetchDataFromStorage = async (): Promise<AuthState> => {
-  try {
-    const user = await AsyncStorage.getItem("user");
-    const token = await AsyncStorage.getItem("token");
+// const fetchDataFromStorage = async (): Promise<AuthState> => {
+//   try {
+//     const user = await AsyncStorage.getItem("user");
+//     const token = await AsyncStorage.getItem("token");
 
-    // Xử lý dữ liệu và trả về AuthState
-    return {
-      user: user ? JSON.parse(user) : null,
-      token: token ? JSON.parse(token) : null,
-    };
-  } catch (error) {
-    // Xử lý lỗi nếu có
-    console.error("Error fetching data from AsyncStorage:", error);
-    // Trả về initialState nếu không thể lấy dữ liệu từ AsyncStorage
-    return initialState;
-  }
-};
+//     // Xử lý dữ liệu và trả về AuthState
+//     return {
+//       user: user ? JSON.parse(user) : null,
+//       token: token ? JSON.parse(token) : null,
+//     };
+//   } catch (error) {
+//     // Xử lý lỗi nếu có
+//     console.error("Error fetching data from AsyncStorage:", error);
+//     // Trả về initialState nếu không thể lấy dữ liệu từ AsyncStorage
+//     return initialState;
+//   }
+// };
 
 // Khởi tạo initialState bằng cách lấy dữ liệu từ AsyncStorage
-export const initializeState = async () => {
-  const dataFromStorage = await fetchDataFromStorage();
-  // Sử dụng dữ liệu từ AsyncStorage nếu có, nếu không sử dụng initialState
-  const finalInitialState: AuthState = dataFromStorage || initialState;
+// export const initializeState = async () => {
+//   const dataFromStorage = await fetchDataFromStorage();
+//   // Sử dụng dữ liệu từ AsyncStorage nếu có, nếu không sử dụng initialState
+//   const finalInitialState: AuthState = dataFromStorage || initialState;
 
-  // Sử dụng finalInitialState ở đây
-  console.log("Final Initial State:", finalInitialState);
-};
+//   // Sử dụng finalInitialState ở đây
+//   console.log("Final Initial State:", finalInitialState);
+// };
 
 // Gọi initializeState() để bắt đầu quá trình khởi tạo
 // initializeState();
@@ -54,8 +54,9 @@ export const AuthSlice = createSlice({
     login: (state, action: PayloadAction<ILoginResponse>) => {
       (state.user = action.payload.user), (state.token = action.payload.token);
     },
-    restoreUserInfo: (state, action: PayloadAction<IUserInfo>) => {
-      state.user = action.payload;
+    restoreUserInfo: (state, action: PayloadAction<ILoginResponse>) => {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
     },
     logout: (state) => {
       state.user = null;

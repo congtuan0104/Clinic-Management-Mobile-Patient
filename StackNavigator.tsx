@@ -4,23 +4,26 @@ import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/AuthenticationScreen/Login/LoginScreen";
 import RegisterScreen from "./screens/AuthenticationScreen/Register/RegisterScreen";
-import { RootNativeStackParamList } from "./types";
+import { ILoginResponse, IUserInfo, RootNativeStackParamList } from "./types";
 import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
 import UserScreen from "./screens/UserScreen/UserScreen";
 import ValidateNotification from "./screens/AuthenticationScreen/ValidateNotification/ValidateNotification";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { initializeState } from "./store";
+import { restoreUserInfo } from "./store";
 import SplashScreen from "./screens/AuthenticationScreen/SplashScreen/SplashScreen";
 import { ReactNavigationTheme } from "./config/react-navigation.theme";
 import DoctorScreen from "./screens/DoctorScreen/DoctorScreen";
+import { useAppDispatch } from "./hooks";
 
 const StackNavigator = () => {
   // define userToken for validation
   const [token, setToken] = React.useState<string | null>(null);
-  const [isReduxInitialized, setReduxInitialized] = React.useState(false);
+  const [user, setUser] = React.useState<IUserInfo | null>(null);
   const RootStack = createNativeStackNavigator<RootNativeStackParamList>();
 
+  const [isLoading, setIsLoading] = React.useState(true);
+  const dispatch = useAppDispatch();
   // Telling out navigator use it
 
   React.useEffect(() => {
@@ -32,37 +35,38 @@ const StackNavigator = () => {
     ]);
   }, []);
 
-  const userInfo = {
-    id: "adsfadfadsfdaf",
-    email: "asdfadfadfadfs ",
-    isInputPassword: false,
-    emailVerified: false,
-    // Sửa role ở đây để thay đổi render
-    role: "user",
-  };
   React.useEffect(() => {
+    // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
-      // Khởi tạo token
-      console.log("Initialzied token");
-      const tokenInfo = await AsyncStorage.getItem("token");
-
-      if (tokenInfo) {
-        setToken(tokenInfo);
-      } else {
-        setToken(null);
+      try {
+        // Restore userInfo and dispatch to the store
+        const testData = await AsyncStorage.getItem("user");
+        const tokenString = await AsyncStorage.getItem("token");
+        if (tokenString && testData) {
+          setToken(tokenString);
+          const testDataObject = JSON.parse(testData);
+          setUser(testDataObject);
+          const UserResponseObject: ILoginResponse = {
+            user: testDataObject,
+            token: tokenString,
+          };
+          dispatch(restoreUserInfo(UserResponseObject));
+        } else {
+          setToken(null);
+        }
+      } catch (e) {
+        // Restoring token failed
+      } finally {
+        setIsLoading(false);
       }
-      // Khởi tạo redux
-      console.log("Initialized redux");
-      await initializeState();
-      setReduxInitialized(true);
     };
     bootstrapAsync();
-  });
+  }, []);
 
-  if (!isReduxInitialized) {
-    console.log("Redux not initialzed");
+  if (isLoading) {
+    // We haven't finished checking for the token yet
     return <SplashScreen />;
-  } else console.log("Redux was initialized");
+  }
   return (
     <NativeBaseProvider theme={theme}>
       <NavigationContainer theme={ReactNavigationTheme}>
@@ -88,7 +92,7 @@ const StackNavigator = () => {
                 initialParams={{ setToken }}
               />
             </>
-          ) : userInfo.role === "doctor" ? (
+          ) : user?.role === "doctor" ? (
             <>
               <RootStack.Screen
                 name="DoctorScreen"
@@ -97,7 +101,7 @@ const StackNavigator = () => {
                 initialParams={{ setToken }}
               />
             </>
-          ) : userInfo.role === "user" ? (
+          ) : user?.role === "user" ? (
             <>
               <RootStack.Screen
                 name="UserScreen"
