@@ -33,7 +33,14 @@ import auth from "@react-native-firebase/auth";
 import { firebase, FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { firebaseConfig } from "../../../config/firebase";
 import { WEB_CLIENT_ID } from "../../../constants";
-
+// Thư viện dùng để kết nối với Facebook
+import { Platform } from "react-native";
+import { LoginManager, AccessToken } from "react-native-fbsdk-next";
+import {
+  getAuth,
+  FacebookAuthProvider,
+  signInWithCredential,
+} from "firebase/auth";
 GoogleSignin.configure({
   webClientId: WEB_CLIENT_ID,
 });
@@ -123,17 +130,89 @@ const Login: React.FC<LoginScreenProps> = ({
             userInfoFromProvider.user.uid,
             providerStr
           );
-          console.log(`userAccount: `, res.data.user);
-          if (res.data.user) {
+          // Nếu account tồn tại
+          if (res.data?.token && res.data?.user) {
+            // Tạo object userToStorage để lưu dữ liệu User vào storage, interface là IUserInfo
+            const userToStorage: IUserInfo = {
+              id: res.data.user.id,
+              email: res.data.user.email,
+              emailVerified: res.data.user.emailVerified,
+              isInputPassword: false, // dữ liệu tạm thời
+              role: res.data.user.roleId === 4 ? "user" : "doctor",
+            };
+            // Tạo object userToReduxStore để lưu dữ liệu User vào redux, interface là ILoginResponse
+            const userToReduxStore: ILoginResponse = {
+              user: userToStorage,
+              token: res.data.token,
+            };
+            // Lưu thông tin user và token vào Async Storage
             await AsyncStorage.setItem("token", res.data.token);
-            await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
-            dispatch(login(res.data.user));
-            // Auto-navigate to Home
+            await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
+            // Dispatch dữ liệu lên redux
+            dispatch(login(userToReduxStore));
+            // setToken để render lại màn hình
+            setToken(res.data.token);
           } else {
             setEmailFromProvider(userInfoFromProvider.user.email);
             // open modal here
             setShowModal(true);
           }
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+
+  async function onFacebookButtonPress() {
+    providerStr = "facebook";
+    // lấy thông tin user từ provider
+    if (Platform.OS === "android") {
+      LoginManager.setLoginBehavior("web_only");
+    }
+    await LoginManager.logInWithPermissions(["public_profile", "email"]);
+    const data = await AccessToken.getCurrentAccessToken();
+    if (!data) return;
+    const facebookCredentials = FacebookAuthProvider.credential(
+      data.accessToken
+    );
+    const auth = getAuth();
+    const userSignIn = signInWithCredential(auth, facebookCredentials);
+    userSignIn
+      .then(async (userInfoFromProvider) => {
+        setUserIdFromProvider(userInfoFromProvider.user.uid);
+        setProviderLogin(providerStr);
+        // kiểm tra account có tồn tại, nếu có thì lưu thông tin user và token
+        const res = await authApi.getUserByAccountId(
+          userInfoFromProvider.user.uid,
+          providerStr
+        );
+        // Nếu account tồn tại
+        if (res.data?.token && res.data?.user) {
+          // Tạo object userToStorage để lưu dữ liệu User vào storage, interface là IUserInfo
+          const userToStorage: IUserInfo = {
+            id: res.data.user.id,
+            email: res.data.user.email,
+            emailVerified: res.data.user.emailVerified,
+            isInputPassword: false, // dữ liệu tạm thời
+            role: res.data.user.roleId === 4 ? "user" : "doctor",
+          };
+          // Tạo object userToReduxStore để lưu dữ liệu User vào redux, interface là ILoginResponse
+          const userToReduxStore: ILoginResponse = {
+            user: userToStorage,
+            token: res.data.token,
+          };
+          // Lưu thông tin user và token vào Async Storage
+          await AsyncStorage.setItem("token", res.data.token);
+          await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
+          // Dispatch dữ liệu lên redux
+          dispatch(login(userToReduxStore));
+          // setToken để render lại màn hình
+          setToken(res.data.token);
+        } else {
+          setEmailFromProvider(userInfoFromProvider.user.email);
+          // open modal here
+          setShowModal(true);
         }
       })
       .catch((err) => {
@@ -157,6 +236,7 @@ const Login: React.FC<LoginScreenProps> = ({
         setShowModal(false);
       }
       setEmailChoose("");
+      navigation.navigate("ValidateNotification", { email, setToken });
     } catch (err) {
       console.error(err);
     }
@@ -207,27 +287,6 @@ const Login: React.FC<LoginScreenProps> = ({
             fontWeight="medium"
             size="xs"
           >
-            {/* <HStack mt="6" justifyContent="center">
-              <Text
-                fontSize="18"
-                color="black"
-                _dark={{
-                  color: "warmGray.200",
-                }}
-              >
-                hoặc{" "}
-              </Text>
-              <Link
-                _text={{
-                  color: "primary.300",
-                  fontWeight: "medium",
-                  fontSize: "18",
-                }}
-                href="http://example.com"
-              >
-                Tạo mới tài khoản
-              </Link>
-            </HStack> */}
             <HStack space={1} alignItems="center" justifyContent="center">
               <Text>hoặc</Text>
               <Link
@@ -371,7 +430,7 @@ const Login: React.FC<LoginScreenProps> = ({
                 borderWidth={1} // Set the border width
                 borderColor="primary.300" // Set the border color to gray
                 borderRadius="full" // Set the border radius
-                onPress={revokeGoogleAccess}
+                onPress={onFacebookButtonPress}
               >
                 <HStack space={2} alignItems="center">
                   <Image

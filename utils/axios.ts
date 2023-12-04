@@ -12,7 +12,6 @@ export const axiosClient = axios.create({
   // Set default headers if needed
   headers: {
     common: {
-      authorization: "Bearer YOUR_ACCESS_TOKEN",
       "Content-Type": "application/json",
     },
   },
@@ -20,7 +19,10 @@ export const axiosClient = axios.create({
 
 const InterceptorsRequest = async (config: AxiosRequestConfig) => {
   // lấy token từ store và gắn vào header trước khi gửi request
-  const token = await AsyncStorage.getItem("token");
+  let token = await AsyncStorage.getItem("token");
+  if (token) {
+    // token = JSON.parse(token);
+  }
   if (token === undefined) {
     return config;
   }

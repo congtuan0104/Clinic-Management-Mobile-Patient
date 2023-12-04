@@ -39,10 +39,14 @@ const StackNavigator = () => {
     // Fetch the token from storage then navigate to our appropriate place
     const bootstrapAsync = async () => {
       try {
+        // await AsyncStorage.removeItem("user");
+        // await AsyncStorage.removeItem("token");
         // Restore userInfo and dispatch to the store
         const testData = await AsyncStorage.getItem("user");
         const tokenString = await AsyncStorage.getItem("token");
         if (tokenString && testData) {
+          // console.log("Test data: ", typeof testData);
+          // console.log("Token string: ", typeof tokenString);
           setToken(tokenString);
           const testDataObject = JSON.parse(testData);
           setUser(testDataObject);

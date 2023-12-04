@@ -66,10 +66,6 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
     }
   }, [isGoogleLink, isFacebookLink, isRender]);
 
-  const signInWithFB = async () => {
-    await linkAccountFacebook();
-  };
-
   const changePassword = () => {
     // Logic for changing password
   };
@@ -99,15 +95,20 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
 
   const disConnectGoogle = () => {
     if (userInfo?.id) {
-      authApi.disConnectLinkAccount(userInfo.id, googleAccoutId).then(() => {
-        setisGoogleLink(false);
-        // Hiển thị thông báo
-        showMessage({
-          message: "Hủy liên kết tài khoản thành công",
-          color: "green",
+      authApi
+        .disConnectLinkAccount(userInfo.id, googleAccoutId)
+        .then(() => {
+          setisGoogleLink(false);
+          // Hiển thị thông báo
+          showMessage({
+            message: "Hủy liên kết tài khoản thành công",
+            color: "green",
+          });
+          GoogleSignin.signOut();
+        })
+        .catch((error) => {
+          console.log(error);
         });
-      });
-      GoogleSignin.signOut();
     }
   };
 
