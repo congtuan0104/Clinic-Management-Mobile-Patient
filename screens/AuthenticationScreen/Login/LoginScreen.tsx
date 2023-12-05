@@ -195,6 +195,10 @@ const Login: React.FC<LoginScreenProps> = ({
             email: res.data.user.email,
             emailVerified: res.data.user.emailVerified,
             isInputPassword: false, // dữ liệu tạm thời
+            // Check isInputPassword: lấy từ API về
+            // nếu là False: Hiện modal Nhập mật khẩu
+            // gọi đến API tạo mật khẩu mới (nói anh Bão)
+            // Nói thêm: Khi cập nhật mật khẩu mới thì phải để isInputPassword thành true
             role: res.data.user.roleId === 4 ? "user" : "doctor",
           };
           // Tạo object userToReduxStore để lưu dữ liệu User vào redux, interface là ILoginResponse

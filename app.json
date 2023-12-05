@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "googleServicesFile": "./GoogleService-Info.plist",
@@ -35,8 +33,20 @@
       },
       "googleServicesFile": "./google-services.json",
       "package": "com.nhatminh287.Mobileapppatient",
-      "permissions": [
-        "android.permission.INTERNET"
+      "permissions": ["android.permission.INTERNET"],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "clinus",
+              "host": "*.myapp.io",
+              "pathPrefix": "/verify-account"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
       ]
     },
     "web": {
