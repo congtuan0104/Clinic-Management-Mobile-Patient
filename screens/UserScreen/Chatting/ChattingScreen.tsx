@@ -1,49 +1,45 @@
-import { View, Text } from "react-native";
 import React from "react";
-import { chatService } from "../../../services/chat.services";
-import { GroupChatInfo } from "../../../types";
-const ChattingScreen = () => {
-  // Gọi API lấy danh sách các nhóm Chat mà user đó tham gia
-  // Sau khi có danh sách, sẽ render các route có param, khi gọi thì sẽ chuyển sang màn hình quản lý tin nhắn.
+import { ChattingScreenProps } from "../UserScreen";
+import {
+  NativeStackScreenProps,
+  createNativeStackNavigator,
+} from "@react-navigation/native-stack";
+import ChattingDetailScreen from "./ChattingDetailScreen";
+import ChattingGroupListScreen from "./ChattingGroupListScreen";
 
-  // Khởi tạo trạng thái rỗng danh sách nhóm chat
-  const [groupMessageList, setGroupMessageList] = React.useState<
-    GroupChatInfo[]
-  >([]);
-
-  React.useEffect(() => {
-    // Gọi API lấy danh sách trong useEffect
-    const getListGroupChat = async () => {
-      const response = await chatService.getListGroupChat();
-      // Nếu thành công: lấy dữ liệu
-      if (response.status) {
-        const groupList = response.data;
-        // Nếu tồn tại danh sách: gán vào state
-        if (groupList?.length) {
-          setGroupMessageList(groupList);
-        } else {
-          // Nếu danh sách rỗng: Gán mảng rỗng cho state
-          setGroupMessageList([]);
-        }
-      }
-    };
-    getListGroupChat();
-  }, [groupMessageList]);
-  const renderGroupMessageList = () => {
-    return groupMessageList.map((item, index) => {
-      return <Text key={index}>{item.groupName}</Text>;
-    });
-  };
-  return (
-    <View>
-      <Text>ChattingScreen</Text>
-      {groupMessageList.length ? (
-        renderGroupMessageList()
-      ) : (
-        <Text>Chưa tham gia</Text>
-      )}
-    </View>
-  );
+export type ChatDetailStackParamList = {
+  ChattingGroupList: undefined;
+  ChattingDetail: { groupId: string };
 };
 
-export default ChattingScreen;
+export type ChattingGroupListScreenProps = NativeStackScreenProps<
+  ChatDetailStackParamList,
+  "ChattingGroupList"
+>;
+
+export type ChattingDetailScreenProps = NativeStackScreenProps<
+  ChatDetailStackParamList,
+  "ChattingDetail"
+>;
+
+const ChattingStackNavigator =
+  createNativeStackNavigator<ChatDetailStackParamList>();
+
+export default function ChattingScreen({
+  navigation,
+  route,
+}: ChattingScreenProps) {
+  return (
+    <ChattingStackNavigator.Navigator initialRouteName="ChattingGroupList">
+      <ChattingStackNavigator.Screen
+        name="ChattingGroupList"
+        component={ChattingGroupListScreen}
+      />
+      <ChattingStackNavigator.Screen
+        name="ChattingDetail"
+        component={ChattingDetailScreen}
+        options={({ route }) => ({ title: route.params.groupId })}
+      />
+    </ChattingStackNavigator.Navigator>
+  );
+}

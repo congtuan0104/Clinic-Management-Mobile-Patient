@@ -1,9 +1,6 @@
 import * as React from "react";
 import { UserScreenProps } from "../../types";
-import {
-  DrawerItemList,
-  createDrawerNavigator,
-} from "@react-navigation/drawer";
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import UserProfile from "../UserScreen/UserProfile/UserProfileScreen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Function02 from "./Function02/Function02";
@@ -19,9 +16,14 @@ export type RootNativeDrawerParamList = {
   Chatting: undefined;
   Function02: undefined;
 };
+
 export type UserProfileScreenProps = NativeStackScreenProps<
   RootNativeDrawerParamList,
   "UserProfile"
+>;
+export type ChattingScreenProps = NativeStackScreenProps<
+  RootNativeDrawerParamList,
+  "Chatting"
 >;
 
 const RootDrawer = createDrawerNavigator<RootNativeDrawerParamList>();
