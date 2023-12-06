@@ -6,7 +6,6 @@ import {
 } from "@react-navigation/drawer";
 import UserProfile from "../UserScreen/UserProfile/UserProfileScreen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import Function01 from "./Function01/Function01";
 import Function02 from "./Function02/Function02";
 import { appColor } from "../../theme";
 // Import custom icons
@@ -14,11 +13,12 @@ import { Ionicons } from "@expo/vector-icons";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Image, Text, View } from "native-base";
 import CustomDrawer from "../../components/CustomDrawer/CustomDrawer";
+import ChattingScreen from "./Chatting/ChattingScreen";
 
 export type RootNativeDrawerParamList = {
   // undefined: the route doesn't have params
   UserProfile: { setToken: (token: string | null) => void };
-  Function01: undefined;
+  Chatting: undefined;
   Function02: undefined;
 };
 export type UserProfileScreenProps = NativeStackScreenProps<
@@ -68,14 +68,14 @@ export default function UserScreen({ navigation, route }: UserScreenProps) {
         initialParams={{ setToken }}
       />
       <RootDrawer.Screen
-        name="Function01"
+        name="Chatting"
         options={{
-          title: "Chức năng 1",
+          title: "Nhắn tin",
           drawerIcon: ({ color }) => (
             <Ionicons name="settings-outline" size={24} color={color} />
           ),
         }}
-        component={Function01}
+        component={ChattingScreen}
       />
       <RootDrawer.Screen
         name="Function02"

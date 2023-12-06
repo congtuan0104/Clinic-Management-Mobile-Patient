@@ -1,12 +1,12 @@
 import { View, Text } from "react-native";
 import React from "react";
 
-const Function01 = () => {
+const ChattingScreen = () => {
   return (
     <View>
-      <Text>Function01</Text>
+      <Text>ChattingScreen</Text>
     </View>
   );
 };
 
-export default Function01;
+export default ChattingScreen;
