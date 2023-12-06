@@ -2,6 +2,11 @@ import { View, Text } from "react-native";
 import React from "react";
 import { ChattingDetailScreenProps } from "./ChattingScreen";
 
+const mockData = [
+  { name: "khang", content: "ff" },
+  { name: "minh", content: "ffzz" },
+  { name: "thinh", content: "ffzzzdfdf" },
+];
 const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
   route,
 }) => {

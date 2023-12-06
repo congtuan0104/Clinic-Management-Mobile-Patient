@@ -1,8 +1,19 @@
-import { Text, Button } from "native-base";
+import {
+  Text,
+  Button,
+  Box,
+  Heading,
+  FlatList,
+  HStack,
+  Avatar,
+  VStack,
+  Spacer,
+} from "native-base";
 import React from "react";
 import { GroupChatInfo } from "../../../types";
 import { chatService } from "../../../services/chat.services";
 import { ChattingGroupListScreenProps } from "./ChattingScreen";
+import { TouchableOpacity } from "react-native";
 
 export default function ChattingGroupListScreen({
   navigation,
@@ -28,14 +39,61 @@ export default function ChattingGroupListScreen({
   };
 
   const renderGroupList = () => {
-    return groupMessageList.map((group) => (
-      <Button key={group.id} onPress={() => navigateToChatDetail(group.id)}>
-        <Text>
-          {group.groupName} {/* Assuming groupName is displayed */}
-        </Text>
-      </Button>
-    ));
+    return (
+      <Box>
+        <FlatList
+          data={groupMessageList}
+          renderItem={({ item }) => (
+            <TouchableOpacity onPress={() => navigateToChatDetail(item.name)}>
+              <Box
+                borderBottomWidth="1"
+                _dark={{
+                  borderColor: "muted.50",
+                }}
+                borderColor="muted.800"
+                pl={["0", "4"]}
+                pr={["0", "5"]}
+                py="2"
+              >
+                <HStack space={[2, 3]} justifyContent="space-between">
+                  <Avatar
+                    size="48px"
+                    source={{
+                      uri: item.avatar_url,
+                    }}
+                  />
+                  <VStack>
+                    <Text
+                      _dark={{
+                        color: "warmGray.50",
+                      }}
+                      color="coolGray.800"
+                      bold
+                    >
+                      {item.name}
+                    </Text>
+                    <Text
+                      color="coolGray.600"
+                      _dark={{
+                        color: "warmGray.200",
+                      }}
+                    >
+                      {item.subtitle}
+                    </Text>
+                  </VStack>
+                  <Spacer />
+                </HStack>
+              </Box>
+            </TouchableOpacity>
+          )}
+          keyExtractor={(item) => item.id}
+        />
+      </Box>
+    );
   };
+
+  const [search, setsearch] = React.useState<string | null>("");
+
   return (
     <React.Fragment>
       {groupMessageList.length ? (
