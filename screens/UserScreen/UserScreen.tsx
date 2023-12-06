@@ -10,8 +10,6 @@ import Function02 from "./Function02/Function02";
 import { appColor } from "../../theme";
 // Import custom icons
 import { Ionicons } from "@expo/vector-icons";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { Image, Text, View } from "native-base";
 import CustomDrawer from "../../components/CustomDrawer/CustomDrawer";
 import ChattingScreen from "./Chatting/ChattingScreen";
 
