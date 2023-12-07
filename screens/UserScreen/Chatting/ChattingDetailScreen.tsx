@@ -6,123 +6,67 @@ import {
   TextInput,
   Animated,
 } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import { ChattingDetailScreenProps } from "./ChattingScreen";
 import { StyleSheet } from "react-native";
 import MsgComponent from "../../../components/MsgComponent/MsgComponent";
-import { Button, Pressable } from "native-base";
+import { Pressable } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { appColor } from "../../../theme";
-// const mockData = [
-//   { name: "khang", content: "ff" },
-//   { name: "minh", content: "ffzz" },
-//   { name: "thinh", content: "ffzzzdfdf" },
-// ];
+import { firebase } from "@react-native-firebase/database";
+import { useAppSelector } from "../../../hooks";
+import { userInfoSelector } from "../../../store";
 
-const Data = [
-  {
-    massage: "Yes Ofcourse..",
-    type: "sender",
-  },
-  {
-    massage: "How are You ?",
-    type: "sender",
-  },
-  {
-    massage: "How Your Opinion about the one done app ?",
-    type: "sender",
-  },
-  {
-    massage:
-      "Well i am not satisfied with this design plzz make design better ",
-    type: "receiver",
-  },
-  {
-    massage: "could you plz change the design...",
-    type: "receiver",
-  },
-  {
-    massage: "How are You ?",
-    type: "sender",
-  },
-  {
-    massage: "How Your Opinion about the one done app ?",
-    type: "sender",
-  },
-  {
-    massage:
-      "Well i am not satisfied with this design plzz make design better ",
-    type: "receiver",
-  },
-  {
-    massage: "could you plz change the design...",
-    type: "receiver",
-  },
-  {
-    massage: "How are You ?",
-    type: "sender",
-  },
-  {
-    massage: "How Your Opinion about the one done app ?",
-    type: "sender",
-  },
-  {
-    massage: "Yes Ofcourse..",
-    type: "sender",
-  },
-  {
-    massage: "How are You ?",
-    type: "sender",
-  },
-  {
-    massage: "How Your Opinion about the one done app ?",
-    type: "sender",
-  },
-  {
-    massage:
-      "Well i am not satisfied with this design plzz make design better ",
-    type: "receiver",
-  },
-  {
-    massage: "could you plz change the design...",
-    type: "receiver",
-  },
-  {
-    massage: "How are You ?",
-    type: "sender",
-  },
-  {
-    massage: "How Your Opinion about the one done app ?",
-    type: "sender",
-  },
-  {
-    massage:
-      "Well i am not satisfied with this design plzz make design better ",
-    type: "receiver",
-  },
-  {
-    massage: "could you plz change the design...",
-    type: "receiver",
-  },
-  {
-    massage: "How are You ?",
-    type: "sender",
-  },
-  {
-    massage: "How Your Opinion about the one done app ?",
-    type: "sender",
-  },
-];
+export interface MsgType {
+  message: string;
+  senderId: string;
+  senderName: string;
+  timestamp: Date;
+}
 
 const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
   route,
 }) => {
-  const { groupId } = route.params;
+  // Lấy thông tin user
+  const userInfo = useAppSelector(userInfoSelector);
 
-  const [msg, setMsg] = React.useState("");
-  const [update, setupdate] = React.useState(false);
-  const [disabled, setdisabled] = React.useState(false);
-  const [allChat, setallChat] = React.useState([]);
+  const { groupId } = route.params;
+  const [msg, setMsg] = React.useState<MsgType>({
+    message: "",
+    senderId: userInfo?.id ? userInfo?.id : "tempId",
+    senderName: userInfo?.email ? userInfo?.id : "unknown",
+    timestamp: new Date(),
+  });
+  const [msgList, setMsgList] = React.useState<MsgType[]>([
+    // {
+    //   message: "dffsdfs",
+    //   senderId: "dfjdfdfadsf",
+    //   senderName: "xfdfsdsdf",
+    //   timestamp: new Date("2022-03-25"),
+    // },
+  ]);
+
+  // Thiết lập firebase
+  let path = groupId;
+  // Tạo tham chiếu đến groupId
+  // const reference = firebase
+  //   .app()
+  //   .database(
+  //     "https://clinus-8d987-default-rtdb.asia-southeast1.firebasedatabase.app/"
+  //   )
+  //   .ref("/users/123");
+  // dùng useEffect để gọi dữ liệu
+  // useEffect(() => {
+  //   const onValueChange =
+  //     reference.on("value", (snapshot) => {
+  //       console.log("User data: ", snapshot.val());
+  //     });
+
+  //   // Stop listening for updates when no longer required
+  //   return () => reference.off("value", onValueChange);
+  // }, []);
+
+  // Hiệu ứng khi gửi tin nhắn
   const opacity = React.useRef(new Animated.Value(1)).current;
   const handlePressIn = () => {
     Animated.timing(opacity, {
@@ -141,77 +85,98 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
   };
 
   const handlePress = () => {
-    console.log("Sending");
-    // Add more actions or effects here when the button is pressed
+    if (msg !== null && msg) {
+      setMsg({ ...msg, timestamp: new Date() });
+      // Nếu tin nhắn tồn tại nội dung: push vào trong messageList
+      const updatedList = [...msgList, msg];
+      updatedList.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+      setMsgList(updatedList);
+      setMsg({
+        ...msg,
+        message: "",
+      });
+      console.log(msgList);
+    }
   };
 
   return (
-    <View style={styles.container}>
-      <FlatList
-        style={{ flex: 1 }}
-        data={Data}
-        showsVerticalScrollIndicator={false}
-        inverted
-        renderItem={({ item }) => {
-          return (
-            <MsgComponent
-              sender={item.type == "sender"}
-              massage={item.massage}
-              item={item}
-            />
-          );
-        }}
-      />
+    <>
+      {userInfo ? (
+        <View style={styles.container}>
+          <FlatList
+            style={{ flex: 1 }}
+            data={msgList}
+            showsVerticalScrollIndicator={false}
+            inverted
+            renderItem={({ item }) => {
+              return (
+                <MsgComponent
+                  sender={item.senderId === userInfo.id ? true : false}
+                  message={item.message}
+                  item={item}
+                />
+              );
+            }}
+          />
 
-      {/**Bottom sending message bar */}
-      <View
-        style={{
-          backgroundColor: "#fff",
-          elevation: 5,
-          // height: 60,
-          flexDirection: "row",
-          alignItems: "center",
-          paddingVertical: 8,
-          justifyContent: "space-evenly",
-        }}
-      >
-        <TextInput
-          style={{
-            backgroundColor: "#f0f2fd",
-            width: "80%",
-            height: "auto",
-            borderRadius: 25,
-            borderWidth: 0.5,
-            borderColor: "#fff",
-            color: "#000",
-            paddingVertical: 7,
-            paddingLeft: 10,
-            paddingRight: 7,
-          }}
-          placeholder="Nhập tin nhắn"
-          placeholderTextColor="#a8a29e"
-          multiline={true}
-          value={msg}
-          onChangeText={(val) => setMsg(val)}
-        />
-
-        <Pressable
-          onPress={handlePress}
-          onPressIn={handlePressIn}
-          onPressOut={handlePressOut}
-        >
-          {({ isPressed }) => (
-            <Animated.View
+          {/**Bottom sending message bar */}
+          <View
+            style={{
+              backgroundColor: "#fff",
+              elevation: 5,
+              // height: 60,
+              flexDirection: "row",
+              alignItems: "center",
+              paddingVertical: 8,
+              justifyContent: "space-evenly",
+            }}
+          >
+            <TextInput
               style={{
-                opacity: isPressed ? opacity : 1,
+                backgroundColor: "#f0f2fd",
+                width: "80%",
+                height: "auto",
+                borderRadius: 25,
+                borderWidth: 0.5,
+                borderColor: "#fff",
+                color: "#000",
+                paddingVertical: 7,
+                paddingLeft: 10,
+                paddingRight: 7,
               }}
+              placeholder="Nhập tin nhắn"
+              placeholderTextColor="#a8a29e"
+              multiline={true}
+              value={msg.message}
+              onChangeText={(val) =>
+                setMsg({
+                  ...msg,
+                  message: val,
+                })
+              }
+            />
+
+            <Pressable
+              onPress={handlePress}
+              onPressIn={handlePressIn}
+              onPressOut={handlePressOut}
             >
-              <Ionicons name="send" size={24} color={appColor.primary} />
-            </Animated.View>
-          )}
-        </Pressable>
-      </View>
-    </View>
+              {({ isPressed }) => (
+                <Animated.View
+                  style={{
+                    opacity: isPressed ? opacity : 1,
+                  }}
+                >
+                  <Ionicons name="send" size={24} color={appColor.primary} />
+                </Animated.View>
+              )}
+            </Pressable>
+          </View>
+        </View>
+      ) : (
+        <View></View>
+      )}
+    </>
   );
 };
 

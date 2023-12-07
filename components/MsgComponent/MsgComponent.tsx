@@ -6,7 +6,7 @@ import { appColor } from "../../theme";
 import { Image } from "native-base";
 
 const MsgComponent = (props: any) => {
-  const { sender, massage, item, sendTime } = props;
+  const { sender, message, item, sendTime } = props;
   return (
     <Pressable style={{ marginVertical: 0 }}>
       <Image
@@ -25,7 +25,7 @@ const MsgComponent = (props: any) => {
           },
         ]}
       >
-        <Text color={sender ? "#fff" : "#000"}>{item.massage}</Text>
+        <Text color={sender ? "#fff" : "#000"}>{item.message}</Text>
       </View>
     </Pressable>
   );

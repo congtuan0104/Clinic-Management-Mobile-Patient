@@ -8,7 +8,6 @@ import ChattingDetailScreen from "./ChattingDetailScreen";
 import ChattingGroupListScreen from "./ChattingGroupListScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { Actionsheet, Text, useDisclose, Image, HStack } from "native-base";
-import { appColor } from "../../../theme";
 
 export type ChatDetailStackParamList = {
   ChattingGroupList: undefined;
