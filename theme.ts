@@ -6,6 +6,7 @@ export const appColor = {
   title: "#343C6A",
   primary: "#6964FF",
   backgroundPrimary: "#605BFF",
+  white: "#fff",
 };
 export const theme = extendTheme({
   fontConfig: {
