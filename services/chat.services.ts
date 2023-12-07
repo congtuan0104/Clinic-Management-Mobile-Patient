@@ -12,7 +12,7 @@ const mockData = [
 const listData = [
   {
     id: "1",
-    name: "Amy Farha",
+    name: "Phòng khám YDS Phòng khám YDS Phòng khám YDS Phòng khám YDS ",
     avatar_url:
       "https://images.pexels.com/photos/2811087/pexels-photo-2811087.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
     subtitle: "Hey there, how are you?",

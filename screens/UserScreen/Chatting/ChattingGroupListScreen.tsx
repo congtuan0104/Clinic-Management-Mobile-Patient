@@ -51,9 +51,8 @@ export default function ChattingGroupListScreen({
                   borderColor: "muted.50",
                 }}
                 borderColor="muted.800"
-                pl={["0", "4"]}
-                pr={["0", "5"]}
                 py="2"
+                padding={2}
               >
                 <HStack space={[2, 3]} justifyContent="space-between">
                   <Avatar
@@ -69,8 +68,11 @@ export default function ChattingGroupListScreen({
                       }}
                       color="coolGray.800"
                       bold
+                      style={{ flexWrap: "wrap" }}
                     >
-                      {item.name}
+                      {item.name.length > 30
+                        ? `${item.name.slice(0, 30)}...`
+                        : item.name}
                     </Text>
                     <Text
                       color="coolGray.600"
@@ -78,7 +80,9 @@ export default function ChattingGroupListScreen({
                         color: "warmGray.200",
                       }}
                     >
-                      {item.subtitle}
+                      {item.subtitle.length > 30
+                        ? `${item.subtitle.slice(0, 30)}...`
+                        : item.subtitle}
                     </Text>
                   </VStack>
                   <Spacer />
