@@ -8,13 +8,15 @@ import {
   Avatar,
   VStack,
   Spacer,
+  Input,
+  Icon,
 } from "native-base";
 import React from "react";
 import { GroupChatInfo } from "../../../types";
 import { chatService } from "../../../services/chat.services";
 import { ChattingGroupListScreenProps } from "./ChattingScreen";
 import { TouchableOpacity } from "react-native";
-
+import { MaterialIcons } from "@expo/vector-icons";
 export default function ChattingGroupListScreen({
   navigation,
   route,
@@ -22,39 +24,88 @@ export default function ChattingGroupListScreen({
   const [groupMessageList, setGroupMessageList] = React.useState<
     GroupChatInfo[]
   >([]);
+  const [searchList, setSearchList] = React.useState<GroupChatInfo[]>([]);
 
   React.useEffect(() => {
+    // Lấy danh sách group chat
     const getListGroupChat = async () => {
       const response = await chatService.getListGroupChat();
       if (response.status) {
         const groupList = response.data || [];
         setGroupMessageList(groupList);
+        setSearchList(groupList);
       }
     };
     getListGroupChat();
   }, []);
 
+  // Thực hiện việc navigate đến màn hình chat cụ thể
   const navigateToChatDetail = (groupId: string) => {
     navigation.navigate("ChattingDetail", { groupId });
+  };
+
+  // Thực hiện phần tìm kiếm trò chuyện
+  const handleSearch = (event: string) => {
+    if (event === "") {
+      setSearchList(groupMessageList);
+    } else {
+      setSearchList(
+        searchList.filter(
+          (item) => item.name.toLowerCase().indexOf(event.toLowerCase()) !== -1
+        )
+      );
+    }
   };
 
   const renderGroupList = () => {
     return (
       <Box>
+        <Box alignItems="center">
+          {/** ***************************SEARCH BAR ****************************** */}
+          <Input
+            placeholder="Tìm kiếm nhóm trò chuyện"
+            width="90%"
+            borderRadius="50"
+            py="3"
+            px="1"
+            fontSize="14"
+            onChangeText={(e) => {
+              handleSearch(e);
+            }}
+            InputLeftElement={
+              <Icon
+                m="2"
+                ml="3"
+                size="6"
+                color="gray.400"
+                as={<MaterialIcons name="search" />}
+              />
+            }
+            InputRightElement={
+              <Icon
+                m="2"
+                mr="3"
+                size="6"
+                color="gray.400"
+                as={<MaterialIcons name="mic" />}
+              />
+            }
+          />
+        </Box>
+        {/** *************************** RENDER USER LIST ****************************** */}
         <FlatList
-          data={groupMessageList}
+          mt={2}
+          style={{ width: "90%" }}
+          data={searchList}
+          showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
             <TouchableOpacity onPress={() => navigateToChatDetail(item.name)}>
-              <Box
-                borderBottomWidth="1"
-                _dark={{
-                  borderColor: "muted.50",
-                }}
-                borderColor="muted.800"
-                py="2"
-                padding={2}
-              >
-                <HStack space={[2, 3]} justifyContent="space-between">
+              <Box alignItems="center" py="2">
+                <HStack
+                  width="90%"
+                  space={[2, 3]}
+                  justifyContent="space-between"
+                >
                   <Avatar
                     size="48px"
                     source={{

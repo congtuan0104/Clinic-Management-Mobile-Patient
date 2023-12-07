@@ -88,7 +88,6 @@ const Login: React.FC<LoginScreenProps> = ({
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);

@@ -47,6 +47,8 @@ const StackNavigator = () => {
         if (tokenString && testData) {
           // console.log("Test data: ", typeof testData);
           // console.log("Token string: ", typeof tokenString);
+          // console.log("Test data: ", testData);
+          // console.log("Token string: ", tokenString);
           setToken(tokenString);
           const testDataObject = JSON.parse(testData);
           setUser(testDataObject);
