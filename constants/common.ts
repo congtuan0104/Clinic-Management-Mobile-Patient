@@ -8,4 +8,4 @@ export const COOKIE_KEY = {
 //   "931199521045-rn8i7um077q2b9pgpsrdejj90qj26fvv.apps.googleusercontent.com";
 
 export const WEB_CLIENT_ID =
-  "360103440958-d1c8839mo5c2soqher9j2mskp68sf3fh.apps.googleusercontent.com";
+  "416278606380-s9vkim9bj0n131q2odvmgirh96uqu90k.apps.googleusercontent.com";

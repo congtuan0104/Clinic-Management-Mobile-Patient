@@ -13,7 +13,7 @@ import MsgComponent from "../../../components/MsgComponent/MsgComponent";
 import { Pressable } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { appColor } from "../../../theme";
-import { firebase } from "@react-native-firebase/database";
+import database from "@react-native-firebase/database";
 import { useAppSelector } from "../../../hooks";
 import { userInfoSelector } from "../../../store";
 
@@ -21,7 +21,7 @@ export interface MsgType {
   message: string;
   senderId: string;
   senderName: string;
-  timestamp: Date;
+  timestamp: string;
 }
 
 const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
@@ -31,40 +31,18 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
   const userInfo = useAppSelector(userInfoSelector);
 
   const { groupId } = route.params;
-  const [msg, setMsg] = React.useState<MsgType>({
-    message: "",
-    senderId: userInfo?.id ? userInfo?.id : "tempId",
-    senderName: userInfo?.email ? userInfo?.id : "unknown",
-    timestamp: new Date(),
-  });
-  const [msgList, setMsgList] = React.useState<MsgType[]>([
-    // {
-    //   message: "dffsdfs",
-    //   senderId: "dfjdfdfadsf",
-    //   senderName: "xfdfsdsdf",
-    //   timestamp: new Date("2022-03-25"),
-    // },
-  ]);
+  const [msg, setMsg] = React.useState<string>("");
+  const [allChat, setallChat] = React.useState<MsgType[]>([]);
+  const [disabled, setdisabled] = React.useState(false);
+  const msgvalid = (txt: string) => txt && txt.replace(/\s/g, "").length;
 
   // Thiết lập firebase
   let path = groupId;
-  // Tạo tham chiếu đến groupId
-  // const reference = firebase
-  //   .app()
-  //   .database(
-  //     "https://clinus-8d987-default-rtdb.asia-southeast1.firebasedatabase.app/"
-  //   )
-  //   .ref("/users/123");
-  // dùng useEffect để gọi dữ liệu
-  // useEffect(() => {
-  //   const onValueChange =
-  //     reference.on("value", (snapshot) => {
-  //       console.log("User data: ", snapshot.val());
-  //     });
 
-  //   // Stop listening for updates when no longer required
-  //   return () => reference.off("value", onValueChange);
-  // }, []);
+  // dùng useEffect để gọi dữ liệu
+  useEffect(() => {
+    // Stop listening for updates when no longer required
+  }, [groupId]);
 
   // Hiệu ứng khi gửi tin nhắn
   const opacity = React.useRef(new Animated.Value(1)).current;
@@ -84,19 +62,24 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     }).start();
   };
 
-  const handlePress = () => {
-    if (msg !== null && msg) {
-      setMsg({ ...msg, timestamp: new Date() });
-      // Nếu tin nhắn tồn tại nội dung: push vào trong messageList
-      const updatedList = [...msgList, msg];
-      updatedList.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-      setMsgList(updatedList);
-      setMsg({
-        ...msg,
-        message: "",
-      });
-      console.log(msgList);
+  const handlePress = async () => {
+    if (msg == "" || msgvalid(msg) == 0) {
+      return false;
     }
+    setdisabled(true);
+    let msgData: MsgType = {
+      message: msg,
+      senderId: userInfo?.id ? userInfo.id : "null",
+      senderName: userInfo?.email ? userInfo.email : "unknown",
+      timestamp: "tét",
+    };
+    database()
+      .ref("/users/123")
+      .set(msgData)
+      .then(() => console.log("data set"));
+    setMsg("");
+    setdisabled(false);
+    setallChat([...allChat, msgData]);
   };
 
   return (
@@ -105,7 +88,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
         <View style={styles.container}>
           <FlatList
             style={{ flex: 1 }}
-            data={msgList}
+            data={allChat}
             showsVerticalScrollIndicator={false}
             inverted
             renderItem={({ item }) => {
@@ -147,16 +130,12 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
               placeholder="Nhập tin nhắn"
               placeholderTextColor="#a8a29e"
               multiline={true}
-              value={msg.message}
-              onChangeText={(val) =>
-                setMsg({
-                  ...msg,
-                  message: val,
-                })
-              }
+              value={msg}
+              onChangeText={(val) => setMsg(val)}
             />
 
             <Pressable
+              disabled={disabled}
               onPress={handlePress}
               onPressIn={handlePressIn}
               onPressOut={handlePressOut}

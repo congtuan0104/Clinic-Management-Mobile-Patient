@@ -42,7 +42,8 @@ import {
   signInWithCredential,
 } from "firebase/auth";
 GoogleSignin.configure({
-  webClientId: WEB_CLIENT_ID,
+  webClientId:
+    "416278606380-s9vkim9bj0n131q2odvmgirh96uqu90k.apps.googleusercontent.com",
 });
 let providerStr: string = "";
 
@@ -122,6 +123,7 @@ const Login: React.FC<LoginScreenProps> = ({
     userSignIn
       .then(async (userInfoFromProvider) => {
         if (userInfoFromProvider) {
+          console.log(userInfoFromProvider);
           setUserIdFromProvider(userInfoFromProvider.user.uid);
           setProviderLogin(providerStr);
           // kiểm tra account có tồn tại, nếu có thì lưu thông tin user và token

@@ -1,41 +1,34 @@
 {
   "project_info": {
-    "project_number": "931199521045",
-    "project_id": "login-6752e",
-    "storage_bucket": "login-6752e.appspot.com"
+    "project_number": "416278606380",
+    "firebase_url": "https://clinus-67efd-default-rtdb.firebaseio.com",
+    "project_id": "clinus-67efd",
+    "storage_bucket": "clinus-67efd.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:931199521045:android:f22b9362cda32f90e0d91c",
+        "mobilesdk_app_id": "1:416278606380:android:606c87240d7f42d2ab1789",
         "android_client_info": {
           "package_name": "com.nhatminh287.Mobileapppatient"
         }
       },
       "oauth_client": [
         {
-          "client_id": "931199521045-jmhmdpb2q2pn5rp24ol6d30198quorui.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.nhatminh287.Mobileapppatient",
-            "certificate_hash": "3a01293214ad0aac553dca53e80e62f77a0a5530"
-          }
-        },
-        {
-          "client_id": "931199521045-rn8i7um077q2b9pgpsrdejj90qj26fvv.apps.googleusercontent.com",
+          "client_id": "416278606380-s9vkim9bj0n131q2odvmgirh96uqu90k.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBwljKuHPNin6ODGe4EkG8UQL4QwuL-UoM"
+          "current_key": "AIzaSyBCfI5baKD5lfEpDJ4NvF7h3nHa5uBRtq4"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "931199521045-rn8i7um077q2b9pgpsrdejj90qj26fvv.apps.googleusercontent.com",
+              "client_id": "416278606380-s9vkim9bj0n131q2odvmgirh96uqu90k.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
