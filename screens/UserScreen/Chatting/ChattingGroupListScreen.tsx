@@ -17,6 +17,8 @@ import { chatService } from "../../../services/chat.services";
 import { ChattingGroupListScreenProps } from "./ChattingScreen";
 import { TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
+import { StyleSheet } from "react-native";
+import { appColor } from "../../../theme";
 export default function ChattingGroupListScreen({
   navigation,
   route,
@@ -59,7 +61,7 @@ export default function ChattingGroupListScreen({
 
   const renderGroupList = () => {
     return (
-      <Box>
+      <Box flex="1">
         <Box alignItems="center">
           {/** ***************************SEARCH BAR ****************************** */}
           <Input
@@ -143,11 +145,21 @@ export default function ChattingGroupListScreen({
           )}
           keyExtractor={(item) => item.id}
         />
+        <TouchableOpacity
+          style={styles.but}
+          onPress={() => {
+            navigation.navigate("CreateChattingGroup");
+          }}
+        >
+          <Icon
+            as={<MaterialIcons name="chat" color="white" />}
+            color={appColor.white}
+            size={8}
+          />
+        </TouchableOpacity>
       </Box>
     );
   };
-
-  const [search, setsearch] = React.useState<string | null>("");
 
   return (
     <React.Fragment>
@@ -159,3 +171,18 @@ export default function ChattingGroupListScreen({
     </React.Fragment>
   );
 }
+
+const styles = StyleSheet.create({
+  but: {
+    position: "absolute",
+    bottom: 15,
+    right: 15,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: appColor.primary,
+    alignItems: "center",
+    justifyContent: "center",
+    elevation: 5,
+  },
+});

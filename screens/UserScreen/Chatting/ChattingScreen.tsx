@@ -8,10 +8,12 @@ import ChattingDetailScreen from "./ChattingDetailScreen";
 import ChattingGroupListScreen from "./ChattingGroupListScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { Actionsheet, Text, useDisclose, Image, HStack } from "native-base";
+import CreateChattingGroupScreen from "./CreateChattingGroupScreen";
 
 export type ChatDetailStackParamList = {
   ChattingGroupList: undefined;
   ChattingDetail: { groupId: string };
+  CreateChattingGroup: undefined;
 };
 
 export type ChattingGroupListScreenProps = NativeStackScreenProps<
@@ -22,6 +24,11 @@ export type ChattingGroupListScreenProps = NativeStackScreenProps<
 export type ChattingDetailScreenProps = NativeStackScreenProps<
   ChatDetailStackParamList,
   "ChattingDetail"
+>;
+
+export type CreateChattingGroupScreenProps = NativeStackScreenProps<
+  ChatDetailStackParamList,
+  "CreateChattingGroup"
 >;
 
 const ChattingStackNavigator =
@@ -38,6 +45,11 @@ export default function ChattingScreen({
       <ChattingStackNavigator.Screen
         name="ChattingGroupList"
         component={ChattingGroupListScreen}
+        options={{ headerShown: false }}
+      />
+      <ChattingStackNavigator.Screen
+        name="CreateChattingGroup"
+        component={CreateChattingGroupScreen}
         options={{ headerShown: false }}
       />
       <ChattingStackNavigator.Screen
