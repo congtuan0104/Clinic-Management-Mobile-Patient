@@ -81,7 +81,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     setdisabled(true);
     let msgData: MsgType = {
       content: msg,
-      messageId: "3",
+      messageId: dayjs().unix().toString(),
       senderId: userInfo?.id ? userInfo.id : "null",
       senderName: userInfo?.email ? userInfo.email : "unknown",
       timestamp: dayjs().format("DD/MM/YYYY HH:mm:ss"),
@@ -101,7 +101,6 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
           });
         setMsg("");
         setdisabled(false);
-        setallChat([...allChat, msgData]);
       });
   };
 
@@ -119,7 +118,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
                 <MsgComponent
                   sender={item.senderId === userInfo.id ? true : false}
                   message={item.content}
-                  item={item}
+                  time={item.timestamp}
                 />
               );
             }}

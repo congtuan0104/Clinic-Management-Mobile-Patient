@@ -4,9 +4,10 @@ import { View, StyleSheet, Pressable } from "react-native";
 import { Text } from "native-base";
 import { appColor } from "../../theme";
 import { Image } from "native-base";
+import TimeDelivery from "./TimeDelivery/TimeDelivery";
 
 const MsgComponent = (props: any) => {
-  const { sender, message, item, sendTime } = props;
+  const { sender, message, time } = props;
   return (
     <Pressable style={{ marginVertical: 0 }}>
       <Image
@@ -26,6 +27,7 @@ const MsgComponent = (props: any) => {
         ]}
       >
         <Text color={sender ? "#fff" : "#000"}>{message}</Text>
+        <TimeDelivery sender={sender} time={time} />
       </View>
     </Pressable>
   );
