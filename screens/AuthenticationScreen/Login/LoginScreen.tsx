@@ -92,7 +92,7 @@ const Login: React.FC<LoginScreenProps> = ({
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
-  const { setToken } = route.params;
+  const { setLogin } = route.params;
   const dispatch = useAppDispatch();
   // Handle user state changes
   function onAuthStateChanged(user: FirebaseAuthTypes.User | null) {
@@ -104,7 +104,9 @@ const Login: React.FC<LoginScreenProps> = ({
     try {
       await GoogleSignin.signOut();
       // Tiếp theo, thực hiện đăng nhập lại với Google
-      onGoogleButtonPress();
+      onGoogleButtonPress()
+        .then((e) => console.log(e))
+        .catch((e) => console.log(e));
     } catch (error) {
       console.error("Không thể thu hồi quyền truy cập Google: ", error);
     }
@@ -122,6 +124,7 @@ const Login: React.FC<LoginScreenProps> = ({
     const userSignIn = auth().signInWithCredential(googleCredential);
     userSignIn
       .then(async (userInfoFromProvider) => {
+        console.log(userInfoFromProvider);
         if (userInfoFromProvider) {
           console.log(userInfoFromProvider);
           setUserIdFromProvider(userInfoFromProvider.user.uid);
@@ -152,7 +155,7 @@ const Login: React.FC<LoginScreenProps> = ({
             // Dispatch dữ liệu lên redux
             dispatch(login(userToReduxStore));
             // setToken để render lại màn hình
-            setToken(res.data.token);
+            setLogin(res.data.user, res.data.token);
           } else {
             setEmailFromProvider(userInfoFromProvider.user.email);
             // open modal here
@@ -213,7 +216,7 @@ const Login: React.FC<LoginScreenProps> = ({
           // Dispatch dữ liệu lên redux
           dispatch(login(userToReduxStore));
           // setToken để render lại màn hình
-          setToken(res.data.token);
+          setLogin(res.data.user, res.data.token);
         } else {
           setEmailFromProvider(userInfoFromProvider.user.email);
           // open modal here
@@ -235,13 +238,12 @@ const Login: React.FC<LoginScreenProps> = ({
       });
       if (res.status) {
         navigation.navigate("ValidateNotification", {
-          email: email,
-          setToken: setToken,
+          setLogin: setLogin,
         });
         setShowModal(false);
       }
       setEmailChoose("");
-      navigation.navigate("ValidateNotification", { email, setToken });
+      navigation.navigate("ValidateNotification", { setLogin });
     } catch (err) {
       console.error(err);
     }
@@ -261,7 +263,7 @@ const Login: React.FC<LoginScreenProps> = ({
           await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
           await AsyncStorage.setItem("token", JSON.stringify(res.data.token));
           // Set lại token để vào trang homepage
-          setToken(res.data.token);
+          setLogin(res.data.user, res.data.token);
         }
       })
       .catch((error) => {
@@ -301,9 +303,7 @@ const Login: React.FC<LoginScreenProps> = ({
                     color: "primary.300",
                   },
                 }}
-                onPress={() =>
-                  navigation.navigate("Register", { setToken: setToken })
-                }
+                onPress={() => navigation.navigate("Register", { setLogin })}
               >
                 Tạo tài khoản mới
               </Link>
@@ -385,13 +385,7 @@ const Login: React.FC<LoginScreenProps> = ({
                 Quên mật khẩu?
               </Link>
             </HStack>
-            <Button
-              mt="2"
-              color="primary.300"
-              bgColor="primary.300"
-              onPress={handleSubmit(onSubmit)}
-              isHovered
-            >
+            <Button mt="2" onPress={handleSubmit(onSubmit)}>
               <Text ml={2} fontWeight="medium" style={{ color: "white" }}>
                 Đăng nhập
               </Text>

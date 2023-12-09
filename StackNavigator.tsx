@@ -1,5 +1,5 @@
 import { LogBox, StyleSheet, Text, View } from "react-native";
-import React from "react";
+import React, { useCallback } from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "./screens/AuthenticationScreen/Login/LoginScreen";
@@ -35,67 +35,74 @@ const StackNavigator = () => {
     ]);
   }, []);
 
+  const setLogin = (user: IUserInfo | null, token: string | null) => {
+    setUser(user);
+    setToken(token);
+  };
+  const setLogout = () => {
+    setUser(null);
+    setToken(null);
+  };
+  const bootstrapAsync = useCallback(async () => {
+    try {
+      // await AsyncStorage.removeItem("user");
+      // await AsyncStorage.removeItem("token");
+      // Restore userInfo and dispatch to the store
+      const testData = await AsyncStorage.getItem("user");
+      const tokenString = await AsyncStorage.getItem("token");
+      if (tokenString && testData) {
+        // console.log("Test data: ", testData);
+        // console.log("Token string: ", tokenString);
+        const testDataObject = JSON.parse(testData);
+        setLogin(testDataObject, tokenString);
+        const UserResponseObject: ILoginResponse = {
+          user: testDataObject,
+          token: tokenString,
+        };
+        dispatch(restoreUserInfo(UserResponseObject));
+      } else {
+        setLogout();
+      }
+    } catch (e) {
+      // Restoring token failed
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
   React.useEffect(() => {
     // Fetch the token from storage then navigate to our appropriate place
-    const bootstrapAsync = async () => {
-      try {
-        // await AsyncStorage.removeItem("user");
-        // await AsyncStorage.removeItem("token");
-        // Restore userInfo and dispatch to the store
-        const testData = await AsyncStorage.getItem("user");
-        const tokenString = await AsyncStorage.getItem("token");
-        if (tokenString && testData) {
-          // console.log("Test data: ", typeof testData);
-          // console.log("Token string: ", typeof tokenString);
-          // console.log("Test data: ", testData);
-          // console.log("Token string: ", tokenString);
-          setToken(tokenString);
-          const testDataObject = JSON.parse(testData);
-          setUser(testDataObject);
-          const UserResponseObject: ILoginResponse = {
-            user: testDataObject,
-            token: tokenString,
-          };
-          dispatch(restoreUserInfo(UserResponseObject));
-        } else {
-          setToken(null);
-        }
-      } catch (e) {
-        // Restoring token failed
-      } finally {
-        setIsLoading(false);
-      }
-    };
     bootstrapAsync();
-  }, []);
+  }, [bootstrapAsync]);
 
   if (isLoading) {
     // We haven't finished checking for the token yet
     return <SplashScreen />;
   }
+  console.log("USER", user);
+  console.log("TOKEN", token);
   return (
     <NativeBaseProvider theme={theme}>
       <NavigationContainer theme={ReactNavigationTheme}>
         <RootStack.Navigator>
-          {token === null ? (
+          {token === null || user === null ? (
             <>
               <RootStack.Screen
                 name="Login"
                 component={LoginScreen}
                 options={{ headerShown: false }}
-                initialParams={{ setToken }}
+                initialParams={{ setLogin: setLogin }}
               />
               <RootStack.Screen
                 name="Register"
                 component={RegisterScreen}
                 options={{ headerShown: false }}
-                initialParams={{ setToken }}
+                initialParams={{ setLogin: setLogin }}
               />
               <RootStack.Screen
                 name="ValidateNotification"
                 component={ValidateNotification}
                 options={{ headerShown: false }}
-                initialParams={{ setToken }}
+                initialParams={{ setLogin: setLogin }}
               />
             </>
           ) : user?.role === "doctor" ? (
@@ -104,7 +111,7 @@ const StackNavigator = () => {
                 name="DoctorScreen"
                 component={DoctorScreen}
                 options={{ headerShown: false }}
-                initialParams={{ setToken }}
+                initialParams={{ setLogout: setLogout }}
               />
             </>
           ) : user?.role === "user" ? (
@@ -113,7 +120,7 @@ const StackNavigator = () => {
                 name="UserScreen"
                 component={UserScreen}
                 options={{ headerShown: false }}
-                initialParams={{ setToken }}
+                initialParams={{ setLogout: setLogout }}
               />
             </>
           ) : null}

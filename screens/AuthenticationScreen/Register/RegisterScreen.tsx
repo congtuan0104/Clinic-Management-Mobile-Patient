@@ -54,7 +54,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
   navigation,
   route,
 }) => {
-  const { setToken } = route.params;
+  const { setLogin } = route.params;
   const {
     control,
     handleSubmit,
@@ -82,10 +82,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
       .then(async (response) => {
         if (response.data)
           // Redirect đến trang Validate
-          navigation.navigate("ValidateNotification", {
-            email: response.data?.user.email,
-            setToken: setToken,
-          });
+          navigation.navigate("ValidateNotification", { setLogin });
       })
       .catch((error) => {
         // Print error to the screen
@@ -119,9 +116,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
                   color: "primary.300",
                 },
               }}
-              onPress={() =>
-                navigation.navigate("Login", { setToken: setToken })
-              }
+              onPress={() => navigation.navigate("Login", { setLogin })}
             >
               Đăng nhập
             </Link>

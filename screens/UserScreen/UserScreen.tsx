@@ -12,7 +12,7 @@ import ChattingScreen from "./Chatting/ChattingScreen";
 
 export type RootNativeDrawerParamList = {
   // undefined: the route doesn't have params
-  UserProfile: { setToken: (token: string | null) => void };
+  UserProfile: { setLogout: () => void };
   Chatting: undefined;
   Function02: undefined;
 };
@@ -29,7 +29,7 @@ export type ChattingScreenProps = NativeStackScreenProps<
 const RootDrawer = createDrawerNavigator<RootNativeDrawerParamList>();
 
 export default function UserScreen({ navigation, route }: UserScreenProps) {
-  const { setToken } = route.params;
+  const { setLogout } = route.params;
 
   return (
     <RootDrawer.Navigator
@@ -65,7 +65,7 @@ export default function UserScreen({ navigation, route }: UserScreenProps) {
         }}
         name="UserProfile"
         component={UserProfile}
-        initialParams={{ setToken }}
+        initialParams={{ setLogout: setLogout }}
       />
       <RootDrawer.Screen
         name="Chatting"

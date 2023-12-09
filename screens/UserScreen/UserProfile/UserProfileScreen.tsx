@@ -42,7 +42,7 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
 
   const [isRender, setisRender] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-  const { setToken } = route.params;
+  const { setLogout } = route.params;
   // Kiểm tra và lấy danh sách tài khoản  liên kết
   useEffect(() => {
     if (userInfo?.id) {
@@ -180,10 +180,10 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
             onPress={async () => {
               // await GoogleSignin.revokeAccess();
               // await GoogleSignin.signOut();
-              AsyncStorage.removeItem("user");
-              AsyncStorage.removeItem("token");
+              await AsyncStorage.removeItem("user");
+              await AsyncStorage.removeItem("token");
               dispatch(logout());
-              setToken(null);
+              setLogout();
             }}
           >
             Log out

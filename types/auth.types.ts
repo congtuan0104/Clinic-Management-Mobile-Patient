@@ -3,13 +3,14 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 // Create an object type with mappings for route name to the params of the route
 export type RootNativeStackParamList = {
   // undefined: the route doesn't have params
-  Login: { setToken: (token: string | null) => void };
-  Register: { setToken: (token: string | null) => void };
-  UserScreen: { setToken: (token: string | null) => void };
-  DoctorScreen: { setToken: (token: string | null) => void };
+  Login: { setLogin: (user: IUserInfo | null, token: string | null) => void };
+  Register: {
+    setLogin: (user: IUserInfo | null, token: string | null) => void;
+  };
+  UserScreen: { setLogout: () => void };
+  DoctorScreen: { setLogout: () => void };
   ValidateNotification: {
-    email: string;
-    setToken: (token: string | null) => void;
+    setLogin: (user: IUserInfo | null, token: string | null) => void;
   };
 };
 
