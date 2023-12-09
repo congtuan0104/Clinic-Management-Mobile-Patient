@@ -16,12 +16,14 @@ import { appColor } from "../../../theme";
 import database from "@react-native-firebase/database";
 import { useAppSelector } from "../../../hooks";
 import { userInfoSelector } from "../../../store";
+import dayjs from "dayjs";
 
 export interface MsgType {
-  message: string;
+  content: string;
+  messageId: string;
   senderId: string;
   senderName: string;
-  timestamp: string;
+  timestamp: any;
 }
 
 const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
@@ -42,6 +44,16 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
   // dùng useEffect để gọi dữ liệu
   useEffect(() => {
     // Stop listening for updates when no longer required
+  }, [groupId]);
+
+  useEffect(() => {
+    const onChildAdd = database()
+      .ref(`${path}/`)
+      .on("child_added", (snapshot) => {
+        setallChat((state) => [snapshot.val(), ...state]);
+      });
+    // Stop listening for updates when no longer required
+    return () => database().ref(`${path}/`).off("child_added", onChildAdd);
   }, [groupId]);
 
   // Hiệu ứng khi gửi tin nhắn
@@ -68,18 +80,29 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     }
     setdisabled(true);
     let msgData: MsgType = {
-      message: msg,
+      content: msg,
+      messageId: "3",
       senderId: userInfo?.id ? userInfo.id : "null",
       senderName: userInfo?.email ? userInfo.email : "unknown",
-      timestamp: "tét",
+      timestamp: dayjs().format("DD/MM/YYYY HH:mm:ss"),
     };
+    // Lấy danh sách nhắn tin tại 1 thời điểm
+    let currentLength = 0;
     database()
-      .ref("/users/123")
-      .set(msgData)
-      .then(() => console.log("data set"));
-    setMsg("");
-    setdisabled(false);
-    setallChat([...allChat, msgData]);
+      .ref(`${path}/`)
+      .once("value")
+      .then((snapshot) => {
+        currentLength = snapshot.val() === null ? 0 : snapshot.val().length;
+        database()
+          .ref(`${path}/${currentLength}/`)
+          .set(msgData)
+          .then(() => {
+            console.log("data set");
+          });
+        setMsg("");
+        setdisabled(false);
+        setallChat([...allChat, msgData]);
+      });
   };
 
   return (
@@ -95,7 +118,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
               return (
                 <MsgComponent
                   sender={item.senderId === userInfo.id ? true : false}
-                  message={item.message}
+                  message={item.content}
                   item={item}
                 />
               );

@@ -25,7 +25,7 @@ const MsgComponent = (props: any) => {
           },
         ]}
       >
-        <Text color={sender ? "#fff" : "#000"}>{item.message}</Text>
+        <Text color={sender ? "#fff" : "#000"}>{message}</Text>
       </View>
     </Pressable>
   );
