@@ -43,7 +43,7 @@ import {
 } from "firebase/auth";
 GoogleSignin.configure({
   webClientId:
-    "416278606380-s9vkim9bj0n131q2odvmgirh96uqu90k.apps.googleusercontent.com",
+    "698964272341 - u24tokvut5fd5heu7vqmh58c3qmd6kfv.apps.googleusercontent.com",
 });
 let providerStr: string = "";
 

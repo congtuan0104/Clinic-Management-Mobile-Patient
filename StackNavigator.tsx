@@ -45,6 +45,17 @@ const StackNavigator = () => {
   };
   const bootstrapAsync = useCallback(async () => {
     try {
+      // const userToStorage: IUserInfo = {
+      //   id: "testId",
+      //   email: "test@gmai.com",
+      //   emailVerified: false,
+      //   isInputPassword: false, // dữ liệu tạm thời
+      //   role: "user",
+      // };
+      // const token = "thisistestingtoken";
+      // await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
+      // await AsyncStorage.setItem("token", token);
+
       // await AsyncStorage.removeItem("user");
       // await AsyncStorage.removeItem("token");
       // Restore userInfo and dispatch to the store

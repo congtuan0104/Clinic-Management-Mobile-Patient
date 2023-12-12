@@ -13,7 +13,7 @@ import MsgComponent from "../../../components/MsgComponent/MsgComponent";
 import { Pressable } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { appColor } from "../../../theme";
-import database from "@react-native-firebase/database";
+import { firebase } from "@react-native-firebase/database";
 import { useAppSelector } from "../../../hooks";
 import { userInfoSelector } from "../../../store";
 import dayjs from "dayjs";
@@ -24,6 +24,7 @@ export interface MsgType {
   senderId: string;
   senderName: string;
   timestamp: any;
+  type: string;
 }
 
 const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
@@ -38,22 +39,23 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
   const [disabled, setdisabled] = React.useState(false);
   const msgvalid = (txt: string) => txt && txt.replace(/\s/g, "").length;
 
-  // Thiết lập firebase
-  let path = groupId;
-
   // dùng useEffect để gọi dữ liệu
   useEffect(() => {
     // Stop listening for updates when no longer required
   }, [groupId]);
 
   useEffect(() => {
-    const onChildAdd = database()
-      .ref(`${path}/`)
-      .on("child_added", (snapshot) => {
-        setallChat((state) => [snapshot.val(), ...state]);
-      });
+    const reference = firebase
+      .app()
+      .database(
+        "https://clinus-1d1d1-default-rtdb.asia-southeast1.firebasedatabase.app/"
+      )
+      .ref(`/chats/${groupId}`);
+    const onChildAdd = reference.on("child_added", (snapshot) => {
+      setallChat((state) => [snapshot.val(), ...state]);
+    });
     // Stop listening for updates when no longer required
-    return () => database().ref(`${path}/`).off("child_added", onChildAdd);
+    return () => reference.off("child_added", onChildAdd);
   }, [groupId]);
 
   // Hiệu ứng khi gửi tin nhắn
@@ -84,24 +86,32 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
       messageId: dayjs().unix().toString(),
       senderId: userInfo?.id ? userInfo.id : "null",
       senderName: userInfo?.email ? userInfo.email : "unknown",
-      timestamp: dayjs().format("DD/MM/YYYY HH:mm:ss"),
+      timestamp: dayjs().toISOString(),
+      type: "text",
     };
     // Lấy danh sách nhắn tin tại 1 thời điểm
     let currentLength = 0;
-    database()
-      .ref(`${path}/`)
-      .once("value")
-      .then((snapshot) => {
-        currentLength = snapshot.val() === null ? 0 : snapshot.val().length;
-        database()
-          .ref(`${path}/${currentLength}/`)
-          .set(msgData)
-          .then(() => {
-            console.log("data set");
-          });
-        setMsg("");
-        setdisabled(false);
-      });
+    const reference = firebase
+      .app()
+      .database(
+        "https://clinus-1d1d1-default-rtdb.asia-southeast1.firebasedatabase.app/"
+      )
+      .ref(`/chats/${groupId}`);
+    reference.once("value").then((snapshot) => {
+      currentLength = snapshot.val() === null ? 0 : snapshot.val().length;
+      firebase
+        .app()
+        .database(
+          "https://clinus-1d1d1-default-rtdb.asia-southeast1.firebasedatabase.app/"
+        )
+        .ref(`/chats/${groupId}/${currentLength}`)
+        .set(msgData)
+        .then(() => {
+          console.log("data set");
+        });
+      setMsg("");
+      setdisabled(false);
+    });
   };
 
   return (

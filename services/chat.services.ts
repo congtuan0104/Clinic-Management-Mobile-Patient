@@ -85,7 +85,7 @@ const listData = [
   },
   {
     id: "11",
-    name: "Tom Holland",
+    name: "group_1",
     avatar_url:
       "https://static.toiimg.com/thumb.cms?msid=80482429&height=600&width=600",
     subtitle:
@@ -93,7 +93,7 @@ const listData = [
   },
   {
     id: "12",
-    name: "Tom Holland",
+    name: "group_2",
     avatar_url:
       "https://static.toiimg.com/thumb.cms?msid=80482429&height=600&width=600",
     subtitle:

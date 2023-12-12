@@ -2,6 +2,7 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { appColor } from "../../../theme";
+import dayjs from "dayjs";
 
 // create a component
 const TimeDelivery = (props: any) => {
@@ -19,10 +20,10 @@ const TimeDelivery = (props: any) => {
         style={{
           fontFamily: "Poppins-Regular",
           fontSize: 10,
-          color: sender ? appColor.background : appColor.background,
+          color: sender ? appColor.background : "#000",
         }}
       >
-        {time}
+        {dayjs(time).format("DD/MM/YYYY HH:mm:ss")}
       </Text>
     </View>
   );

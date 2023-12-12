@@ -110,7 +110,6 @@ export default function CreateChattingGroupScreen({
             render={({ field: { onChange, onBlur, value } }) => (
               <Select
                 minWidth="200"
-                accessibilityLabel="Choose Service"
                 placeholder="Chọn loại nhóm"
                 _selectedItem={{
                   bg: "teal.600",
