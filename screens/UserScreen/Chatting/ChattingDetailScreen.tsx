@@ -18,6 +18,7 @@ import { useAppSelector } from "../../../hooks";
 import { userInfoSelector } from "../../../store";
 import dayjs from "dayjs";
 import UploadImageModal from "../../../components/UploadImageModal/UploadImageModal";
+import * as ImagePicker from "expo-image-picker";
 
 export interface MsgType {
   content: string;
@@ -111,8 +112,48 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     });
   };
 
-  const onPressCamera = () => {
+  const onPressCamera = async () => {
     console.log(1);
+    try {
+      await ImagePicker.requestCameraPermissionsAsync();
+      let result = await ImagePicker.launchCameraAsync({
+        cameraType: ImagePicker.CameraType.front,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        // save image
+        await handleSendImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const onPressUploadImageGallery = async () => {
+    try {
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+      let result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 1,
+      });
+      if (!result.canceled) {
+        // save image
+        await handleSendImage(result.assets[0].uri);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSendImage = async (image: any) => {
+    try {
+      console.log(image);
+      setShowModal(false);
+    } catch (error) {}
   };
 
   return (
@@ -230,6 +271,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
             showModal={showModal}
             setShowModal={setShowModal}
             onPressCamera={onPressCamera}
+            onPressUploadImageGallery={onPressUploadImageGallery}
           />
         </View>
       ) : (
