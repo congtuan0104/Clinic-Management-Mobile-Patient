@@ -1,13 +1,13 @@
 // import moment from 'moment';
 import React, { Component } from "react";
 import { View, StyleSheet, Pressable } from "react-native";
-import { Text } from "native-base";
+import { Link, Text } from "native-base";
 import { appColor } from "../../theme";
 import { Image } from "native-base";
 import TimeDelivery from "./TimeDelivery/TimeDelivery";
 
 const MsgComponent = (props: any) => {
-  const { sender, content, time, type } = props;
+  const { sender, content, time, type, link } = props;
   return (
     <Pressable style={{ marginVertical: 0 }}>
       <Image
@@ -28,8 +28,17 @@ const MsgComponent = (props: any) => {
       >
         {type === "text" ? (
           <Text color={sender ? "#fff" : "#000"}>{content}</Text>
-        ) : (
+        ) : type === "image" ? (
           <Image src={content} alt={content} size={250} />
+        ) : (
+          <Link
+            href={link}
+            _text={{
+              color: sender ? "#fff" : "#000",
+            }}
+          >
+            {content}
+          </Link>
         )}
         <TimeDelivery sender={sender} time={time} />
       </View>

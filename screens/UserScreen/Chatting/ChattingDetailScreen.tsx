@@ -19,9 +19,13 @@ import { userInfoSelector } from "../../../store";
 import dayjs from "dayjs";
 import UploadImageModal from "../../../components/UploadImageModal/UploadImageModal";
 import * as ImagePicker from "expo-image-picker";
+import * as DocumentPicker from "expo-document-picker";
+
 import storage from "@react-native-firebase/storage";
+import { helpers } from "../../../utils/helper";
 
 export interface MsgType {
+  link?: string;
   content: string;
   messageId: string;
   senderId: string;
@@ -76,7 +80,11 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     }).start();
   };
 
-  const handleUploadToRealtimeDB = async (msg: string, type: string) => {
+  const handleUploadToRealtimeDB = async (
+    msg: string,
+    type: string,
+    link?: string
+  ) => {
     if (msg == "" || msgvalid(msg) == 0) {
       return false;
     }
@@ -88,6 +96,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
       senderName: userInfo?.email ? userInfo.email : "unknown",
       timestamp: dayjs().toISOString(),
       type: type,
+      link: link,
     };
     // Lấy danh sách nhắn tin tại 1 thời điểm
     let currentLength = 0;
@@ -176,6 +185,41 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     } catch (error) {}
   };
 
+  const handleDocumentPicker = async () => {
+    const docRes = await DocumentPicker.getDocumentAsync({
+      type: "*/*",
+      multiple: true,
+    });
+    const assets = docRes.assets;
+    if (!assets) {
+      return;
+    } else {
+      const fileList = assets;
+      fileList.map(async (file) => {
+        try {
+          setShowModal(false);
+          // Check if file is image
+          if (helpers.checkFileType(file.mimeType) === "image") {
+            await handleSendImage(file.uri);
+            return;
+          }
+          const filename = file.name;
+          const reference = storage().ref(`/chats/${groupId}/${filename}`);
+          try {
+            await reference.putFile(file.uri);
+            const url = await storage()
+              .ref(`/chats/${groupId}/${filename}`)
+              .getDownloadURL();
+            handleUploadToRealtimeDB(filename, "file", url);
+          } catch (error) {
+            console.error("Error uploading image:", error);
+          }
+        } catch (error) {
+          console.log(error);
+        }
+      });
+    }
+  };
   return (
     <>
       {userInfo ? (
@@ -192,6 +236,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
                   content={item.content}
                   time={item.timestamp}
                   type={item.type}
+                  link={item.link ? item.link : null}
                 />
               );
             }}
@@ -213,7 +258,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
             {/** Send file button */}
             <Pressable
               disabled={disabled}
-              onPress={() => {}}
+              onPress={handleDocumentPicker}
               onPressIn={handlePressIn}
               onPressOut={handlePressOut}
             >
