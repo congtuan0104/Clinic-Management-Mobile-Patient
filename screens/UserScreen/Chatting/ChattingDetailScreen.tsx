@@ -17,6 +17,7 @@ import { firebase } from "@react-native-firebase/database";
 import { useAppSelector } from "../../../hooks";
 import { userInfoSelector } from "../../../store";
 import dayjs from "dayjs";
+import UploadImageModal from "../../../components/UploadImageModal/UploadImageModal";
 
 export interface MsgType {
   content: string;
@@ -38,11 +39,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
   const [allChat, setallChat] = React.useState<MsgType[]>([]);
   const [disabled, setdisabled] = React.useState(false);
   const msgvalid = (txt: string) => txt && txt.replace(/\s/g, "").length;
-
-  // dùng useEffect để gọi dữ liệu
-  useEffect(() => {
-    // Stop listening for updates when no longer required
-  }, [groupId]);
+  const [showModal, setShowModal] = React.useState<boolean>(false);
 
   useEffect(() => {
     const reference = firebase
@@ -114,6 +111,10 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     });
   };
 
+  const onPressCamera = () => {
+    console.log(1);
+  };
+
   return (
     <>
       {userInfo ? (
@@ -143,13 +144,54 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
               flexDirection: "row",
               alignItems: "center",
               paddingVertical: 8,
+              paddingHorizontal: 4,
               justifyContent: "space-evenly",
             }}
           >
+            {/** Send file button */}
+            <Pressable
+              disabled={disabled}
+              onPress={() => {}}
+              onPressIn={handlePressIn}
+              onPressOut={handlePressOut}
+            >
+              {({ isPressed }) => (
+                <Animated.View
+                  style={{
+                    opacity: isPressed ? opacity : 1,
+                  }}
+                >
+                  <Ionicons name="attach" size={24} color={appColor.primary} />
+                </Animated.View>
+              )}
+            </Pressable>
+            {/** Send image button */}
+            <Pressable
+              disabled={disabled}
+              onPress={() => {
+                setShowModal(true);
+              }}
+              onPressIn={handlePressIn}
+              onPressOut={handlePressOut}
+            >
+              {({ isPressed }) => (
+                <Animated.View
+                  style={{
+                    opacity: isPressed ? opacity : 1,
+                  }}
+                >
+                  <Ionicons
+                    name="image-outline"
+                    size={24}
+                    color={appColor.primary}
+                  />
+                </Animated.View>
+              )}
+            </Pressable>
             <TextInput
               style={{
                 backgroundColor: "#f0f2fd",
-                width: "80%",
+                width: "70%",
                 height: "auto",
                 borderRadius: 25,
                 borderWidth: 0.5,
@@ -166,6 +208,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
               onChangeText={(val) => setMsg(val)}
             />
 
+            {/** Send message button */}
             <Pressable
               disabled={disabled}
               onPress={handlePress}
@@ -183,6 +226,11 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
               )}
             </Pressable>
           </View>
+          <UploadImageModal
+            showModal={showModal}
+            setShowModal={setShowModal}
+            onPressCamera={onPressCamera}
+          />
         </View>
       ) : (
         <View></View>
