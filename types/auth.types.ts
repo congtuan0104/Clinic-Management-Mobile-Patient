@@ -3,14 +3,15 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 // Create an object type with mappings for route name to the params of the route
 export type RootNativeStackParamList = {
   // undefined: the route doesn't have params
-  Login: { setToken: (token: string | null) => void };
-  Register: { setToken: (token: string | null) => void };
-  Home: { setToken: (token: string | null) => void };
-  ValidateNotification: {
-    email: string;
-    setToken: (token: string | null) => void;
+  Login: { setLogin: (user: IUserInfo | null, token: string | null) => void };
+  Register: {
+    setLogin: (user: IUserInfo | null, token: string | null) => void;
   };
-  UserProfile: undefined;
+  UserScreen: { setLogout: () => void };
+  DoctorScreen: { setLogout: () => void };
+  ValidateNotification: {
+    setLogin: (user: IUserInfo | null, token: string | null) => void;
+  };
 };
 
 // Define type of props
@@ -23,14 +24,14 @@ export type RegisterScreenProps = NativeStackScreenProps<
   "Register"
 >;
 
-export type HomeScreenProps = NativeStackScreenProps<
+export type UserScreenProps = NativeStackScreenProps<
   RootNativeStackParamList,
-  "Home"
+  "UserScreen"
 >;
 
-export type UserProfileScreenProps = NativeStackScreenProps<
+export type DoctorScreenProps = NativeStackScreenProps<
   RootNativeStackParamList,
-  "UserProfile"
+  "DoctorScreen"
 >;
 
 export type ValidateNotificationProps = NativeStackScreenProps<
@@ -38,24 +39,26 @@ export type ValidateNotificationProps = NativeStackScreenProps<
   "ValidateNotification"
 >;
 
+// Interface cho thông tin người dùng
+
 export interface IUserInfo {
   id: string;
   email: string;
+  isInputPassword: boolean;
   emailVerified: boolean;
   role: string;
-  token: string;
 }
 
-export interface IRegisterRequest {
-  firstName: string;
-  lastName: string;
-  email: string;
-  password: string;
-}
+// Interface xử lí đăng nhập
 
 export interface ILoginRequest {
   email: string;
   password: string;
+}
+
+export interface ILoginResponse {
+  user: IUserInfo;
+  token: string;
 }
 
 export interface ILoginWithGoogleRequest {
@@ -63,15 +66,6 @@ export interface ILoginWithGoogleRequest {
   firstName: string;
   lastName: string;
   picture: string;
-}
-
-export interface ILoginResponse {
-  data: {
-    token: string;
-    user: IUserInfo;
-  };
-  message: string;
-  status: string;
 }
 
 export interface ILoginResponseData {
@@ -94,12 +88,18 @@ export interface ILoginWithGoogleResponse {
   status: string;
 }
 
+// Register
+
+export interface IRegisterRequest {
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  role: string;
+}
+
 export interface IRegisterResponse {
-  data: {
-    user: IUserInfo;
-  };
-  message: string;
-  status: string;
+  user: IUserInfo;
 }
 
 export interface ILinkAccountRequest {

@@ -11,20 +11,43 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
-      "googleServicesFile": "./GoogleService-Info.plist"
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "SKAdNetworkItems": [
+          {
+            "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork"
+          },
+          {
+            "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
+          }
+        ]
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"       
+        "backgroundColor": "#ffffff"
       },
       "googleServicesFile": "./google-services.json",
-      "package": "com.nhatminh287.Mobileapppatient"
+      "package": "com.nhatminh287.Mobileapppatient",
+      "permissions": ["android.permission.INTERNET"],
+      "intentFilters": [
+        {
+          "action": "VIEW",
+          "autoVerify": true,
+          "data": [
+            {
+              "scheme": "clinus",
+              "host": "*.myapp.io",
+              "pathPrefix": "/verify-account"
+            }
+          ],
+          "category": ["BROWSABLE", "DEFAULT"]
+        }
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -33,13 +56,14 @@
       "@react-native-google-signin/google-signin",
       [
         "react-native-fbsdk-next",
-      {
-        "appID": "246416061448702",
-        "clientToken": "6b9ac107583746e675bbba995b377e66",
-        "displayName": "CLINUS"
-      }
-    ]
+        {
+          "appID": "246416061448702",
+          "clientToken": "6b9ac107583746e675bbba995b377e66",
+          "displayName": "CLINUS"
+        }
+      ]
     ],
+    "owner": "nhatminh287",
     "extra": {
       "eas": {
         "projectId": "cfdcaa5a-205a-4c17-87d3-f07957a50cc9"
