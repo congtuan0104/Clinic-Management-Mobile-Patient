@@ -19,6 +19,7 @@ import { userInfoSelector } from "../../../store";
 import dayjs from "dayjs";
 import UploadImageModal from "../../../components/UploadImageModal/UploadImageModal";
 import * as ImagePicker from "expo-image-picker";
+import storage from "@react-native-firebase/storage";
 
 export interface MsgType {
   content: string;
@@ -43,6 +44,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
   const [showModal, setShowModal] = React.useState<boolean>(false);
 
   useEffect(() => {
+    setallChat([]);
     const reference = firebase
       .app()
       .database(
@@ -74,7 +76,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     }).start();
   };
 
-  const handlePress = async () => {
+  const handleUploadToRealtimeDB = async (msg: string, type: string) => {
     if (msg == "" || msgvalid(msg) == 0) {
       return false;
     }
@@ -85,7 +87,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
       senderId: userInfo?.id ? userInfo.id : "null",
       senderName: userInfo?.email ? userInfo.email : "unknown",
       timestamp: dayjs().toISOString(),
-      type: "text",
+      type: type,
     };
     // Lấy danh sách nhắn tin tại 1 thời điểm
     let currentLength = 0;
@@ -107,13 +109,16 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
         .then(() => {
           console.log("data set");
         });
-      setMsg("");
       setdisabled(false);
     });
   };
 
+  const handlePress = () => {
+    handleUploadToRealtimeDB(msg, "text");
+    setMsg("");
+  };
+
   const onPressCamera = async () => {
-    console.log(1);
     try {
       await ImagePicker.requestCameraPermissionsAsync();
       let result = await ImagePicker.launchCameraAsync({
@@ -125,6 +130,8 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
       if (!result.canceled) {
         // save image
         await handleSendImage(result.assets[0].uri);
+      } else {
+        alert("You did not select any image.");
       }
     } catch (error) {
       console.log(error);
@@ -143,6 +150,8 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
       if (!result.canceled) {
         // save image
         await handleSendImage(result.assets[0].uri);
+      } else {
+        alert("You did not select any image.");
       }
     } catch (error) {
       console.log(error);
@@ -151,8 +160,19 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
 
   const handleSendImage = async (image: any) => {
     try {
-      console.log(image);
       setShowModal(false);
+      // set imageName = currentDate
+      const imageName = dayjs().toISOString();
+      const reference = storage().ref(`/chats/${groupId}/${imageName}`);
+      try {
+        await reference.putFile(image);
+        const url = await storage()
+          .ref(`/chats/${groupId}/${imageName}`)
+          .getDownloadURL();
+        handleUploadToRealtimeDB(url, "image");
+      } catch (error) {
+        console.error("Error uploading image:", error);
+      }
     } catch (error) {}
   };
 
@@ -169,8 +189,9 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
               return (
                 <MsgComponent
                   sender={item.senderId === userInfo.id ? true : false}
-                  message={item.content}
+                  content={item.content}
                   time={item.timestamp}
+                  type={item.type}
                 />
               );
             }}

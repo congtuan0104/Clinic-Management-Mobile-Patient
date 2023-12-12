@@ -7,7 +7,7 @@ import { Image } from "native-base";
 import TimeDelivery from "./TimeDelivery/TimeDelivery";
 
 const MsgComponent = (props: any) => {
-  const { sender, message, time } = props;
+  const { sender, content, time, type } = props;
   return (
     <Pressable style={{ marginVertical: 0 }}>
       <Image
@@ -26,7 +26,11 @@ const MsgComponent = (props: any) => {
           },
         ]}
       >
-        <Text color={sender ? "#fff" : "#000"}>{message}</Text>
+        {type === "text" ? (
+          <Text color={sender ? "#fff" : "#000"}>{content}</Text>
+        ) : (
+          <Image src={content} alt={content} size={250} />
+        )}
         <TimeDelivery sender={sender} time={time} />
       </View>
     </Pressable>
