@@ -20,14 +20,15 @@ import dayjs from "dayjs";
 import UploadImageModal from "../../../components/UploadImageModal/UploadImageModal";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
-
+import { v4 as uuidv4 } from "uuid";
 import storage from "@react-native-firebase/storage";
 import { helpers } from "../../../utils/helper";
+import uuid from "react-native-uuid";
 
 export interface MsgType {
   link?: string;
   content: string;
-  messageId: string;
+  messageId: any;
   senderId: string;
   senderName: string;
   timestamp: any;
@@ -91,7 +92,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     setdisabled(true);
     let msgData: MsgType = {
       content: msg,
-      messageId: dayjs().unix().toString(),
+      messageId: uuid.v4(),
       senderId: userInfo?.id ? userInfo.id : "null",
       senderName: userInfo?.email ? userInfo.email : "unknown",
       timestamp: dayjs().toISOString(),
@@ -138,7 +139,9 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
       });
       if (!result.canceled) {
         // save image
-        await handleSendImage(result.assets[0].uri);
+        const uri = result.assets[0].uri;
+        const fileName = uri.substring(uri.lastIndexOf("/") + 1);
+        await handleSendImage(fileName, uri);
       } else {
         alert("You did not select any image.");
       }
@@ -158,7 +161,9 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
       });
       if (!result.canceled) {
         // save image
-        await handleSendImage(result.assets[0].uri);
+        const uri = result.assets[0].uri;
+        const fileName = uri.substring(uri.lastIndexOf("/") + 1);
+        await handleSendImage(fileName, uri);
       } else {
         alert("You did not select any image.");
       }
@@ -167,18 +172,19 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     }
   };
 
-  const handleSendImage = async (image: any) => {
+  const handleSendImage = async (imageName: any, imageUri: any) => {
     try {
       setShowModal(false);
       // set imageName = currentDate
-      const imageName = dayjs().toISOString();
+      // const imageName = dayjs().toISOString();
+      console.log(imageName, imageUri);
       const reference = storage().ref(`/chats/${groupId}/${imageName}`);
       try {
-        await reference.putFile(image);
+        await reference.putFile(imageUri);
         const url = await storage()
           .ref(`/chats/${groupId}/${imageName}`)
           .getDownloadURL();
-        handleUploadToRealtimeDB(url, "image");
+        handleUploadToRealtimeDB(imageName, "image", url);
       } catch (error) {
         console.error("Error uploading image:", error);
       }
@@ -200,19 +206,19 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
           setShowModal(false);
           // Check if file is image
           if (helpers.checkFileType(file.mimeType) === "image") {
-            await handleSendImage(file.uri);
-            return;
-          }
-          const filename = file.name;
-          const reference = storage().ref(`/chats/${groupId}/${filename}`);
-          try {
-            await reference.putFile(file.uri);
-            const url = await storage()
-              .ref(`/chats/${groupId}/${filename}`)
-              .getDownloadURL();
-            handleUploadToRealtimeDB(filename, "file", url);
-          } catch (error) {
-            console.error("Error uploading image:", error);
+            await handleSendImage(file.name, file.uri);
+          } else {
+            const filename = file.name;
+            const reference = storage().ref(`/chats/${groupId}/${filename}`);
+            try {
+              await reference.putFile(file.uri);
+              const url = await storage()
+                .ref(`/chats/${groupId}/${filename}`)
+                .getDownloadURL();
+              handleUploadToRealtimeDB(filename, "file", url);
+            } catch (error) {
+              console.error("Error uploading image:", error);
+            }
           }
         } catch (error) {
           console.log(error);
@@ -237,6 +243,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
                   time={item.timestamp}
                   type={item.type}
                   link={item.link ? item.link : null}
+                  username={item.senderName}
                 />
               );
             }}

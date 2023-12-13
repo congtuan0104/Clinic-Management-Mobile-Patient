@@ -7,11 +7,11 @@ import { Image } from "native-base";
 import TimeDelivery from "./TimeDelivery/TimeDelivery";
 
 const MsgComponent = (props: any) => {
-  const { sender, content, time, type, link } = props;
+  const { sender, content, time, type, link, username } = props;
   return (
     <Pressable style={{ marginVertical: 0 }}>
       <Image
-        src="https://picsum.photos/200"
+        src={`https://ui-avatars.com/api/?name=${username}`}
         borderRadius={100}
         size={50}
         alt="ff"
@@ -29,7 +29,7 @@ const MsgComponent = (props: any) => {
         {type === "text" ? (
           <Text color={sender ? "#fff" : "#000"}>{content}</Text>
         ) : type === "image" ? (
-          <Image src={content} alt={content} size={250} />
+          <Image src={link} alt={content} size={250} />
         ) : (
           <Link
             href={link}
