@@ -2,20 +2,60 @@ import { Alert, LogBox, StyleSheet, Text, View } from "react-native";
 import React, { useCallback } from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginScreen from "./screens/AuthenticationScreen/Login/LoginScreen";
-import RegisterScreen from "./screens/AuthenticationScreen/Register/RegisterScreen";
-import { ILoginResponse, IUserInfo, RootNativeStackParamList } from "./types";
+import LoginScreen from "../screens/AuthenticationScreen/Login/LoginScreen";
+import RegisterScreen from "../screens/AuthenticationScreen/Register/RegisterScreen";
+import { ILoginResponse, IUserInfo } from "../types";
 import { NativeBaseProvider } from "native-base";
-import { theme } from "./theme";
-import UserScreen from "./screens/UserScreen/UserScreen";
-import ValidateNotification from "./screens/AuthenticationScreen/ValidateNotification/ValidateNotification";
+import { theme } from "../theme";
+import UserNavigator from "./UserNavigator";
+import ValidateNotification from "../screens/AuthenticationScreen/ValidateNotification/ValidateNotification";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { restoreUserInfo } from "./store";
-import SplashScreen from "./screens/AuthenticationScreen/SplashScreen/SplashScreen";
-import { ReactNavigationTheme } from "./config/react-navigation.theme";
-import DoctorScreen from "./screens/DoctorScreen/DoctorScreen";
-import { useAppDispatch } from "./hooks";
+import { restoreUserInfo } from "../store";
+import SplashScreen from "../screens/AuthenticationScreen/SplashScreen/SplashScreen";
+import { ReactNavigationTheme } from "../config/react-navigation.theme";
+import DoctorNavigator from "./DoctorNavigator";
+import { useAppDispatch } from "../hooks";
 import messaging from "@react-native-firebase/messaging";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+
+// Create an object type with mappings for route name to the params of the route
+export type RootNativeStackParamList = {
+  // undefined: the route doesn't have params
+  Login: { setLogin: (user: IUserInfo | null, token: string | null) => void };
+  Register: {
+    setLogin: (user: IUserInfo | null, token: string | null) => void;
+  };
+  UserNavigator: { setLogout: () => void };
+  DoctorNavigator: { setLogout: () => void };
+  ValidateNotification: {
+    setLogin: (user: IUserInfo | null, token: string | null) => void;
+  };
+};
+
+// Define type of props
+export type LoginScreenProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "Login"
+>;
+export type RegisterScreenProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "Register"
+>;
+
+export type UserNavigatorProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "UserNavigator"
+>;
+
+export type DoctorNavigatorProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "DoctorNavigator"
+>;
+
+export type ValidateNotificationProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "ValidateNotification"
+>;
 
 const StackNavigator = () => {
   // define userToken for validation
@@ -51,16 +91,16 @@ const StackNavigator = () => {
   // Running before render
   const bootstrapAsync = useCallback(async () => {
     try {
-      // const userToStorage: IUserInfo = {
-      //   id: "testId",
-      //   email: "test@gmai.com",
-      //   emailVerified: false,
-      //   isInputPassword: false, // dữ liệu tạm thời
-      //   role: "user",
-      // };
-      // const token = "thisistestingtoken";
-      // await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
-      // await AsyncStorage.setItem("token", token);
+      const userToStorage: IUserInfo = {
+        id: "testId",
+        email: "test@gmai.com",
+        emailVerified: false,
+        isInputPassword: false, // dữ liệu tạm thời
+        role: "user",
+      };
+      const token = "thisistestingtoken";
+      await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
+      await AsyncStorage.setItem("token", token);
 
       // await AsyncStorage.removeItem("user");
       // await AsyncStorage.removeItem("token");
@@ -182,8 +222,8 @@ const StackNavigator = () => {
           ) : user?.role === "doctor" ? (
             <>
               <RootStack.Screen
-                name="DoctorScreen"
-                component={DoctorScreen}
+                name="DoctorNavigator"
+                component={DoctorNavigator}
                 options={{ headerShown: false }}
                 initialParams={{ setLogout: setLogout }}
               />
@@ -191,8 +231,8 @@ const StackNavigator = () => {
           ) : user?.role === "user" ? (
             <>
               <RootStack.Screen
-                name="UserScreen"
-                component={UserScreen}
+                name="UserNavigator"
+                component={UserNavigator}
                 options={{ headerShown: false }}
                 initialParams={{ setLogout: setLogout }}
               />

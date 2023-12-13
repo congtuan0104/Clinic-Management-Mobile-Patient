@@ -12,13 +12,13 @@ import {
   Icon,
 } from "native-base";
 import React from "react";
-import { GroupChatInfo } from "../../../types";
-import { chatService } from "../../../services/chat.services";
-import { ChattingGroupListScreenProps } from "./ChattingScreen";
+import { GroupChatInfo } from "../../types";
+import { chatService } from "../../services/chat.services";
+import { ChattingGroupListScreenProps } from "../../Navigator/ChattingNavigator";
 import { TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
-import { appColor } from "../../../theme";
+import { appColor } from "../../theme";
 export default function ChattingGroupListScreen({
   navigation,
   route,

@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet } from "react-native";
 import { Provider } from "react-redux";
 import { store } from "./store/store";
-import StackNavigator from "./StackNavigator";
+import StackNavigator from "./Navigator/StackNavigator";
 import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
 import "react-native-gesture-handler";

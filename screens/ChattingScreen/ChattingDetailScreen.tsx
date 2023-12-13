@@ -7,24 +7,24 @@ import {
   Animated,
 } from "react-native";
 import React, { useEffect } from "react";
-import { ChattingDetailScreenProps } from "./ChattingScreen";
+import { ChattingDetailScreenProps } from "../../Navigator/ChattingNavigator";
 import { StyleSheet } from "react-native";
-import MsgComponent from "../../../components/MsgComponent/MsgComponent";
+import MsgComponent from "../../components/MsgComponent/MsgComponent";
 import { Pressable } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
-import { appColor } from "../../../theme";
+import { appColor } from "../../theme";
 import { firebase } from "@react-native-firebase/database";
-import { useAppSelector } from "../../../hooks";
-import { userInfoSelector } from "../../../store";
+import { useAppSelector } from "../../hooks";
+import { userInfoSelector } from "../../store";
 import dayjs from "dayjs";
-import UploadImageModal from "../../../components/UploadImageModal/UploadImageModal";
+import UploadImageModal from "../../components/UploadImageModal/UploadImageModal";
 import * as ImagePicker from "expo-image-picker";
 import * as DocumentPicker from "expo-document-picker";
 import { v4 as uuidv4 } from "uuid";
 import storage from "@react-native-firebase/storage";
-import { helpers } from "../../../utils/helper";
+import { helpers } from "../../utils/helper";
 import uuid from "react-native-uuid";
-import { LoadingSpinner } from "../../../components/LoadingSpinner/LoadingSpinner";
+import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 
 export interface MsgType {
   link?: string;
