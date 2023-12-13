@@ -29,7 +29,7 @@ const MsgComponent = (props: any) => {
         {type === "text" ? (
           <Text color={sender ? "#fff" : "#000"}>{content}</Text>
         ) : type === "image" ? (
-          <Image src={link} alt={content} size={250} />
+          <Image src={link} alt={content} size="200px" />
         ) : (
           <Link
             href={link}

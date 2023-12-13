@@ -1,4 +1,4 @@
-import { LogBox, StyleSheet, Text, View } from "react-native";
+import { Alert, LogBox, StyleSheet, Text, View } from "react-native";
 import React, { useCallback } from "react";
 import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -15,17 +15,20 @@ import SplashScreen from "./screens/AuthenticationScreen/SplashScreen/SplashScre
 import { ReactNavigationTheme } from "./config/react-navigation.theme";
 import DoctorScreen from "./screens/DoctorScreen/DoctorScreen";
 import { useAppDispatch } from "./hooks";
+import messaging from "@react-native-firebase/messaging";
 
 const StackNavigator = () => {
   // define userToken for validation
   const [token, setToken] = React.useState<string | null>(null);
   const [user, setUser] = React.useState<IUserInfo | null>(null);
+  // Define rootStack to handle root navigation
   const RootStack = createNativeStackNavigator<RootNativeStackParamList>();
 
+  // Set loading state to render splash screen
   const [isLoading, setIsLoading] = React.useState(true);
   const dispatch = useAppDispatch();
-  // Telling out navigator use it
 
+  // Ignore unessessary notifications
   React.useEffect(() => {
     LogBox.ignoreLogs([
       "In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.",
@@ -35,6 +38,7 @@ const StackNavigator = () => {
     ]);
   }, []);
 
+  // Define two function to handle login and logout
   const setLogin = (user: IUserInfo | null, token: string | null) => {
     setUser(user);
     setToken(token);
@@ -43,6 +47,8 @@ const StackNavigator = () => {
     setUser(null);
     setToken(null);
   };
+
+  // Running before render
   const bootstrapAsync = useCallback(async () => {
     try {
       // const userToStorage: IUserInfo = {
@@ -81,16 +87,73 @@ const StackNavigator = () => {
     }
   }, []);
   React.useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
     bootstrapAsync();
   }, [bootstrapAsync]);
+
+  const requestUserPermission = async () => {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      console.log("Authorization status:", authStatus);
+      return true;
+    } else return false;
+  };
+  React.useEffect(() => {
+    const getFCMToken = async () => {
+      if (await requestUserPermission()) {
+        // return fcm token for the device
+        messaging()
+          .getToken()
+          .then((token: string) => {
+            console.log("FCM token: ", token);
+          });
+      } else {
+        console.log("Failed token");
+      }
+    };
+    getFCMToken();
+
+    // Check whether an initial notification is available
+    messaging()
+      .getInitialNotification()
+      .then(async (remoteMessage) => {
+        if (remoteMessage) {
+          console.log(
+            "Notification caused app to open from quit state:",
+            remoteMessage.notification
+          );
+          // set Initial route here
+        }
+      });
+
+    messaging().onNotificationOpenedApp((remoteMessage) => {
+      console.log(
+        "Notification caused app to open from background state:",
+        remoteMessage.notification
+      );
+      // set Initial route here
+    });
+
+    // Handle background messages using setBackgroundMessageHandler
+    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
+      console.log("Message handled in the background!", remoteMessage);
+    });
+
+    // Handle foreground messages using setBackgroundMessageHandler
+    messaging().onMessage(async (remoteMessage) => {
+      Alert.alert("A new FCM message arrived!", JSON.stringify(remoteMessage));
+    });
+  }, []);
 
   if (isLoading) {
     // We haven't finished checking for the token yet
     return <SplashScreen />;
   }
-  console.log("USER", user);
-  console.log("TOKEN", token);
+  // console.log("USER", user);
+  // console.log("TOKEN", token);
   return (
     <NativeBaseProvider theme={theme}>
       <NavigationContainer theme={ReactNavigationTheme}>

@@ -61,6 +61,7 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
           });
         })
         .catch((error) => {
+          console.log("Call api to get profile error: ");
           console.log(error);
         });
     }
