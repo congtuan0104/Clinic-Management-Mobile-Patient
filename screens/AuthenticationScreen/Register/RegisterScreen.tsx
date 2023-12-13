@@ -1,5 +1,5 @@
 import React from "react";
-import { RegisterScreenProps } from "../../../types/auth.types";
+import { RegisterScreenProps } from "../../../Navigator/StackNavigator";
 import {
   Box,
   Heading,

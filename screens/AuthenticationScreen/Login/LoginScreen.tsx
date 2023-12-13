@@ -25,14 +25,12 @@ import { useForm, Controller, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { ILoginRequest, ILoginResponse } from "../../../types";
 import * as yup from "yup";
-import { LoginScreenProps } from "../../../types";
-import { RootState, login } from "../../../store";
+import { LoginScreenProps } from "../../../Navigator/StackNavigator";
+import { login } from "../../../store";
 import { authApi } from "../../../services/auth.services";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
-import { firebase, FirebaseAuthTypes } from "@react-native-firebase/auth";
-import { firebaseConfig } from "../../../config/firebase";
-import { WEB_CLIENT_ID } from "../../../constants";
+import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 // Thư viện dùng để kết nối với Facebook
 import { Platform } from "react-native";
 import { LoginManager, AccessToken } from "react-native-fbsdk-next";
@@ -86,9 +84,6 @@ const Login: React.FC<LoginScreenProps> = ({
     resolver: yupResolver(schema),
   });
   useEffect(() => {
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-    }
     const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
     return subscriber; // unsubscribe on unmount
   }, []);
@@ -184,6 +179,7 @@ const Login: React.FC<LoginScreenProps> = ({
     const userSignIn = signInWithCredential(auth, facebookCredentials);
     userSignIn
       .then(async (userInfoFromProvider) => {
+        console.log(userInfoFromProvider);
         setUserIdFromProvider(userInfoFromProvider.user.uid);
         setProviderLogin(providerStr);
         // kiểm tra account có tồn tại, nếu có thì lưu thông tin user và token

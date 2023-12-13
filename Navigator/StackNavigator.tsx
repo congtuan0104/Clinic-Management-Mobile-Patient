@@ -1,6 +1,6 @@
-import { Alert, LogBox, StyleSheet, Text, View } from "react-native";
+import { LogBox, StyleSheet } from "react-native";
 import React, { useCallback } from "react";
-import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../screens/AuthenticationScreen/Login/LoginScreen";
 import RegisterScreen from "../screens/AuthenticationScreen/Register/RegisterScreen";
@@ -17,6 +17,9 @@ import DoctorNavigator from "./DoctorNavigator";
 import { useAppDispatch } from "../hooks";
 import messaging from "@react-native-firebase/messaging";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { firebase, FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { firebaseConfig } from "../config/firebase";
+import { FCMConfig } from "../config/firebaseCloudMessage";
 
 // Create an object type with mappings for route name to the params of the route
 export type RootNativeStackParamList = {
@@ -91,16 +94,16 @@ const StackNavigator = () => {
   // Running before render
   const bootstrapAsync = useCallback(async () => {
     try {
-      const userToStorage: IUserInfo = {
-        id: "testId",
-        email: "test@gmai.com",
-        emailVerified: false,
-        isInputPassword: false, // dữ liệu tạm thời
-        role: "user",
-      };
-      const token = "thisistestingtoken";
-      await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
-      await AsyncStorage.setItem("token", token);
+      // const userToStorage: IUserInfo = {
+      //   id: "testId",
+      //   email: "test@gmai.com",
+      //   emailVerified: false,
+      //   isInputPassword: false, // dữ liệu tạm thời
+      //   role: "user",
+      // };
+      // const token = "thisistestingtoken";
+      // await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
+      // await AsyncStorage.setItem("token", token);
 
       // await AsyncStorage.removeItem("user");
       // await AsyncStorage.removeItem("token");
@@ -126,67 +129,19 @@ const StackNavigator = () => {
       setIsLoading(false);
     }
   }, []);
+
+  // this useEffect function is used to initialize firebase app and firebase cloud message config
+  // and bootstrap the app (get token, user from storage and save them to reducer)
   React.useEffect(() => {
+    // init firebase app
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    // init FCM config
+    FCMConfig();
+    // bootstrap the app
     bootstrapAsync();
   }, [bootstrapAsync]);
-
-  const requestUserPermission = async () => {
-    const authStatus = await messaging().requestPermission();
-    const enabled =
-      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
-      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-    if (enabled) {
-      console.log("Authorization status:", authStatus);
-      return true;
-    } else return false;
-  };
-  React.useEffect(() => {
-    const getFCMToken = async () => {
-      if (await requestUserPermission()) {
-        // return fcm token for the device
-        messaging()
-          .getToken()
-          .then((token: string) => {
-            console.log("FCM token: ", token);
-          });
-      } else {
-        console.log("Failed token");
-      }
-    };
-    getFCMToken();
-
-    // Check whether an initial notification is available
-    messaging()
-      .getInitialNotification()
-      .then(async (remoteMessage) => {
-        if (remoteMessage) {
-          console.log(
-            "Notification caused app to open from quit state:",
-            remoteMessage.notification
-          );
-          // set Initial route here
-        }
-      });
-
-    messaging().onNotificationOpenedApp((remoteMessage) => {
-      console.log(
-        "Notification caused app to open from background state:",
-        remoteMessage.notification
-      );
-      // set Initial route here
-    });
-
-    // Handle background messages using setBackgroundMessageHandler
-    messaging().setBackgroundMessageHandler(async (remoteMessage) => {
-      console.log("Message handled in the background!", remoteMessage);
-    });
-
-    // Handle foreground messages using setBackgroundMessageHandler
-    messaging().onMessage(async (remoteMessage) => {
-      Alert.alert("A new FCM message arrived!", JSON.stringify(remoteMessage));
-    });
-  }, []);
 
   if (isLoading) {
     // We haven't finished checking for the token yet

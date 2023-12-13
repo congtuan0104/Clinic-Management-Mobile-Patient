@@ -1,15 +1,5 @@
 import firebase from "firebase/compat/app";
 
-// export const firebaseConfig = {
-//   apiKey: "AIzaSyDeKmt3vXGRZBhDIFjHG_sfCrsQP_3dQxk",
-//   authDomain: "clinus-67efd.firebaseapp.com",
-//   databaseURL: "https://clinus-67efd-default-rtdb.firebaseio.com",
-//   projectId: "clinus-67efd",
-//   storageBucket: "clinus-67efd.appspot.com",
-//   messagingSenderId: "416278606380",
-//   appId: "1:416278606380:web:460ee8ebebcce94fab1789",
-// };
-
 export const firebaseConfig = {
   apiKey: "AIzaSyBUjR_LpKzbeLaBANVXDN84BDLPLRn6VhM",
   authDomain: "clinus-1d1d1.firebaseapp.com",
