@@ -24,6 +24,7 @@ import { v4 as uuidv4 } from "uuid";
 import storage from "@react-native-firebase/storage";
 import { helpers } from "../../../utils/helper";
 import uuid from "react-native-uuid";
+import { LoadingSpinner } from "../../../components/LoadingSpinner/LoadingSpinner";
 
 export interface MsgType {
   link?: string;
@@ -47,7 +48,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
   const [disabled, setdisabled] = React.useState(false);
   const msgvalid = (txt: string) => txt && txt.replace(/\s/g, "").length;
   const [showModal, setShowModal] = React.useState<boolean>(false);
-
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   useEffect(() => {
     setallChat([]);
     const reference = firebase
@@ -128,6 +129,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     setMsg("");
   };
 
+  // Handle when user press to the button "Take image from camera"
   const onPressCamera = async () => {
     try {
       await ImagePicker.requestCameraPermissionsAsync();
@@ -138,7 +140,8 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
         quality: 1,
       });
       if (!result.canceled) {
-        // save image
+        // After take a photo, we will get uri, name and send it to the firebase storage
+        // using handlSendImage function
         const uri = result.assets[0].uri;
         const fileName = uri.substring(uri.lastIndexOf("/") + 1);
         await handleSendImage(fileName, uri);
@@ -172,39 +175,45 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
     }
   };
 
+  // Handle send image to firebase storage
   const handleSendImage = async (imageName: any, imageUri: any) => {
+    setIsLoading(true);
     try {
       setShowModal(false);
-      // set imageName = currentDate
-      // const imageName = dayjs().toISOString();
-      console.log(imageName, imageUri);
+      // Get reference to DB and send it to firebase storage.
       const reference = storage().ref(`/chats/${groupId}/${imageName}`);
-      try {
-        await reference.putFile(imageUri);
-        const url = await storage()
-          .ref(`/chats/${groupId}/${imageName}`)
-          .getDownloadURL();
-        handleUploadToRealtimeDB(imageName, "image", url);
-      } catch (error) {
-        console.error("Error uploading image:", error);
-      }
-    } catch (error) {}
+      await reference.putFile(imageUri);
+      // Get url of image from firebase storage returning
+      const url = await storage()
+        .ref(`/chats/${groupId}/${imageName}`)
+        .getDownloadURL();
+      handleUploadToRealtimeDB(imageName, "image", url);
+    } catch (error) {
+      console.log(error);
+    }
+    setIsLoading(false);
   };
 
+  // handle document picker function
   const handleDocumentPicker = async () => {
+    setIsLoading(true);
     const docRes = await DocumentPicker.getDocumentAsync({
       type: "*/*",
       multiple: true,
     });
+    // get all assets
     const assets = docRes.assets;
+    // if assets is null (user doesn't pick any asset), return
     if (!assets) {
+      setIsLoading(false);
       return;
     } else {
       const fileList = assets;
       fileList.map(async (file) => {
         try {
           setShowModal(false);
-          // Check if file is image
+          // Check if file is image. If it is an image, we will send it like image
+          // Otherwise, we will send it as type = file
           if (helpers.checkFileType(file.mimeType) === "image") {
             await handleSendImage(file.name, file.uri);
           } else {
@@ -225,6 +234,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
         }
       });
     }
+    setIsLoading(false);
   };
   return (
     <>
@@ -238,7 +248,7 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
             renderItem={({ item }) => {
               return (
                 <MsgComponent
-                  sender={item.senderId === userInfo.id ? true : false}
+                  sender={item.senderId === userInfo?.id ? true : false}
                   content={item.content}
                   time={item.timestamp}
                   type={item.type}
@@ -346,9 +356,12 @@ const ChattingDetailScreen: React.FC<ChattingDetailScreenProps> = ({
             onPressCamera={onPressCamera}
             onPressUploadImageGallery={onPressUploadImageGallery}
           />
+          <LoadingSpinner showLoading={isLoading} />
         </View>
       ) : (
-        <View></View>
+        <View>
+          <Text>Lỗi</Text>
+        </View>
       )}
     </>
   );
