@@ -6,29 +6,23 @@ import {
   StyleSheet,
   Platform,
 } from "react-native";
-import { useAppDispatch, useAppSelector } from "../../../hooks";
-import { logout, userInfoSelector } from "../../../store";
-import {
-  getAuth,
-  FacebookAuthProvider,
-  signInWithCredential,
-} from "firebase/auth";
-import { firebase } from "../../../config/firebase";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { logout, userInfoSelector } from "../../store";
 import { useState, useEffect } from "react";
-import { useAuth } from "../../../hooks/auth";
+import { useAuth } from "../../hooks/auth";
 import { Button } from "native-base";
-import FlashMessage, { showMessage } from "react-native-flash-message";
-import { authApi } from "../../../services/auth.services";
+import { showMessage } from "react-native-flash-message";
+import { authApi } from "../../services/auth.services";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { UserProfileScreenProps } from "../UserScreen";
+import { ProfileScreenProps } from "../../Navigator/UserNavigator";
 
 GoogleSignin.configure({
   webClientId:
     "931199521045-rn8i7um077q2b9pgpsrdejj90qj26fvv.apps.googleusercontent.com",
 });
 
-const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
+const ProfileScreen = ({ navigation, route }: ProfileScreenProps) => {
   const userInfo = useAppSelector(userInfoSelector);
   const { linkAccountFacebook, linkAccountGoogle } = useAuth();
 
@@ -61,6 +55,7 @@ const UserProfile = ({ navigation, route }: UserProfileScreenProps) => {
           });
         })
         .catch((error) => {
+          console.log("Call api to get profile error: ");
           console.log(error);
         });
     }
@@ -240,4 +235,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default UserProfile;
+export default ProfileScreen;

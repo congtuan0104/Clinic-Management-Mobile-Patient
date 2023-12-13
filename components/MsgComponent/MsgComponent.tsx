@@ -1,17 +1,17 @@
 // import moment from 'moment';
 import React, { Component } from "react";
 import { View, StyleSheet, Pressable } from "react-native";
-import { Text } from "native-base";
+import { Link, Text } from "native-base";
 import { appColor } from "../../theme";
 import { Image } from "native-base";
 import TimeDelivery from "./TimeDelivery/TimeDelivery";
 
 const MsgComponent = (props: any) => {
-  const { sender, message, time } = props;
+  const { sender, content, time, type, link, username } = props;
   return (
     <Pressable style={{ marginVertical: 0 }}>
       <Image
-        src="https://picsum.photos/200"
+        src={`https://ui-avatars.com/api/?name=${username}`}
         borderRadius={100}
         size={50}
         alt="ff"
@@ -26,7 +26,20 @@ const MsgComponent = (props: any) => {
           },
         ]}
       >
-        <Text color={sender ? "#fff" : "#000"}>{message}</Text>
+        {type === "text" ? (
+          <Text color={sender ? "#fff" : "#000"}>{content}</Text>
+        ) : type === "image" ? (
+          <Image src={link} alt={content} size="200px" />
+        ) : (
+          <Link
+            href={link}
+            _text={{
+              color: sender ? "#fff" : "#000",
+            }}
+          >
+            {content}
+          </Link>
+        )}
         <TimeDelivery sender={sender} time={time} />
       </View>
     </Pressable>

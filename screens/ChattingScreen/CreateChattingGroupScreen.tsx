@@ -1,6 +1,6 @@
 import { View, Text } from "react-native";
 import React from "react";
-import { CreateChattingGroupScreenProps } from "./ChattingScreen";
+import { CreateChattingGroupScreenProps } from "../../Navigator/ChattingNavigator";
 import {
   Button,
   Center,
@@ -13,7 +13,7 @@ import {
 } from "native-base";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { ICreateGroupChatRequest } from "../../../types";
+import { ICreateGroupChatRequest } from "../../types";
 import { Controller, useForm } from "react-hook-form";
 
 // Validate đăng nhập

@@ -1,5 +1,5 @@
 import { Text, Button, View, Box } from "native-base";
-import { ValidateNotificationProps } from "../../../types";
+import { ValidateNotificationProps } from "../../../Navigator/StackNavigator";
 
 const ValidateNotification: React.FC<ValidateNotificationProps> = ({
   navigation,

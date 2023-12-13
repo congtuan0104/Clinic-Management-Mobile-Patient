@@ -1,31 +1,77 @@
-import { LogBox, StyleSheet, Text, View } from "react-native";
+import { LogBox, StyleSheet } from "react-native";
 import React, { useCallback } from "react";
-import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import LoginScreen from "./screens/AuthenticationScreen/Login/LoginScreen";
-import RegisterScreen from "./screens/AuthenticationScreen/Register/RegisterScreen";
-import { ILoginResponse, IUserInfo, RootNativeStackParamList } from "./types";
+import LoginScreen from "../screens/AuthenticationScreen/Login/LoginScreen";
+import RegisterScreen from "../screens/AuthenticationScreen/Register/RegisterScreen";
+import { ILoginResponse, IUserInfo } from "../types";
 import { NativeBaseProvider } from "native-base";
-import { theme } from "./theme";
-import UserScreen from "./screens/UserScreen/UserScreen";
-import ValidateNotification from "./screens/AuthenticationScreen/ValidateNotification/ValidateNotification";
+import { theme } from "../theme";
+import UserNavigator from "./UserNavigator";
+import ValidateNotification from "../screens/AuthenticationScreen/ValidateNotification/ValidateNotification";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { restoreUserInfo } from "./store";
-import SplashScreen from "./screens/AuthenticationScreen/SplashScreen/SplashScreen";
-import { ReactNavigationTheme } from "./config/react-navigation.theme";
-import DoctorScreen from "./screens/DoctorScreen/DoctorScreen";
-import { useAppDispatch } from "./hooks";
+import { restoreUserInfo } from "../store";
+import SplashScreen from "../screens/AuthenticationScreen/SplashScreen/SplashScreen";
+import { ReactNavigationTheme } from "../config/react-navigation.theme";
+import DoctorNavigator from "./DoctorNavigator";
+import { useAppDispatch } from "../hooks";
+import messaging from "@react-native-firebase/messaging";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { firebase, FirebaseAuthTypes } from "@react-native-firebase/auth";
+import { firebaseConfig } from "../config/firebase";
+import { FCMConfig } from "../config/firebaseCloudMessage";
+
+// Create an object type with mappings for route name to the params of the route
+export type RootNativeStackParamList = {
+  // undefined: the route doesn't have params
+  Login: { setLogin: (user: IUserInfo | null, token: string | null) => void };
+  Register: {
+    setLogin: (user: IUserInfo | null, token: string | null) => void;
+  };
+  UserNavigator: { setLogout: () => void };
+  DoctorNavigator: { setLogout: () => void };
+  ValidateNotification: {
+    setLogin: (user: IUserInfo | null, token: string | null) => void;
+  };
+};
+
+// Define type of props
+export type LoginScreenProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "Login"
+>;
+export type RegisterScreenProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "Register"
+>;
+
+export type UserNavigatorProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "UserNavigator"
+>;
+
+export type DoctorNavigatorProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "DoctorNavigator"
+>;
+
+export type ValidateNotificationProps = NativeStackScreenProps<
+  RootNativeStackParamList,
+  "ValidateNotification"
+>;
 
 const StackNavigator = () => {
   // define userToken for validation
   const [token, setToken] = React.useState<string | null>(null);
   const [user, setUser] = React.useState<IUserInfo | null>(null);
+  // Define rootStack to handle root navigation
   const RootStack = createNativeStackNavigator<RootNativeStackParamList>();
 
+  // Set loading state to render splash screen
   const [isLoading, setIsLoading] = React.useState(true);
   const dispatch = useAppDispatch();
-  // Telling out navigator use it
 
+  // Ignore unessessary notifications
   React.useEffect(() => {
     LogBox.ignoreLogs([
       "In React 18, SSRProvider is not necessary and is a noop. You can remove it from your app.",
@@ -35,6 +81,7 @@ const StackNavigator = () => {
     ]);
   }, []);
 
+  // Define two function to handle login and logout
   const setLogin = (user: IUserInfo | null, token: string | null) => {
     setUser(user);
     setToken(token);
@@ -43,6 +90,8 @@ const StackNavigator = () => {
     setUser(null);
     setToken(null);
   };
+
+  // Running before render
   const bootstrapAsync = useCallback(async () => {
     try {
       // const userToStorage: IUserInfo = {
@@ -80,8 +129,17 @@ const StackNavigator = () => {
       setIsLoading(false);
     }
   }, []);
+
+  // this useEffect function is used to initialize firebase app and firebase cloud message config
+  // and bootstrap the app (get token, user from storage and save them to reducer)
   React.useEffect(() => {
-    // Fetch the token from storage then navigate to our appropriate place
+    // init firebase app
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    // init FCM config
+    FCMConfig();
+    // bootstrap the app
     bootstrapAsync();
   }, [bootstrapAsync]);
 
@@ -89,8 +147,8 @@ const StackNavigator = () => {
     // We haven't finished checking for the token yet
     return <SplashScreen />;
   }
-  console.log("USER", user);
-  console.log("TOKEN", token);
+  // console.log("USER", user);
+  // console.log("TOKEN", token);
   return (
     <NativeBaseProvider theme={theme}>
       <NavigationContainer theme={ReactNavigationTheme}>
@@ -119,8 +177,8 @@ const StackNavigator = () => {
           ) : user?.role === "doctor" ? (
             <>
               <RootStack.Screen
-                name="DoctorScreen"
-                component={DoctorScreen}
+                name="DoctorNavigator"
+                component={DoctorNavigator}
                 options={{ headerShown: false }}
                 initialParams={{ setLogout: setLogout }}
               />
@@ -128,8 +186,8 @@ const StackNavigator = () => {
           ) : user?.role === "user" ? (
             <>
               <RootStack.Screen
-                name="UserScreen"
-                component={UserScreen}
+                name="UserNavigator"
+                component={UserNavigator}
                 options={{ headerShown: false }}
                 initialParams={{ setLogout: setLogout }}
               />

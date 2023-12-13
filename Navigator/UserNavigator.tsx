@@ -1,34 +1,34 @@
 import * as React from "react";
-import { UserScreenProps } from "../../types";
+import { UserNavigatorProps } from "./StackNavigator";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import UserProfile from "../UserScreen/UserProfile/UserProfileScreen";
+import ProfileScreen from "../screens/ProfileScreen/ProfileScreen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import Function02 from "./Function02/Function02";
-import { appColor } from "../../theme";
+import Function02 from "../screens/UserScreen/Function02/Function02";
+import { appColor } from "../theme";
 // Import custom icons
 import { Ionicons } from "@expo/vector-icons";
-import CustomDrawer from "../../components/CustomDrawer/CustomDrawer";
-import ChattingScreen from "./Chatting/ChattingScreen";
+import CustomDrawer from "../components/CustomDrawer/CustomDrawer";
+import ChattingNavigator from "./ChattingNavigator";
 
 export type RootNativeDrawerParamList = {
   // undefined: the route doesn't have params
   UserProfile: { setLogout: () => void };
-  Chatting: undefined;
+  ChattingNavigator: undefined;
   Function02: undefined;
 };
 
-export type UserProfileScreenProps = NativeStackScreenProps<
+export type ProfileScreenProps = NativeStackScreenProps<
   RootNativeDrawerParamList,
   "UserProfile"
 >;
-export type ChattingScreenProps = NativeStackScreenProps<
+export type ChattingNavigatorProps = NativeStackScreenProps<
   RootNativeDrawerParamList,
-  "Chatting"
+  "ChattingNavigator"
 >;
 
 const RootDrawer = createDrawerNavigator<RootNativeDrawerParamList>();
 
-export default function UserScreen({ navigation, route }: UserScreenProps) {
+export default function UserScreen({ navigation, route }: UserNavigatorProps) {
   const { setLogout } = route.params;
 
   return (
@@ -64,18 +64,18 @@ export default function UserScreen({ navigation, route }: UserScreenProps) {
           ),
         }}
         name="UserProfile"
-        component={UserProfile}
+        component={ProfileScreen}
         initialParams={{ setLogout: setLogout }}
       />
       <RootDrawer.Screen
-        name="Chatting"
+        name="ChattingNavigator"
         options={{
           title: "Nhắn tin",
           drawerIcon: ({ color }) => (
             <Ionicons name="settings-outline" size={24} color={color} />
           ),
         }}
-        component={ChattingScreen}
+        component={ChattingNavigator}
       />
       <RootDrawer.Screen
         name="Function02"

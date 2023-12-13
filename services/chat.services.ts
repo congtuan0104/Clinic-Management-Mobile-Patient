@@ -1,4 +1,4 @@
-import { axiosClient } from "../utils/axios";
+import { axiosClient } from "../config/axios";
 import { IApiResponse, GroupChatInfo } from "../types";
 
 const mockData = [

@@ -1,14 +1,14 @@
 import React from "react";
-import { ChattingScreenProps } from "../UserScreen";
+import { ChattingNavigatorProps } from "./UserNavigator";
 import {
   NativeStackScreenProps,
   createNativeStackNavigator,
 } from "@react-navigation/native-stack";
-import ChattingDetailScreen from "./ChattingDetailScreen";
-import ChattingGroupListScreen from "./ChattingGroupListScreen";
+import ChattingDetailScreen from "../screens/ChattingScreen/ChattingDetailScreen";
+import ChattingGroupListScreen from "../screens/ChattingScreen/ChattingGroupListScreen";
 import { Ionicons } from "@expo/vector-icons";
 import { Actionsheet, Text, useDisclose, Image, HStack } from "native-base";
-import CreateChattingGroupScreen from "./CreateChattingGroupScreen";
+import CreateChattingGroupScreen from "../screens/ChattingScreen/CreateChattingGroupScreen";
 
 export type ChatDetailStackParamList = {
   ChattingGroupList: undefined;
@@ -34,10 +34,10 @@ export type CreateChattingGroupScreenProps = NativeStackScreenProps<
 const ChattingStackNavigator =
   createNativeStackNavigator<ChatDetailStackParamList>();
 
-export default function ChattingScreen({
+export default function ChattingNavigator({
   navigation,
   route,
-}: ChattingScreenProps) {
+}: ChattingNavigatorProps) {
   const { isOpen, onOpen, onClose } = useDisclose();
 
   return (
