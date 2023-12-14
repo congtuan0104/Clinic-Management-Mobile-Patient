@@ -38,11 +38,8 @@ export const helpers = {
     ];
     if (imageTypes.includes(fileTypeString)) {
       return "image";
-    } else if (
-      videoTypes.includes(fileTypeString) ||
-      audioTypes.includes(fileTypeString)
-    ) {
-      return "file";
+    } else if (videoTypes.includes(fileTypeString)) {
+      return "video";
     } else {
       return "file";
     }
