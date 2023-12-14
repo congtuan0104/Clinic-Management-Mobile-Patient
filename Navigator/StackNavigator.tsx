@@ -97,9 +97,10 @@ const StackNavigator = () => {
       const userToStorage: IUserInfo = {
         id: "testId",
         email: "test@gmai.com",
-        emailVerified: false,
         isInputPassword: false, // dữ liệu tạm thời
-        role: "user",
+        firstName: "Khang",
+        lastName: "Nguyen Nhat",
+        moduleId: 4,
       };
       const token = "thisistestingtoken";
       await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
@@ -174,7 +175,7 @@ const StackNavigator = () => {
                 initialParams={{ setLogin: setLogin }}
               />
             </>
-          ) : user?.role === "doctor" ? (
+          ) : user?.moduleId === 2 ? (
             <>
               <RootStack.Screen
                 name="DoctorNavigator"
@@ -183,7 +184,7 @@ const StackNavigator = () => {
                 initialParams={{ setLogout: setLogout }}
               />
             </>
-          ) : user?.role === "user" ? (
+          ) : user?.moduleId === 4 ? (
             <>
               <RootStack.Screen
                 name="UserNavigator"

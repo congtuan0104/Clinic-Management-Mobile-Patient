@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Image } from "expo-image";
 import { StyleSheet } from "react-native";
-import { useAppSelector, useAppDispatch } from "../../../hooks";
+import { useAppDispatch } from "../../../hooks";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ILoginWithGoogleRequest, IUserInfo } from "../../../types";
+import { IUserInfo } from "../../../types";
 import {
   Checkbox,
   Box,
@@ -39,6 +39,7 @@ import {
   FacebookAuthProvider,
   signInWithCredential,
 } from "firebase/auth";
+import { LoadingSpinner } from "../../../components/LoadingSpinner/LoadingSpinner";
 GoogleSignin.configure({
   webClientId:
     "698964272341 - u24tokvut5fd5heu7vqmh58c3qmd6kfv.apps.googleusercontent.com",
@@ -71,7 +72,8 @@ const Login: React.FC<LoginScreenProps> = ({
   const [emailFromProvider, setEmailFromProvider] = useState<string | null>(""); // email được chọn để đăng ký tài khoản
   const [showModal, setShowModal] = useState<boolean>(false);
   const [emailChoose, setEmailChoose] = useState<string>(""); // email được chọn để đăng ký tài khoản
-
+  // handle loading state
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const {
     control,
     handleSubmit,
@@ -135,9 +137,10 @@ const Login: React.FC<LoginScreenProps> = ({
             const userToStorage: IUserInfo = {
               id: res.data.user.id,
               email: res.data.user.email,
-              emailVerified: res.data.user.emailVerified,
-              isInputPassword: false, // dữ liệu tạm thời
-              role: res.data.user.roleId === 4 ? "user" : "doctor",
+              isInputPassword: res.data.user.isInputPassword,
+              firstName: res.data.user.firstName,
+              lastName: res.data.user.lastName,
+              moduleId: res.data.user.moduleId,
             };
             // Tạo object userToReduxStore để lưu dữ liệu User vào redux, interface là ILoginResponse
             const userToReduxStore: ILoginResponse = {
@@ -193,13 +196,16 @@ const Login: React.FC<LoginScreenProps> = ({
           const userToStorage: IUserInfo = {
             id: res.data.user.id,
             email: res.data.user.email,
-            emailVerified: res.data.user.emailVerified,
-            isInputPassword: false, // dữ liệu tạm thời
+            isInputPassword: res.data.user.isInputPassword,
+            firstName: res.data.user.firstName,
+            lastName: res.data.user.lastName,
+            moduleId: res.data.user.moduleId,
+
+            // dữ liệu tạm thời
             // Check isInputPassword: lấy từ API về
             // nếu là False: Hiện modal Nhập mật khẩu
             // gọi đến API tạo mật khẩu mới (nói anh Bão)
             // Nói thêm: Khi cập nhật mật khẩu mới thì phải để isInputPassword thành true
-            role: res.data.user.roleId === 4 ? "user" : "doctor",
           };
           // Tạo object userToReduxStore để lưu dữ liệu User vào redux, interface là ILoginResponse
           const userToReduxStore: ILoginResponse = {
@@ -245,17 +251,22 @@ const Login: React.FC<LoginScreenProps> = ({
     }
   };
 
+  /**
+   * Function handle login with email and password
+   * if login success: save info in asyncStorage, dispatch data to reducer and navigate to Profile
+   * else: export notifications and errors
+   */
   const onSubmit: SubmitHandler<ILoginRequest> = async (
     data: ILoginRequest
   ) => {
+    setIsLoading(true);
     await authApi
       .login(data)
       .then(async (res) => {
-        console.log("Response: ", res);
         if (res.status && res.data) {
-          // Dispatch dữ liệu lên reducer
+          // Dispatch data to reducer
           dispatch(login(res.data));
-          // Gắn dữ liệu vào async storage
+          // save data in async storage
           await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
           await AsyncStorage.setItem("token", JSON.stringify(res.data.token));
           // Set lại token để vào trang homepage
@@ -265,10 +276,12 @@ const Login: React.FC<LoginScreenProps> = ({
       .catch((error) => {
         console.log(error.response);
       });
+    setIsLoading(false);
   };
 
   return (
     <Center flex="1" px="3">
+      <LoadingSpinner showLoading={isLoading} setShowLoading={setIsLoading} />
       <Center w="100%">
         <Box safeArea p="2" py="8" w="100%">
           <Heading

@@ -22,7 +22,6 @@ export const authApi = {
       lastName: data.lastName,
       email: data.email,
       password: data.password,
-      role: data.role,
     });
   },
   loginWithGoogle(
