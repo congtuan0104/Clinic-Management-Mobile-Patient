@@ -1,20 +1,13 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Platform,
-} from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useAppDispatch, useAppSelector } from "../../hooks";
-import { logout, userInfoSelector } from "../../store";
+import { userInfoSelector } from "../../store";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/auth";
 import { Button } from "native-base";
 import { showMessage } from "react-native-flash-message";
 import { authApi } from "../../services/auth.services";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { ProfileScreenProps } from "../../Navigator/UserNavigator";
 
 GoogleSignin.configure({
@@ -35,8 +28,6 @@ const ProfileScreen = ({ navigation, route }: ProfileScreenProps) => {
   const [isFacebookLink, setisFacebookLink] = useState(false);
 
   const [isRender, setisRender] = useState<boolean>(false);
-  const dispatch = useAppDispatch();
-  const { setLogout } = route.params;
   // Kiểm tra và lấy danh sách tài khoản  liên kết
   useEffect(() => {
     if (userInfo?.id) {
@@ -169,20 +160,6 @@ const ProfileScreen = ({ navigation, route }: ProfileScreenProps) => {
             )}
           </View>
           <Text>{isGoogleLink ? `Đã kết nối` : "Chưa kết nối"}</Text>
-        </View>
-        <View style={{ marginTop: 50 }}>
-          <Button
-            onPress={async () => {
-              // await GoogleSignin.revokeAccess();
-              // await GoogleSignin.signOut();
-              await AsyncStorage.removeItem("user");
-              await AsyncStorage.removeItem("token");
-              dispatch(logout());
-              setLogout();
-            }}
-          >
-            Log out
-          </Button>
         </View>
       </View>
     </View>

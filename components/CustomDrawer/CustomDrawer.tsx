@@ -6,10 +6,27 @@ import { Button, HStack, Image, Text, View } from "native-base";
 import { appColor } from "../../theme";
 import { ImageBackground } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
+import React from "react";
+import { LoadingSpinner } from "../LoadingSpinner/LoadingSpinner";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useAppDispatch } from "../../hooks";
+import { logout } from "../../store";
 
 const CustomDrawer = (props: any) => {
+  const { logOut } = props;
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const handleLogout = async () => {
+    setIsLoading(true);
+    await AsyncStorage.removeItem("user");
+    await AsyncStorage.removeItem("token");
+    dispatch(logout());
+    logOut();
+    setIsLoading(false);
+  };
   return (
     <View style={{ flex: 1 }}>
+      <LoadingSpinner showLoading={isLoading} setShowLoading={setIsLoading} />
       <DrawerContentScrollView
         {...props}
         contentContainerStyle={{
@@ -37,7 +54,7 @@ const CustomDrawer = (props: any) => {
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
       <View p="5" borderTopWidth="1" borderTopColor="#ccc">
-        <Button>
+        <Button onPress={handleLogout}>
           <HStack space={1}>
             <Ionicons name="log-out-outline" size={24} color="#fff" />
             <Text fontSize={15} color="#fff">

@@ -4,17 +4,18 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import ProfileScreen from "../screens/ProfileScreen/ProfileScreen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import AppointmentScreen from "../screens/DoctorScreen/AppointmentScreen/AppointmentScreen";
-export type RootNativeDrawerParamList = {
+export type DoctorNavigatorDrawerParamList = {
   // undefined: the route doesn't have params
   UserProfile: { setLogout: () => void };
   Appointment: undefined;
 };
 export type UserProfileScreenProps = NativeStackScreenProps<
-  RootNativeDrawerParamList,
+  DoctorNavigatorDrawerParamList,
   "UserProfile"
 >;
 
-const RootDrawer = createDrawerNavigator<RootNativeDrawerParamList>();
+const DoctorNavigatorDrawer =
+  createDrawerNavigator<DoctorNavigatorDrawerParamList>();
 
 export default function DoctorScreen({
   navigation,
@@ -23,13 +24,16 @@ export default function DoctorScreen({
   const { setLogout } = route.params;
 
   return (
-    <RootDrawer.Navigator>
-      <RootDrawer.Screen
+    <DoctorNavigatorDrawer.Navigator>
+      <DoctorNavigatorDrawer.Screen
         name="UserProfile"
         component={ProfileScreen}
         initialParams={{ setLogout }}
       />
-      <RootDrawer.Screen name="Appointment" component={AppointmentScreen} />
-    </RootDrawer.Navigator>
+      <DoctorNavigatorDrawer.Screen
+        name="Appointment"
+        component={AppointmentScreen}
+      />
+    </DoctorNavigatorDrawer.Navigator>
   );
 }

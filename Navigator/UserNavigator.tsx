@@ -10,7 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import CustomDrawer from "../components/CustomDrawer/CustomDrawer";
 import ChattingNavigator from "./ChattingNavigator";
 
-export type RootNativeDrawerParamList = {
+export type UserNavigatorDrawerParamList = {
   // undefined: the route doesn't have params
   UserProfile: { setLogout: () => void };
   ChattingNavigator: undefined;
@@ -18,21 +18,22 @@ export type RootNativeDrawerParamList = {
 };
 
 export type ProfileScreenProps = NativeStackScreenProps<
-  RootNativeDrawerParamList,
+  UserNavigatorDrawerParamList,
   "UserProfile"
 >;
 export type ChattingNavigatorProps = NativeStackScreenProps<
-  RootNativeDrawerParamList,
+  UserNavigatorDrawerParamList,
   "ChattingNavigator"
 >;
 
-const RootDrawer = createDrawerNavigator<RootNativeDrawerParamList>();
+const UserNavigatorDrawer =
+  createDrawerNavigator<UserNavigatorDrawerParamList>();
 
 export default function UserScreen({ navigation, route }: UserNavigatorProps) {
   const { setLogout } = route.params;
 
   return (
-    <RootDrawer.Navigator
+    <UserNavigatorDrawer.Navigator
       initialRouteName="UserProfile"
       screenOptions={{
         headerStyle: {
@@ -54,9 +55,9 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
         drawerActiveBackgroundColor: appColor.primary,
         drawerInactiveTintColor: appColor.primary,
       }}
-      drawerContent={(props) => <CustomDrawer {...props} />}
+      drawerContent={(props) => <CustomDrawer {...props} logOut={setLogout} />}
     >
-      <RootDrawer.Screen
+      <UserNavigatorDrawer.Screen
         options={{
           title: "Tài khoản",
           drawerIcon: ({ color }) => (
@@ -67,7 +68,7 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
         component={ProfileScreen}
         initialParams={{ setLogout: setLogout }}
       />
-      <RootDrawer.Screen
+      <UserNavigatorDrawer.Screen
         name="ChattingNavigator"
         options={{
           title: "Nhắn tin",
@@ -77,7 +78,7 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
         }}
         component={ChattingNavigator}
       />
-      <RootDrawer.Screen
+      <UserNavigatorDrawer.Screen
         name="Function02"
         options={{
           title: "Chức năng 2",
@@ -87,6 +88,6 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
         }}
         component={Function02}
       />
-    </RootDrawer.Navigator>
+    </UserNavigatorDrawer.Navigator>
   );
 }
