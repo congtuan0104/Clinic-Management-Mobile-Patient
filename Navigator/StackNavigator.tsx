@@ -112,8 +112,8 @@ const StackNavigator = () => {
       const testData = await AsyncStorage.getItem("user");
       const tokenString = await AsyncStorage.getItem("token");
       if (tokenString && testData) {
-        // console.log("Test data: ", testData);
-        // console.log("Token string: ", tokenString);
+        console.log("Test data: ", testData);
+        console.log("Token string: ", tokenString);
         const testDataObject = JSON.parse(testData);
         setLogin(testDataObject, tokenString);
         const UserResponseObject: ILoginResponse = {
