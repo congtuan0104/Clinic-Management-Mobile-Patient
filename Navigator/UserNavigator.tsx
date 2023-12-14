@@ -9,17 +9,18 @@ import { appColor } from "../theme";
 import { Ionicons } from "@expo/vector-icons";
 import CustomDrawer from "../components/CustomDrawer/CustomDrawer";
 import ChattingNavigator from "./ChattingNavigator";
+import ProfileNavigator from "./ProfileNavigator";
 
 export type UserNavigatorDrawerParamList = {
   // undefined: the route doesn't have params
-  UserProfile: { setLogout: () => void };
+  ProfileNavigator: undefined;
   ChattingNavigator: undefined;
   Function02: undefined;
 };
 
-export type ProfileScreenProps = NativeStackScreenProps<
+export type ProfileNavigatorProps = NativeStackScreenProps<
   UserNavigatorDrawerParamList,
-  "UserProfile"
+  "ProfileNavigator"
 >;
 export type ChattingNavigatorProps = NativeStackScreenProps<
   UserNavigatorDrawerParamList,
@@ -34,7 +35,7 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
 
   return (
     <UserNavigatorDrawer.Navigator
-      initialRouteName="UserProfile"
+      initialRouteName="ProfileNavigator"
       screenOptions={{
         headerStyle: {
           backgroundColor: appColor.background,
@@ -64,9 +65,8 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
             <Ionicons name="settings-outline" size={24} color={color} />
           ),
         }}
-        name="UserProfile"
-        component={ProfileScreen}
-        initialParams={{ setLogout: setLogout }}
+        name="ProfileNavigator"
+        component={ProfileNavigator}
       />
       <UserNavigatorDrawer.Screen
         name="ChattingNavigator"
