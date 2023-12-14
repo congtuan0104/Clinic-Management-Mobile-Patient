@@ -58,4 +58,8 @@ export const authApi = {
   disConnectLinkAccount(userId: string, accountId: string): Promise<any> {
     return axiosClient.delete(`/auth/${userId}/accounts/${accountId}`);
   },
+
+  addingAdditionalPassword(email: string, password: string): Promise<any> {
+    return axiosClient.put(`/auth/add-new-password`, { email, password });
+  },
 };

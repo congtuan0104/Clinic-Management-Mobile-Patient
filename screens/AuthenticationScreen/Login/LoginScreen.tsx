@@ -28,7 +28,10 @@ import * as yup from "yup";
 import { LoginScreenProps } from "../../../Navigator/StackNavigator";
 import { login } from "../../../store";
 import { authApi } from "../../../services/auth.services";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
+import {
+  GoogleSignin,
+  statusCodes,
+} from "@react-native-google-signin/google-signin";
 import auth from "@react-native-firebase/auth";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
 // Thư viện dùng để kết nối với Facebook
@@ -40,6 +43,7 @@ import {
   signInWithCredential,
 } from "firebase/auth";
 import { LoadingSpinner } from "../../../components/LoadingSpinner/LoadingSpinner";
+import { appColor } from "../../../theme";
 GoogleSignin.configure({
   webClientId:
     "698964272341 - u24tokvut5fd5heu7vqmh58c3qmd6kfv.apps.googleusercontent.com",
@@ -70,8 +74,15 @@ const Login: React.FC<LoginScreenProps> = ({
   const [userIdFromProvider, setUserIdFromProvider] = useState<string>("");
   const [providerLogin, setProviderLogin] = useState<string>("");
   const [emailFromProvider, setEmailFromProvider] = useState<string | null>(""); // email được chọn để đăng ký tài khoản
-  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showEnterEmailModal, setShowEnterEmailModal] =
+    useState<boolean>(false);
   const [emailChoose, setEmailChoose] = useState<string>(""); // email được chọn để đăng ký tài khoản
+  const [additionalPassword, setAdditionalPassword] = useState<string>("");
+  const [
+    showEnterAdditionalPasswordModal,
+    setShowEnterAdditionalPasswordModal,
+  ] = useState<boolean>(false);
+  const [emailFromResponse, setEmailFromResponse] = useState<string>("");
   // handle loading state
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const {
@@ -99,13 +110,17 @@ const Login: React.FC<LoginScreenProps> = ({
 
   async function revokeGoogleAccess() {
     try {
+      // const isSignedIn = await GoogleSignin.isSignedIn();
+      // if (isSignedIn) {
+      //   await GoogleSignin.signOut();
+      //   await GoogleSignin.revokeAccess();
+      // }
       await GoogleSignin.signOut();
+      // await GoogleSignin.revokeAccess();
       // Tiếp theo, thực hiện đăng nhập lại với Google
-      onGoogleButtonPress()
-        .then((e) => console.log(e))
-        .catch((e) => console.log(e));
-    } catch (error) {
-      console.error("Không thể thu hồi quyền truy cập Google: ", error);
+      await onGoogleButtonPress();
+    } catch (error: any) {
+      console.error(error);
     }
   }
 
@@ -142,27 +157,37 @@ const Login: React.FC<LoginScreenProps> = ({
               lastName: res.data.user.lastName,
               moduleId: res.data.user.moduleId,
             };
-            // Tạo object userToReduxStore để lưu dữ liệu User vào redux, interface là ILoginResponse
-            const userToReduxStore: ILoginResponse = {
-              user: userToStorage,
-              token: res.data.token,
-            };
-            // Lưu thông tin user và token vào Async Storage
-            await AsyncStorage.setItem("token", res.data.token);
-            await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
-            // Dispatch dữ liệu lên redux
-            dispatch(login(userToReduxStore));
-            // setToken để render lại màn hình
-            setLogin(res.data.user, res.data.token);
+            // If isInputPassword = false: require user enter the password
+            if (userToStorage.isInputPassword === false) {
+              setEmailFromResponse(userToStorage.email);
+              setShowEnterAdditionalPasswordModal(true);
+            } else {
+              // Tạo object userToReduxStore để lưu dữ liệu User vào redux, interface là ILoginResponse
+              const userToReduxStore: ILoginResponse = {
+                user: userToStorage,
+                token: res.data.token,
+              };
+              // Lưu thông tin user và token vào Async Storage
+              await AsyncStorage.setItem("token", res.data.token);
+              await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
+              // Dispatch dữ liệu lên redux
+              dispatch(login(userToReduxStore));
+              // setToken để render lại màn hình
+              setLogin(res.data.user, res.data.token);
+            }
           } else {
-            setEmailFromProvider(userInfoFromProvider.user.email);
+            const providedEmail =
+              userInfoFromProvider.user.email !== null
+                ? userInfoFromProvider.user.email
+                : userInfoFromProvider.additionalUserInfo?.profile?.email;
+            setEmailFromProvider(providedEmail);
             // open modal here
-            setShowModal(true);
+            setShowEnterEmailModal(true);
           }
         }
       })
       .catch((err) => {
-        console.log(err);
+        console.log();
       });
   }
 
@@ -200,29 +225,34 @@ const Login: React.FC<LoginScreenProps> = ({
             firstName: res.data.user.firstName,
             lastName: res.data.user.lastName,
             moduleId: res.data.user.moduleId,
-
             // dữ liệu tạm thời
             // Check isInputPassword: lấy từ API về
             // nếu là False: Hiện modal Nhập mật khẩu
             // gọi đến API tạo mật khẩu mới (nói anh Bão)
             // Nói thêm: Khi cập nhật mật khẩu mới thì phải để isInputPassword thành true
           };
-          // Tạo object userToReduxStore để lưu dữ liệu User vào redux, interface là ILoginResponse
-          const userToReduxStore: ILoginResponse = {
-            user: userToStorage,
-            token: res.data.token,
-          };
-          // Lưu thông tin user và token vào Async Storage
-          await AsyncStorage.setItem("token", res.data.token);
-          await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
-          // Dispatch dữ liệu lên redux
-          dispatch(login(userToReduxStore));
-          // setToken để render lại màn hình
-          setLogin(res.data.user, res.data.token);
+          // If isInputPassword = false: require user enter the password
+          if (userToStorage.isInputPassword === false) {
+            setEmailFromResponse(userToStorage.email);
+            setShowEnterAdditionalPasswordModal(true);
+          } else {
+            // Tạo object userToReduxStore để lưu dữ liệu User vào redux, interface là ILoginResponse
+            const userToReduxStore: ILoginResponse = {
+              user: userToStorage,
+              token: res.data.token,
+            };
+            // Lưu thông tin user và token vào Async Storage
+            await AsyncStorage.setItem("token", res.data.token);
+            await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
+            // Dispatch dữ liệu lên redux
+            dispatch(login(userToReduxStore));
+            // setToken để render lại màn hình
+            setLogin(res.data.user, res.data.token);
+          }
         } else {
           setEmailFromProvider(userInfoFromProvider.user.email);
           // open modal here
-          setShowModal(true);
+          setShowEnterEmailModal(true);
         }
       })
       .catch((err) => {
@@ -242,12 +272,28 @@ const Login: React.FC<LoginScreenProps> = ({
         navigation.navigate("ValidateNotification", {
           setLogin: setLogin,
         });
-        setShowModal(false);
+        setShowEnterEmailModal(false);
       }
       setEmailChoose("");
       navigation.navigate("ValidateNotification", { setLogin });
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleAddingAdditionalPassword = async () => {
+    if (additionalPassword === "") {
+      console.log("mat khau trong");
+    } else {
+      console.log(emailFromResponse, additionalPassword);
+      const response = await authApi.addingAdditionalPassword(
+        emailFromResponse,
+        additionalPassword
+      );
+      if (response.status) {
+        console.log("Thay doi mat khau thanh cong");
+        setShowEnterAdditionalPasswordModal(false);
+      }
     }
   };
 
@@ -470,9 +516,12 @@ const Login: React.FC<LoginScreenProps> = ({
             </HStack>
           </VStack>
         </Box>
-        <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+        {/** Modal handling enter email */}
+        <Modal
+          isOpen={showEnterEmailModal}
+          onClose={() => setShowEnterEmailModal(false)}
+        >
           <Modal.Content maxWidth="400px">
-            <Modal.CloseButton />
             <Modal.Header>
               Tài khoản của bạn chưa được liên kết, vui lòng chọn email muốn
               liên kết
@@ -491,7 +540,7 @@ const Login: React.FC<LoginScreenProps> = ({
                     }
                   }}
                 >
-                  <Text>{emailFromProvider}</Text>
+                  <Text color={appColor.white}>{emailFromProvider}</Text>
                 </Button>
               </FormControl>
               <FormControl mt="3">
@@ -511,15 +560,60 @@ const Login: React.FC<LoginScreenProps> = ({
                   variant="ghost"
                   colorScheme="blueGray"
                   onPress={() => {
-                    setShowModal(false);
+                    setShowEnterEmailModal(false);
                   }}
                 >
                   Thoát
                 </Button>
                 <Button
                   onPress={() => {
-                    setShowModal(false);
+                    setShowEnterEmailModal(false);
                     sendEmailVerifyLinkAccount(emailChoose);
+                  }}
+                >
+                  Tiếp tục
+                </Button>
+              </Button.Group>
+            </Modal.Footer>
+          </Modal.Content>
+        </Modal>
+        {/** Modal handling enter password */}
+        <Modal
+          isOpen={showEnterAdditionalPasswordModal}
+          onClose={() => setShowEnterAdditionalPasswordModal(false)}
+        >
+          <Modal.Content maxWidth="400px">
+            <Modal.Header>
+              Tài khoản mà bạn liên kết chưa có mật khẩu, vui lòng nhập mật khẩu
+              bổ sung:
+            </Modal.Header>
+            <Modal.Body>
+              <FormControl mt="3">
+                <FormControl.Label>Nhập mật khẩu mới: </FormControl.Label>
+                <Input
+                  placeholder="Nhập mật khẩu"
+                  value={additionalPassword}
+                  onChangeText={(password) => {
+                    setAdditionalPassword(password);
+                  }}
+                />
+              </FormControl>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button.Group space={2}>
+                <Button
+                  variant="ghost"
+                  colorScheme="blueGray"
+                  onPress={() => {
+                    setShowEnterAdditionalPasswordModal(false);
+                  }}
+                >
+                  Thoát
+                </Button>
+                <Button
+                  onPress={() => {
+                    // Xử lý việc gửi lại mật khẩu ở đây
+                    handleAddingAdditionalPassword();
                   }}
                 >
                   Tiếp tục
