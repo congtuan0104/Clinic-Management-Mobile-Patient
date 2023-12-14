@@ -28,11 +28,13 @@ const ProfileScreen = ({ navigation, route }: ProfileScreenProps) => {
   const [isFacebookLink, setisFacebookLink] = useState(false);
 
   const [isRender, setisRender] = useState<boolean>(false);
+
+  console.log(userInfo);
   // Kiểm tra và lấy danh sách tài khoản  liên kết
   useEffect(() => {
     if (userInfo?.id) {
       authApi
-        .geLinkAccount(userInfo.id)
+        .getLinkAccount(userInfo.id)
         .then((res) => {
           res.data.forEach((item: any) => {
             if (item.provider === "google") {

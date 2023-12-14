@@ -110,12 +110,12 @@ const Login: React.FC<LoginScreenProps> = ({
 
   async function revokeGoogleAccess() {
     try {
-      // const isSignedIn = await GoogleSignin.isSignedIn();
-      // if (isSignedIn) {
-      //   await GoogleSignin.signOut();
-      //   await GoogleSignin.revokeAccess();
-      // }
-      await GoogleSignin.signOut();
+      const isSignedIn = await GoogleSignin.isSignedIn();
+      if (isSignedIn) {
+        await GoogleSignin.signOut();
+        // await GoogleSignin.revokeAccess();
+      }
+      // await GoogleSignin.signOut();
       // await GoogleSignin.revokeAccess();
       // Tiếp theo, thực hiện đăng nhập lại với Google
       await onGoogleButtonPress();
@@ -314,7 +314,7 @@ const Login: React.FC<LoginScreenProps> = ({
           dispatch(login(res.data));
           // save data in async storage
           await AsyncStorage.setItem("user", JSON.stringify(res.data.user));
-          await AsyncStorage.setItem("token", JSON.stringify(res.data.token));
+          await AsyncStorage.setItem("token", res.data.token);
           // Set lại token để vào trang homepage
           setLogin(res.data.user, res.data.token);
         }

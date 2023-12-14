@@ -51,7 +51,7 @@ export const authApi = {
     return axiosClient.post("/auth/link-account", data);
   },
 
-  geLinkAccount(userId: string): Promise<any> {
+  getLinkAccount(userId: string): Promise<any> {
     return axiosClient.get(`/auth/${userId}/accounts`);
   },
 
