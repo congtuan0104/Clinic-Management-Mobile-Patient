@@ -45,7 +45,6 @@ const ConnectingScreen = ({ navigation, route }: ConnectingScreenProps) => {
       authApi
         .getLinkAccount(userInfo.id)
         .then((res) => {
-          console.log("Data: ", res.data);
           res.data.forEach((item: any) => {
             if (item.provider === "google") {
               setgoogleAccoutId(item.id);
@@ -137,7 +136,7 @@ const ConnectingScreen = ({ navigation, route }: ConnectingScreenProps) => {
               {isFacebookLink ? "Đã kết nối" : "Chưa kết nối"}
             </Text>
           </HStack>
-          <HStack width="full">
+          <HStack width="full" mt="5/6">
             <Button
               width="full"
               onPress={isGoogleLink ? disConnectGoogle : connectGoogle}

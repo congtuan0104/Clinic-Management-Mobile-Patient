@@ -47,6 +47,7 @@ export default function ProfileNavigator({
           elevation: 0,
           borderTopLeftRadius: 20,
           borderTopRightRadius: 20,
+          marginTop: 20,
         },
         tabBarAndroidRipple: {
           color: "transparent",

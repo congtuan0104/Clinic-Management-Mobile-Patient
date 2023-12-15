@@ -31,7 +31,7 @@ export default function ChattingGroupListScreen({
   React.useEffect(() => {
     // Lấy danh sách group chat
     const getListGroupChat = async () => {
-      const response = await chatService.getListGroupChat();
+      const response = await chatService.getListGroupChatByUserId("fff");
       if (response.status) {
         const groupList = response.data || [];
         setGroupMessageList(groupList);

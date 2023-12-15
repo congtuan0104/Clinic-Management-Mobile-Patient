@@ -2,17 +2,18 @@ import {
   DrawerContentScrollView,
   DrawerItemList,
 } from "@react-navigation/drawer";
-import { Button, HStack, Image, Text, View } from "native-base";
+import { Avatar, Button, HStack, Image, Text, View } from "native-base";
 import { appColor } from "../../theme";
 import { ImageBackground } from "expo-image";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { LoadingSpinner } from "../LoadingSpinner/LoadingSpinner";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAppDispatch } from "../../hooks";
-import { logout } from "../../store";
+import { useAppDispatch, useAppSelector } from "../../hooks";
+import { logout, userInfoSelector } from "../../store";
 
 const CustomDrawer = (props: any) => {
+  const userInfo = useAppSelector(userInfoSelector);
   const { logOut } = props;
   const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const dispatch = useAppDispatch();
@@ -37,18 +38,20 @@ const CustomDrawer = (props: any) => {
           source={require("../../assets/images/menu-bg.jpeg")}
           style={{ padding: 20 }}
         >
-          <Image
-            source={require("../../assets/images/default_avatar.jpg")}
-            borderRadius={100}
-            size="sm"
-            alt="testimage"
-            mb={5}
-          />
+          <Avatar
+            alignSelf="center"
+            bg="green.500"
+            source={{
+              uri: `https://ui-avatars.com/api/?name=${userInfo?.firstName}`,
+            }}
+            size="xl"
+            mb={2}
+          ></Avatar>
           <Text color="#fff" fontWeight="bold" fontSize="16">
-            Nguyễn Nhật Khang
+            {userInfo?.lastName + " " + userInfo?.firstName}
           </Text>
           <Text color="#fff" fontSize="13">
-            khangnl24112002@gmail.com
+            {userInfo?.email}
           </Text>
         </ImageBackground>
         <DrawerItemList {...props} />

@@ -93,7 +93,7 @@ const ProfileScreen = ({ navigation, route }: UserProfileScreenProps) => {
             <Text color={appColor.textSecondary}>Nghề nghiệp</Text>
             <Text color={appColor.textSecondary}>Kỹ sư phần mềm</Text>
           </HStack>
-          <HStack width="full">
+          <HStack width="full" mt={20}>
             <Button width="full" onPress={handleChangeUserInfo}>
               Thay đổi thông tin cá nhân
             </Button>

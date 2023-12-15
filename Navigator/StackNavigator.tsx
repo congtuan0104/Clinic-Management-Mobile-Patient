@@ -148,8 +148,8 @@ const StackNavigator = () => {
     // We haven't finished checking for the token yet
     return <SplashScreen />;
   }
-  // console.log("USER", user);
-  // console.log("TOKEN", token);
+  console.log("USER", user);
+  console.log("TOKEN", token);
   return (
     <NativeBaseProvider theme={theme}>
       <NavigationContainer theme={ReactNavigationTheme}>

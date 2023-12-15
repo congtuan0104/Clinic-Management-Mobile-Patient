@@ -13,6 +13,7 @@ export const axiosClient = axios.create({
   headers: {
     common: {
       "Content-Type": "application/json",
+      "X-Mobile": true,
     },
   },
 });
@@ -30,6 +31,7 @@ const InterceptorsRequest = async (config: AxiosRequestConfig) => {
   const interceptorHeaders = {
     token: `Bearer ${token}`,
     authorization: `Bearer ${token}`,
+    "X-Mobile": true,
   };
 
   const headers = {

@@ -1,5 +1,5 @@
 import { axiosClient } from "../config/axios";
-import { IApiResponse, GroupChatInfo } from "../types";
+import { IApiResponse, GroupChatInfo, ICreateGroupChatRequest } from "../types";
 
 const mockData = [
   { id: "1", groupName: "chat 1", maxMember: 20 },
@@ -101,13 +101,49 @@ const listData = [
   },
 ];
 export const chatService = {
-  async getListGroupChat(): Promise<IApiResponse<GroupChatInfo[]>> {
+  async getGroupChatByGroupId(groupId: string) {
+    return axiosClient.get(`/chats/${groupId}/users`);
+  },
+  async createGroupChat(
+    createGroupChatRequest: ICreateGroupChatRequest,
+    memberList: string[]
+  ) {
+    return axiosClient.post("/chats", {
+      groupName: createGroupChatRequest.groupName,
+      maxMember: createGroupChatRequest.maxMember,
+      type: createGroupChatRequest.type,
+      userList: memberList,
+    });
+  },
+  async getListGroupChatByUserId(
+    userId: string
+  ): Promise<IApiResponse<GroupChatInfo[]>> {
     // Tạm thời giả dữ liệu để trả về
     return {
       data: listData,
       message: "Thành công",
       status: true,
     };
-    return axiosClient.get("/");
+    return axiosClient.get("/chats", {
+      params: {
+        userId,
+      },
+    });
+  },
+  async inviteUsersToGroupChat(
+    groupChatId: string,
+    userId: string,
+    userList: string[]
+  ) {
+    return axiosClient.post(`chats/${groupChatId}/user/${userId}`, userList);
+  },
+  async removeMemberOutGroupChat(groupChatId: string, userId: string) {
+    return axiosClient.delete(`/chats/${groupChatId}/user/${userId}`);
+  },
+  async updateGroupChatName(groupId: string, groupName: string) {
+    return axiosClient.put(`/chats/${groupId}`, groupName);
+  },
+  async deleteGroupChat(groupId: string) {
+    return axiosClient.delete(`/chats/${groupId}`);
   },
 };

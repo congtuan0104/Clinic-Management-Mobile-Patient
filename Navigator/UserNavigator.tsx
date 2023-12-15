@@ -1,7 +1,6 @@
 import * as React from "react";
 import { UserNavigatorProps } from "./StackNavigator";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import ProfileScreen from "../screens/ProfileScreen/ProfileScreen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Function02 from "../screens/UserScreen/Function02/Function02";
 import { appColor } from "../theme";
