@@ -380,7 +380,6 @@ const Login: React.FC<LoginScreenProps> = ({
                     onBlur={onBlur}
                     onChangeText={onChange}
                     value={value}
-                    fontSize={13}
                     InputLeftElement={
                       <Icon as={<Entypo name="email" />} ml="3" />
                     }
@@ -405,7 +404,6 @@ const Login: React.FC<LoginScreenProps> = ({
                     onChangeText={onChange}
                     value={value}
                     secureTextEntry
-                    fontSize={13}
                     InputLeftElement={
                       <Icon as={<AntDesign name="lock" />} ml="3" />
                     }

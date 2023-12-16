@@ -1,11 +1,13 @@
 import { View, Text } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { CreateChattingGroupScreenProps } from "../../Navigator/ChattingNavigator";
 import {
+  Box,
   Button,
   Center,
   CheckIcon,
   FormControl,
+  Heading,
   Input,
   Select,
   VStack,
@@ -15,6 +17,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { ICreateGroupChatRequest } from "../../types";
 import { Controller, useForm } from "react-hook-form";
+import { MultipleSelectList } from "react-native-dropdown-select-list";
+import { appColor } from "../../theme";
+import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 
 // Validate đăng nhập
 const schema: yup.ObjectSchema<ICreateGroupChatRequest> = yup.object({
@@ -38,19 +43,73 @@ export default function CreateChattingGroupScreen({
     resolver: yupResolver(schema),
     defaultValues: {
       groupName: "",
-      maxMember: 2,
-      type: "1",
+      maxMember: 50,
+      type: "2",
     },
   });
 
+  // Sample data
+  const data = [
+    {
+      key: "1",
+      value: "N Tuan",
+    },
+    {
+      key: "2",
+      value: "Nhat C",
+    },
+    {
+      key: "3",
+      value: "Ng Van B",
+    },
+    {
+      key: "4",
+      value: "Nguyen Tran Minh",
+    },
+    {
+      key: "5",
+      value: "Nguyen Van A",
+    },
+    {
+      key: "6",
+      value: "Nguyen Tran Minh Quang",
+    },
+    {
+      key: "7",
+      value: "Nguyen Tran Minh",
+    },
+    {
+      key: "8",
+      value: "Nguyen Tran Minh",
+    },
+    {
+      key: "9",
+      value: "Nguyen Ha",
+    },
+    {
+      key: "10",
+      value: "Nguyen Nhat Khang",
+    },
+  ];
+
+  const [selected, setSelected] = useState([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   // Xử lí việc gọi API tạo nhóm
   const onSubmit = async (data: ICreateGroupChatRequest) => {
+    setIsLoading(true);
     console.log(data);
+    console.log(selected);
+    setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
   };
 
   return (
     <Center flex={1}>
-      <VStack width="90%" mx="3" maxW="300px">
+      <VStack width="90%" space={5} mx="3" maxW="500px">
+        <Heading size="xl" mb="4" alignSelf="center">
+          Tạo nhóm mới
+        </Heading>
         <FormControl isRequired isInvalid={errors.groupName ? true : false}>
           <FormControl.Label
             _text={{
@@ -76,7 +135,7 @@ export default function CreateChattingGroupScreen({
             {errors.groupName && <Text>{errors.groupName.message}</Text>}
           </FormControl.ErrorMessage>
         </FormControl>
-        <FormControl isRequired isInvalid={errors.maxMember ? true : false}>
+        {/* <FormControl isRequired isInvalid={errors.maxMember ? true : false}>
           <FormControl.Label
             _text={{
               bold: true,
@@ -127,19 +186,47 @@ export default function CreateChattingGroupScreen({
           <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
             Please make a selection!
           </FormControl.ErrorMessage>
-        </FormControl>
-        <Button onPress={handleSubmit(onSubmit)} mt="5">
-          Tạo nhóm
-        </Button>
+        </FormControl> */}
+        <MultipleSelectList
+          setSelected={(val: any) => setSelected(val)}
+          onSelect={() => console.log(selected)}
+          data={data}
+          label="Danh sách thành viên"
+          save="value"
+          notFoundText="Không có dữ liệu"
+          placeholder="Thêm thành viên"
+          searchPlaceholder="Tìm kiếm thành viên"
+          maxHeight={300}
+          labelStyles={{
+            fontWeight: "normal",
+          }}
+          badgeStyles={{
+            backgroundColor: appColor.backgroundPrimary,
+            margin: -3,
+            paddingVertical: 3,
+            paddingHorizontal: 10,
+          }}
+          checkBoxStyles={{
+            borderColor: appColor.backgroundPrimary,
+            borderWidth: 1,
+          }}
+          dropdownItemStyles={{
+            paddingVertical: 4,
+          }}
+          dropdownTextStyles={{
+            fontSize: 14,
+          }}
+        />
+        <Button onPress={handleSubmit(onSubmit)}>Tạo nhóm</Button>
         <Button
           onPress={() => {
             navigation.navigate("ChattingGroupList");
           }}
-          mt="5"
         >
           Quay lại
         </Button>
       </VStack>
+      <LoadingSpinner showLoading={isLoading} setShowLoading={setIsLoading} />
     </Center>
   );
 }

@@ -94,17 +94,17 @@ const StackNavigator = () => {
   // Running before render
   const bootstrapAsync = useCallback(async () => {
     try {
-      // const userToStorage: IUserInfo = {
-      //   id: "testId",
-      //   email: "test@gmai.com",
-      //   isInputPassword: false, // dữ liệu tạm thời
-      //   firstName: "Khang",
-      //   lastName: "Nguyen Nhat",
-      //   moduleId: 4,
-      // };
-      // const token = "thisistestingtoken";
-      // await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
-      // await AsyncStorage.setItem("token", token);
+      const userToStorage: IUserInfo = {
+        id: "testId",
+        email: "test@gmai.com",
+        isInputPassword: false, // dữ liệu tạm thời
+        firstName: "Khang",
+        lastName: "Nguyen Nhat",
+        moduleId: 4,
+      };
+      const token = "thisistestingtoken";
+      await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
+      await AsyncStorage.setItem("token", token);
 
       // await AsyncStorage.removeItem("user");
       // await AsyncStorage.removeItem("token");
