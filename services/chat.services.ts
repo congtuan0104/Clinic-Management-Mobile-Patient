@@ -104,26 +104,18 @@ export const chatService = {
   async getGroupChatByGroupId(groupId: string) {
     return axiosClient.get(`/chats/${groupId}/users`);
   },
-  async createGroupChat(
-    createGroupChatRequest: ICreateGroupChatRequest,
-    memberList: string[]
-  ) {
-    return axiosClient.post("/chats", {
-      groupName: createGroupChatRequest.groupName,
-      maxMember: createGroupChatRequest.maxMember,
-      type: createGroupChatRequest.type,
-      userList: memberList,
-    });
+  async createGroupChat(createGroupChatRequest: any) {
+    return axiosClient.post("/chats", createGroupChatRequest);
   },
   async getListGroupChatByUserId(
-    userId: string
+    userId: string | undefined
   ): Promise<IApiResponse<GroupChatInfo[]>> {
     // Tạm thời giả dữ liệu để trả về
-    return {
-      data: listData,
-      message: "Thành công",
-      status: true,
-    };
+    // return {
+    //   data: listData,
+    //   message: "Thành công",
+    //   status: true,
+    // };
     return axiosClient.get("/chats", {
       params: {
         userId,

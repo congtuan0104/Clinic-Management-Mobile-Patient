@@ -19,6 +19,8 @@ import { TouchableOpacity } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { StyleSheet } from "react-native";
 import { appColor } from "../../theme";
+import { useAppSelector } from "../../hooks";
+import { userInfoSelector } from "../../store";
 export default function ChattingGroupListScreen({
   navigation,
   route,
@@ -27,13 +29,13 @@ export default function ChattingGroupListScreen({
     GroupChatInfo[]
   >([]);
   const [searchList, setSearchList] = React.useState<GroupChatInfo[]>([]);
-
+  const userInfo = useAppSelector(userInfoSelector);
   React.useEffect(() => {
     // Lấy danh sách group chat
     const getListGroupChat = async () => {
-      const response = await chatService.getListGroupChatByUserId("fff");
+      const response = await chatService.getListGroupChatByUserId(userInfo?.id);
       if (response.status) {
-        const groupList = response.data || [];
+        const groupList = response.data ? response.data : [];
         setGroupMessageList(groupList);
         setSearchList(groupList);
       }
@@ -42,8 +44,11 @@ export default function ChattingGroupListScreen({
   }, []);
 
   // Thực hiện việc navigate đến màn hình chat cụ thể
-  const navigateToChatDetail = (groupId: string) => {
-    navigation.navigate("ChattingDetail", { groupId });
+  const navigateToChatDetail = (groupId: number, groupName: string) => {
+    navigation.navigate("ChattingDetail", {
+      groupId: groupId,
+      groupName: groupName,
+    });
   };
 
   // Thực hiện phần tìm kiếm trò chuyện
@@ -53,7 +58,8 @@ export default function ChattingGroupListScreen({
     } else {
       setSearchList(
         searchList.filter(
-          (item) => item.name.toLowerCase().indexOf(event.toLowerCase()) !== -1
+          (item) =>
+            item.groupName.toLowerCase().indexOf(event.toLowerCase()) !== -1
         )
       );
     }
@@ -101,7 +107,9 @@ export default function ChattingGroupListScreen({
           data={searchList}
           showsVerticalScrollIndicator={false}
           renderItem={({ item }) => (
-            <TouchableOpacity onPress={() => navigateToChatDetail(item.name)}>
+            <TouchableOpacity
+              onPress={() => navigateToChatDetail(item.id, item.groupName)}
+            >
               <Box alignItems="center" py="2">
                 <HStack
                   width="90%"
@@ -111,7 +119,7 @@ export default function ChattingGroupListScreen({
                   <Avatar
                     size="48px"
                     source={{
-                      uri: item.avatar_url,
+                      uri: `https://ui-avatars.com/api/?name=${item.groupName}`,
                     }}
                   />
                   <VStack>
@@ -123,9 +131,9 @@ export default function ChattingGroupListScreen({
                       bold
                       style={{ flexWrap: "wrap" }}
                     >
-                      {item.name.length > 30
-                        ? `${item.name.slice(0, 30)}...`
-                        : item.name}
+                      {item.groupName.length > 30
+                        ? `${item.groupName.slice(0, 30)}...`
+                        : item.groupName}
                     </Text>
                     <Text
                       color="coolGray.600"
@@ -133,9 +141,9 @@ export default function ChattingGroupListScreen({
                         color: "warmGray.200",
                       }}
                     >
-                      {item.subtitle.length > 30
-                        ? `${item.subtitle.slice(0, 30)}...`
-                        : item.subtitle}
+                      {item.groupName.length > 30
+                        ? `${item.groupName.slice(0, 30)}...`
+                        : item.groupName}
                     </Text>
                   </VStack>
                   <Spacer />
@@ -143,7 +151,7 @@ export default function ChattingGroupListScreen({
               </Box>
             </TouchableOpacity>
           )}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => JSON.stringify(item.id)}
         />
         <TouchableOpacity
           style={styles.but}

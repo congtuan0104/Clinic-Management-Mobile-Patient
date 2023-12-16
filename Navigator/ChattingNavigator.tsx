@@ -21,9 +21,9 @@ import { appColor } from "../theme";
 
 export type ChatDetailStackParamList = {
   ChattingGroupList: undefined;
-  ChattingDetail: { groupId: string };
+  ChattingDetail: { groupId: number; groupName: string };
   CreateChattingGroup: undefined;
-  ChattingDetailSettings: { groupId: string };
+  ChattingDetailSettings: { groupId: number };
 };
 
 export type ChattingGroupListScreenProps = NativeStackScreenProps<
@@ -90,9 +90,9 @@ export default function ChattingNavigator({
                   alt="ff"
                 />
                 <Text fontWeight="bold" fontSize="16">
-                  {route.params.groupId.length > 20
-                    ? `${route.params.groupId.slice(0, 20)}...`
-                    : route.params.groupId}
+                  {route.params.groupName.length > 20
+                    ? `${route.params.groupName.slice(0, 20)}...`
+                    : route.params.groupName}
                 </Text>
               </HStack>
             );

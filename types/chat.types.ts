@@ -5,20 +5,24 @@
 // }
 
 export interface GroupChatInfo {
-  id: string;
-  name: string;
-  avatar_url: string;
-  subtitle: string;
+  id: number;
+  groupName: string;
+  maxMember: number;
+  type: string | null;
+  isActive: boolean;
+  groupChatMember: IGroupChatMember[] | [] | null;
 }
 
+export interface IGroupChatMember {
+  userId: string;
+  isAdmin: boolean;
+  joinedAt: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+}
 export interface ICreateGroupChatRequest {
   groupName: string;
   maxMember: number;
-  type: string;
-}
-
-export interface ICreateGroupChatForm {
-  groupName: string;
-  maxMember: string;
   type: string;
 }

@@ -20,6 +20,9 @@ import { Controller, useForm } from "react-hook-form";
 import { MultipleSelectList } from "react-native-dropdown-select-list";
 import { appColor } from "../../theme";
 import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
+import { useAppSelector } from "../../hooks";
+import { userInfoSelector } from "../../store";
+import { chatService } from "../../services";
 
 // Validate đăng nhập
 const schema: yup.ObjectSchema<ICreateGroupChatRequest> = yup.object({
@@ -44,50 +47,50 @@ export default function CreateChattingGroupScreen({
     defaultValues: {
       groupName: "",
       maxMember: 50,
-      type: "2",
+      type: "group",
     },
   });
-
+  const userInfo = useAppSelector(userInfoSelector);
   // Sample data
   const data = [
     {
-      key: "1",
+      key: "24d0a9fd-1555-483c-a390-3fa556302d6a",
       value: "N Tuan",
     },
     {
-      key: "2",
+      key: "37386997-de3b-4b78-baf5-884bcf57f1ff",
       value: "Nhat C",
     },
     {
-      key: "3",
+      key: "4200b0a2-11a7-4e2b-bcd0-3cc8649a124f",
       value: "Ng Van B",
     },
     {
-      key: "4",
+      key: "42d0c01b-a319-4021-8fe8-26ddaad14072",
       value: "Nguyen Tran Minh",
     },
     {
-      key: "5",
+      key: "4dcd8b08-78e0-46c6-9f98-f36a881a93f8",
       value: "Nguyen Van A",
     },
     {
-      key: "6",
+      key: "54fd31b6-896c-4944-9fc1-594f0156b821",
       value: "Nguyen Tran Minh Quang",
     },
     {
-      key: "7",
+      key: "8a89f1f5-73b3-48c6-adbf-10b024e34dc6",
       value: "Nguyen Tran Minh",
     },
     {
-      key: "8",
+      key: "9fc5002b-b9f9-4192-85e8-f95dbcfe6f6f",
       value: "Nguyen Tran Minh",
     },
     {
-      key: "9",
+      key: "efe91e19-c832-4d34-ae5c-956b23ad6b40",
       value: "Nguyen Ha",
     },
     {
-      key: "10",
+      key: "e7865f1d-49b4-4102-aeb9-f644c9f22873",
       value: "Nguyen Nhat Khang",
     },
   ];
@@ -97,11 +100,19 @@ export default function CreateChattingGroupScreen({
   // Xử lí việc gọi API tạo nhóm
   const onSubmit = async (data: ICreateGroupChatRequest) => {
     setIsLoading(true);
-    console.log(data);
-    console.log(selected);
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 3000);
+    const dataSubmit = {
+      ...data,
+      userList: [...selected, userInfo?.id],
+    };
+    console.log(dataSubmit);
+    // Call API to create chat group
+    const response = await chatService.createGroupChat(dataSubmit);
+    // console.log(response.data);
+    if (response.status) {
+    } else {
+    }
+    setIsLoading(false);
+    navigation.navigate("ChattingGroupList");
   };
 
   return (
@@ -192,7 +203,7 @@ export default function CreateChattingGroupScreen({
           onSelect={() => console.log(selected)}
           data={data}
           label="Danh sách thành viên"
-          save="value"
+          save="key"
           notFoundText="Không có dữ liệu"
           placeholder="Thêm thành viên"
           searchPlaceholder="Tìm kiếm thành viên"
