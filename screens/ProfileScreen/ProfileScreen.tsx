@@ -1,238 +1,107 @@
 import React from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  Platform,
-} from "react-native";
-import { useAppDispatch, useAppSelector } from "../../hooks";
-import { logout, userInfoSelector } from "../../store";
+import { useAppSelector } from "../../hooks";
+import { userInfoSelector } from "../../store";
 import { useState, useEffect } from "react";
 import { useAuth } from "../../hooks/auth";
-import { Button } from "native-base";
+import {
+  Button,
+  View,
+  Text,
+  Box,
+  Avatar,
+  Input,
+  Stack,
+  Icon,
+  FormControl,
+  HStack,
+  VStack,
+} from "native-base";
 import { showMessage } from "react-native-flash-message";
 import { authApi } from "../../services/auth.services";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { ProfileScreenProps } from "../../Navigator/UserNavigator";
-
+import { UserProfileScreenProps } from "../../Navigator/ProfileNavigator";
+import { MaterialIcons } from "@expo/vector-icons";
+import { appColor } from "../../theme";
 GoogleSignin.configure({
   webClientId:
     "931199521045-rn8i7um077q2b9pgpsrdejj90qj26fvv.apps.googleusercontent.com",
 });
 
-const ProfileScreen = ({ navigation, route }: ProfileScreenProps) => {
+const ProfileScreen = ({ navigation, route }: UserProfileScreenProps) => {
   const userInfo = useAppSelector(userInfoSelector);
-  const { linkAccountFacebook, linkAccountGoogle } = useAuth();
 
-  const [googleAccoutId, setgoogleAccoutId] = useState<string>("");
-
-  const [fbAccoutId, setfbAccoutId] = useState("");
-
-  const [isGoogleLink, setisGoogleLink] = useState(false);
-
-  const [isFacebookLink, setisFacebookLink] = useState(false);
-
-  const [isRender, setisRender] = useState<boolean>(false);
-  const dispatch = useAppDispatch();
-  const { setLogout } = route.params;
-  // Kiểm tra và lấy danh sách tài khoản  liên kết
-  useEffect(() => {
-    if (userInfo?.id) {
-      authApi
-        .geLinkAccount(userInfo.id)
-        .then((res) => {
-          res.data.forEach((item: any) => {
-            if (item.provider === "google") {
-              setgoogleAccoutId(item.id);
-              setisGoogleLink(true);
-            }
-            if (item.provider === "facebook") {
-              setfbAccoutId(item.id);
-              setisFacebookLink(true);
-            }
-          });
-        })
-        .catch((error) => {
-          console.log("Call api to get profile error: ");
-          console.log(error);
-        });
-    }
-  }, [isGoogleLink, isFacebookLink, isRender]);
-
-  const changePassword = () => {
-    // Logic for changing password
-  };
-
-  const connectFacebook = async () => {
-    await linkAccountFacebook();
-    setisRender(!isRender);
-  };
-
-  const disConnectFacebook = () => {
-    if (userInfo?.id) {
-      authApi.disConnectLinkAccount(userInfo.id, fbAccoutId).then(() => {
-        setisFacebookLink(false);
-        // Hiển thị thông báo
-        showMessage({
-          message: "Hủy liên kết tài khoản thành công",
-          color: "green",
-        });
-      });
-    }
-  };
-
-  const connectGoogle = async () => {
-    await linkAccountGoogle();
-    setisGoogleLink(true);
-  };
-
-  const disConnectGoogle = () => {
-    if (userInfo?.id) {
-      authApi
-        .disConnectLinkAccount(userInfo.id, googleAccoutId)
-        .then(() => {
-          setisGoogleLink(false);
-          // Hiển thị thông báo
-          showMessage({
-            message: "Hủy liên kết tài khoản thành công",
-            color: "green",
-          });
-          GoogleSignin.signOut();
-        })
-        .catch((error) => {
-          console.log(error);
-        });
-    }
-  };
+  const handleChangeUserInfo = () => {};
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.heading}>Thông tin cá nhân</Text>
-
-      <View style={styles.section}>
-        <Text style={{ fontWeight: "bold", fontSize: 18, marginBottom: 5 }}>
-          Email:{" "}
+    <Box
+      bgColor="#fff"
+      width="90%"
+      alignSelf="center"
+      alignItems="center"
+      p={5}
+      borderBottomRadius={20}
+    >
+      <Box
+        width="full"
+        alignItems="center"
+        py={3}
+        mb={3}
+        borderBottomWidth={1}
+        borderBottomColor="#EDEDF2"
+      >
+        <Avatar
+          alignSelf="center"
+          bg="green.500"
+          source={{
+            uri: `https://ui-avatars.com/api/?name=${userInfo?.firstName}`,
+          }}
+          size="xl"
+          mb={2}
+        >
+          ABC
+        </Avatar>
+        <Text color={appColor.textTitle} fontWeight="extrabold" fontSize="17">
+          {userInfo?.lastName + " " + userInfo?.firstName}
         </Text>
-        <Text style={{ fontSize: 15 }}>{userInfo?.email}</Text>
-        <TouchableOpacity onPress={changePassword}>
-          <Text style={styles.changePassword}>Đổi mật khẩu</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.socialAccounts}>
-        <Text style={styles.heading}>Tài khoản mạng xã hội</Text>
-
-        <View style={{ marginTop: 50 }}>
-          <View style={styles.socialButtons}>
-            <Text style={{ fontWeight: "bold", fontSize: 18 }}>Facebook</Text>
-            {isFacebookLink ? (
-              <Button
-                variant="solid"
-                style={styles.socialButtons}
-                onPress={disConnectFacebook}
-              >
-                Hủy kết nối
-              </Button>
-            ) : (
-              <Button
-                variant="solid"
-                style={styles.socialButtons}
-                onPress={connectFacebook}
-              >
-                Kết nối
-              </Button>
-            )}
-          </View>
-          <Text>{isFacebookLink ? `Đã kết nối` : "Chưa kết nối"}</Text>
-        </View>
-        <View style={{ marginTop: 50 }}>
-          <View style={styles.socialButtons}>
-            <Text style={{ fontWeight: "bold", fontSize: 18 }}>Google</Text>
-            {isGoogleLink ? (
-              <Button
-                variant="solid"
-                style={styles.socialButtons}
-                onPress={disConnectGoogle}
-              >
-                Hủy kết nối
-              </Button>
-            ) : (
-              <Button
-                variant="solid"
-                style={styles.socialButtons}
-                onPress={connectGoogle}
-              >
-                Kết nối
-              </Button>
-            )}
-          </View>
-          <Text>{isGoogleLink ? `Đã kết nối` : "Chưa kết nối"}</Text>
-        </View>
-        <View style={{ marginTop: 50 }}>
-          <Button
-            onPress={async () => {
-              // await GoogleSignin.revokeAccess();
-              // await GoogleSignin.signOut();
-              await AsyncStorage.removeItem("user");
-              await AsyncStorage.removeItem("token");
-              dispatch(logout());
-              setLogout();
-            }}
-          >
-            Log out
-          </Button>
-        </View>
-      </View>
-    </View>
+        <Text color={appColor.textSecondary}>{userInfo?.email}</Text>
+      </Box>
+      <Box alignItems="flex-start" width="100%">
+        <VStack space="5">
+          <HStack justifyContent="space-between" width="full">
+            <Text color={appColor.textSecondary}>Họ và tên</Text>
+            <Text color={appColor.textSecondary}>
+              {userInfo?.lastName + " " + userInfo?.firstName}
+            </Text>
+          </HStack>
+          <HStack justifyContent="space-between" width="full">
+            <Text color={appColor.textSecondary}>Địa chỉ</Text>
+            <Text color={appColor.textSecondary}>Thành phố Hồ Chí Minh</Text>
+          </HStack>
+          <HStack justifyContent="space-between" width="full">
+            <Text color={appColor.textSecondary}>Giới tính</Text>
+            <Text color={appColor.textSecondary}>Nam</Text>
+          </HStack>
+          <HStack justifyContent="space-between" width="full">
+            <Text color={appColor.textSecondary}>Email</Text>
+            <Text color={appColor.textSecondary}>{userInfo?.email}</Text>
+          </HStack>
+          <HStack justifyContent="space-between" width="full">
+            <Text color={appColor.textSecondary}>Ngày sinh</Text>
+            <Text color={appColor.textSecondary}>24/11/2002</Text>
+          </HStack>
+          <HStack justifyContent="space-between" width="full">
+            <Text color={appColor.textSecondary}>Nghề nghiệp</Text>
+            <Text color={appColor.textSecondary}>Kỹ sư phần mềm</Text>
+          </HStack>
+          <HStack width="full" mt={20}>
+            <Button width="full" onPress={handleChangeUserInfo}>
+              Thay đổi thông tin cá nhân
+            </Button>
+          </HStack>
+        </VStack>
+      </Box>
+    </Box>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  heading: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  section: {
-    marginBottom: 20,
-  },
-  changePassword: {
-    color: "blue",
-    fontSize: 15,
-    marginTop: 20,
-    fontWeight: "bold",
-  },
-  socialAccounts: {
-    marginTop: 40,
-  },
-  socialHeading: {
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  socialButtons: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  socialButton: {
-    borderWidth: 0,
-    borderColor: "#ccc",
-    padding: 10,
-    borderRadius: 5,
-    flex: 0.48, // Adjust flex value for desired width of buttons
-    alignItems: "center",
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-  connectButton: {
-    fontWeight: "bold",
-    fontSize: 18,
-  },
-});
 
 export default ProfileScreen;

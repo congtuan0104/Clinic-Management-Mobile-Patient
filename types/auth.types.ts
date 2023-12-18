@@ -1,11 +1,18 @@
 // Interface cho thông tin người dùng
 
+// ModuleID:
+// 1. Admin
+// 2. Clinic
+// 3. Patient
+// 4. User
+
 export interface IUserInfo {
   id: string;
   email: string;
   isInputPassword: boolean;
-  emailVerified: boolean;
-  role: string;
+  firstName: string;
+  lastName: string;
+  moduleId: number;
 }
 
 // Interface xử lí đăng nhập
@@ -54,7 +61,6 @@ export interface IRegisterRequest {
   lastName: string;
   email: string;
   password: string;
-  role: string;
 }
 
 export interface IRegisterResponse {

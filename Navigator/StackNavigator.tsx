@@ -97,9 +97,10 @@ const StackNavigator = () => {
       // const userToStorage: IUserInfo = {
       //   id: "testId",
       //   email: "test@gmai.com",
-      //   emailVerified: false,
       //   isInputPassword: false, // dữ liệu tạm thời
-      //   role: "user",
+      //   firstName: "Khang",
+      //   lastName: "Nguyen Nhat",
+      //   moduleId: 4,
       // };
       // const token = "thisistestingtoken";
       // await AsyncStorage.setItem("user", JSON.stringify(userToStorage));
@@ -111,8 +112,8 @@ const StackNavigator = () => {
       const testData = await AsyncStorage.getItem("user");
       const tokenString = await AsyncStorage.getItem("token");
       if (tokenString && testData) {
-        // console.log("Test data: ", testData);
-        // console.log("Token string: ", tokenString);
+        console.log("Test data: ", testData);
+        console.log("Token string: ", tokenString);
         const testDataObject = JSON.parse(testData);
         setLogin(testDataObject, tokenString);
         const UserResponseObject: ILoginResponse = {
@@ -147,12 +148,20 @@ const StackNavigator = () => {
     // We haven't finished checking for the token yet
     return <SplashScreen />;
   }
-  // console.log("USER", user);
-  // console.log("TOKEN", token);
+  console.log("USER", user);
+  console.log("TOKEN", token);
   return (
     <NativeBaseProvider theme={theme}>
       <NavigationContainer theme={ReactNavigationTheme}>
         <RootStack.Navigator>
+          {/** If token = null: user doesn't login, render login screen
+           * If token != null: user have already login, check user role (moduleId)
+           * ModuleId = 1: Admin
+           * ModuleId = 2: Nurse
+           * ModuleId = 3: Doctor
+           * ModuleId = 4: Unknown
+           * ModuleId = 5: Guest
+           */}
           {token === null || user === null ? (
             <>
               <RootStack.Screen
@@ -174,7 +183,7 @@ const StackNavigator = () => {
                 initialParams={{ setLogin: setLogin }}
               />
             </>
-          ) : user?.role === "doctor" ? (
+          ) : user?.moduleId === 2 ? (
             <>
               <RootStack.Screen
                 name="DoctorNavigator"
@@ -183,7 +192,16 @@ const StackNavigator = () => {
                 initialParams={{ setLogout: setLogout }}
               />
             </>
-          ) : user?.role === "user" ? (
+          ) : user?.moduleId === 2 ? (
+            <>
+              <RootStack.Screen
+                name="DoctorNavigator"
+                component={DoctorNavigator}
+                options={{ headerShown: false }}
+                initialParams={{ setLogout: setLogout }}
+              />
+            </>
+          ) : user?.moduleId === 4 ? (
             <>
               <RootStack.Screen
                 name="UserNavigator"

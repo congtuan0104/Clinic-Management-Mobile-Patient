@@ -1,10 +1,11 @@
 // import moment from 'moment';
 import React, { Component } from "react";
 import { View, StyleSheet, Pressable } from "react-native";
-import { Link, Text } from "native-base";
+import { HStack, Link, Text } from "native-base";
 import { appColor } from "../../theme";
 import { Image } from "native-base";
 import TimeDelivery from "./TimeDelivery/TimeDelivery";
+import { Entypo } from "@expo/vector-icons";
 
 const MsgComponent = (props: any) => {
   const { sender, content, time, type, link, username } = props;
@@ -37,7 +38,14 @@ const MsgComponent = (props: any) => {
               color: sender ? "#fff" : "#000",
             }}
           >
-            {content}
+            <HStack alignItems="center" space={2}>
+              <Entypo
+                name="download"
+                size={24}
+                color={sender ? "#fff" : "#000"}
+              />
+              <Text color={sender ? "#fff" : "#000"}>{content}</Text>
+            </HStack>
           </Link>
         )}
         <TimeDelivery sender={sender} time={time} />

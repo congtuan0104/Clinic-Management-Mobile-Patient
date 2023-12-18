@@ -16,12 +16,11 @@ import {
 } from "native-base";
 
 import { useForm, Controller, SubmitHandler } from "react-hook-form";
-import { IRegisterRequest } from "../../../types";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { theme } from "../../../theme";
-import { AntDesign } from "@expo/vector-icons";
 import { authApi } from "../../../services";
+import { LoadingSpinner } from "../../../components/LoadingSpinner/LoadingSpinner";
 
 interface IRegisterFormData {
   firstName: string;
@@ -29,7 +28,6 @@ interface IRegisterFormData {
   email: string;
   password: string;
   confirmPassword: string;
-  role: string;
 }
 
 const schema = yup.object().shape({
@@ -47,13 +45,13 @@ const schema = yup.object().shape({
     .string()
     .required("Vui lòng xác nhận lại mật khẩu")
     .oneOf([yup.ref("password"), ""], "Không trùng với mật khẩu đã nhập"),
-  role: yup.string().required(),
 });
 
 const RegisterScreen: React.FC<RegisterScreenProps> = ({
   navigation,
   route,
 }) => {
+  const [isLoading, setIsLoading] = React.useState<boolean>(false);
   const { setLogin } = route.params;
   const {
     control,
@@ -68,14 +66,12 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
       email: "",
       password: "",
       confirmPassword: "",
-      role: "user",
-      // emailVerified: false,
     },
   });
 
   const onSubmit = async (data: IRegisterFormData) => {
+    setIsLoading(true);
     const { confirmPassword, ...registerData } = data;
-    console.log(registerData);
     // Send data to server
     await authApi
       .register(registerData)
@@ -88,11 +84,13 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
         // Print error to the screen
         console.log(error.response.data);
       });
+    setIsLoading(false);
   };
 
   return (
     <NativeBaseProvider theme={theme}>
       <Box safeArea flex={1} p={2} w="90%" mx="auto" justifyContent="center">
+        <LoadingSpinner showLoading={isLoading} setShowLoading={setIsLoading} />
         <VStack>
           <Heading
             style={{ fontWeight: "bold" }}

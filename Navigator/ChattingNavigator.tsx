@@ -7,13 +7,23 @@ import {
 import ChattingDetailScreen from "../screens/ChattingScreen/ChattingDetailScreen";
 import ChattingGroupListScreen from "../screens/ChattingScreen/ChattingGroupListScreen";
 import { Ionicons } from "@expo/vector-icons";
-import { Actionsheet, Text, useDisclose, Image, HStack } from "native-base";
+import {
+  Actionsheet,
+  Text,
+  useDisclose,
+  Image,
+  HStack,
+  Pressable,
+} from "native-base";
 import CreateChattingGroupScreen from "../screens/ChattingScreen/CreateChattingGroupScreen";
+import ChattingDetailSettings from "../screens/ChattingScreen/ChattingDetailSettings";
+import { appColor } from "../theme";
 
 export type ChatDetailStackParamList = {
   ChattingGroupList: undefined;
-  ChattingDetail: { groupId: string };
+  ChattingDetail: { groupId: number; groupName: string };
   CreateChattingGroup: undefined;
+  ChattingDetailSettings: { groupId: number };
 };
 
 export type ChattingGroupListScreenProps = NativeStackScreenProps<
@@ -30,6 +40,10 @@ export type CreateChattingGroupScreenProps = NativeStackScreenProps<
   ChatDetailStackParamList,
   "CreateChattingGroup"
 >;
+export type ChattingDetailSettingsScreenProps = NativeStackScreenProps<
+  ChatDetailStackParamList,
+  "ChattingDetailSettings"
+>;
 
 const ChattingStackNavigator =
   createNativeStackNavigator<ChatDetailStackParamList>();
@@ -38,8 +52,6 @@ export default function ChattingNavigator({
   navigation,
   route,
 }: ChattingNavigatorProps) {
-  const { isOpen, onOpen, onClose } = useDisclose();
-
   return (
     <ChattingStackNavigator.Navigator initialRouteName="ChattingGroupList">
       <ChattingStackNavigator.Screen
@@ -53,12 +65,22 @@ export default function ChattingNavigator({
         options={{ headerShown: false }}
       />
       <ChattingStackNavigator.Screen
+        name="ChattingDetailSettings"
+        component={ChattingDetailSettings}
+        options={{ headerShown: false }}
+      />
+      <ChattingStackNavigator.Screen
         name="ChattingDetail"
         component={ChattingDetailScreen}
-        options={({ route }) => ({
+        options={({ route, navigation }) => ({
           headerTitle: (props) => {
             return (
-              <HStack space={2} justifyContent="center" alignItems="center">
+              <HStack
+                marginLeft={-15}
+                space={2}
+                justifyContent="center"
+                alignItems="center"
+              >
                 <Image
                   src="https://picsum.photos/200"
                   borderRadius={100}
@@ -66,28 +88,34 @@ export default function ChattingNavigator({
                   alt="ff"
                 />
                 <Text fontWeight="bold" fontSize="16">
-                  {route.params.groupId.length > 15
-                    ? `${route.params.groupId.slice(0, 15)}...`
-                    : route.params.groupId}
+                  {route.params.groupName.length > 20
+                    ? `${route.params.groupName.slice(0, 20)}...`
+                    : route.params.groupName}
                 </Text>
               </HStack>
             );
           },
           headerRight: () => (
             <>
-              <Ionicons
-                name="ellipsis-vertical-outline"
-                size={24}
-                color="black"
-                onPress={onOpen}
-              />
-              <Actionsheet isOpen={isOpen} onClose={onClose}>
-                <Actionsheet.Content>
-                  <Actionsheet.Item>Xem thông tin nhóm</Actionsheet.Item>
-                  <Actionsheet.Item>Tùy chỉnh</Actionsheet.Item>
-                  <Actionsheet.Item color="red.500">Rời nhóm</Actionsheet.Item>
-                </Actionsheet.Content>
-              </Actionsheet>
+              <Pressable
+                backgroundColor={appColor.backgroundPrimary}
+                borderRadius={100}
+                width={35}
+                height={35}
+                justifyContent="center"
+                alignItems="center"
+                onPress={() => {
+                  navigation.navigate("ChattingDetailSettings", {
+                    groupId: route.params.groupId,
+                  });
+                }}
+              >
+                <Ionicons
+                  name="ellipsis-vertical-outline"
+                  size={24}
+                  color="#fff"
+                />
+              </Pressable>
             </>
           ),
         })}

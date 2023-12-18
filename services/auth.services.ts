@@ -22,7 +22,6 @@ export const authApi = {
       lastName: data.lastName,
       email: data.email,
       password: data.password,
-      role: data.role,
     });
   },
   loginWithGoogle(
@@ -52,11 +51,15 @@ export const authApi = {
     return axiosClient.post("/auth/link-account", data);
   },
 
-  geLinkAccount(userId: string): Promise<any> {
+  getLinkAccount(userId: string): Promise<any> {
     return axiosClient.get(`/auth/${userId}/accounts`);
   },
 
   disConnectLinkAccount(userId: string, accountId: string): Promise<any> {
     return axiosClient.delete(`/auth/${userId}/accounts/${accountId}`);
+  },
+
+  addingAdditionalPassword(email: string, password: string): Promise<any> {
+    return axiosClient.put(`/auth/add-new-password`, { email, password });
   },
 };

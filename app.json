@@ -40,9 +40,8 @@
           "autoVerify": true,
           "data": [
             {
-              "scheme": "clinus",
-              "host": "*.myapp.io",
-              "pathPrefix": "/verify-account"
+              "scheme": "https",
+              "host": "api.clinus.live"
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]

@@ -1,7 +1,6 @@
 import * as React from "react";
 import { UserNavigatorProps } from "./StackNavigator";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import ProfileScreen from "../screens/ProfileScreen/ProfileScreen";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import Function02 from "../screens/UserScreen/Function02/Function02";
 import { appColor } from "../theme";
@@ -9,31 +8,39 @@ import { appColor } from "../theme";
 import { Ionicons } from "@expo/vector-icons";
 import CustomDrawer from "../components/CustomDrawer/CustomDrawer";
 import ChattingNavigator from "./ChattingNavigator";
+import ProfileNavigator from "./ProfileNavigator";
+import SubscriptionNavigator from "./SubscriptionNavigator";
 
-export type RootNativeDrawerParamList = {
+export type UserNavigatorDrawerParamList = {
   // undefined: the route doesn't have params
-  UserProfile: { setLogout: () => void };
+  ProfileNavigator: undefined;
   ChattingNavigator: undefined;
+  SubscriptionNavigator: undefined;
   Function02: undefined;
 };
 
-export type ProfileScreenProps = NativeStackScreenProps<
-  RootNativeDrawerParamList,
-  "UserProfile"
+export type ProfileNavigatorProps = NativeStackScreenProps<
+  UserNavigatorDrawerParamList,
+  "ProfileNavigator"
 >;
 export type ChattingNavigatorProps = NativeStackScreenProps<
-  RootNativeDrawerParamList,
+  UserNavigatorDrawerParamList,
   "ChattingNavigator"
 >;
+export type SubscriptionNavigatorProps = NativeStackScreenProps<
+  UserNavigatorDrawerParamList,
+  "SubscriptionNavigator"
+>;
 
-const RootDrawer = createDrawerNavigator<RootNativeDrawerParamList>();
+const UserNavigatorDrawer =
+  createDrawerNavigator<UserNavigatorDrawerParamList>();
 
 export default function UserScreen({ navigation, route }: UserNavigatorProps) {
   const { setLogout } = route.params;
 
   return (
-    <RootDrawer.Navigator
-      initialRouteName="UserProfile"
+    <UserNavigatorDrawer.Navigator
+      initialRouteName="ProfileNavigator"
       screenOptions={{
         headerStyle: {
           backgroundColor: appColor.background,
@@ -54,20 +61,29 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
         drawerActiveBackgroundColor: appColor.primary,
         drawerInactiveTintColor: appColor.primary,
       }}
-      drawerContent={(props) => <CustomDrawer {...props} />}
+      drawerContent={(props) => <CustomDrawer {...props} logOut={setLogout} />}
     >
-      <RootDrawer.Screen
+      <UserNavigatorDrawer.Screen
         options={{
           title: "Tài khoản",
           drawerIcon: ({ color }) => (
             <Ionicons name="settings-outline" size={24} color={color} />
           ),
         }}
-        name="UserProfile"
-        component={ProfileScreen}
-        initialParams={{ setLogout: setLogout }}
+        name="ProfileNavigator"
+        component={ProfileNavigator}
       />
-      <RootDrawer.Screen
+      <UserNavigatorDrawer.Screen
+        options={{
+          title: "Quản lý gói",
+          drawerIcon: ({ color }) => (
+            <Ionicons name="settings-outline" size={24} color={color} />
+          ),
+        }}
+        name="SubscriptionNavigator"
+        component={SubscriptionNavigator}
+      />
+      <UserNavigatorDrawer.Screen
         name="ChattingNavigator"
         options={{
           title: "Nhắn tin",
@@ -77,7 +93,7 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
         }}
         component={ChattingNavigator}
       />
-      <RootDrawer.Screen
+      <UserNavigatorDrawer.Screen
         name="Function02"
         options={{
           title: "Chức năng 2",
@@ -87,6 +103,6 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
         }}
         component={Function02}
       />
-    </RootDrawer.Navigator>
+    </UserNavigatorDrawer.Navigator>
   );
 }

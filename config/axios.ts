@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 export const REQUEST_TIMEOUT = 30000;
 
 // generate with ngrok
-const baseUrl = "https://clinus.live/api/";
+const baseUrl = "https://api.clinus.live/api/";
 export const axiosClient = axios.create({
   baseURL: baseUrl, // Set the base URL for all requests
   timeout: 30000, // Set the default timeout for requests
@@ -13,6 +13,7 @@ export const axiosClient = axios.create({
   headers: {
     common: {
       "Content-Type": "application/json",
+      "X-Mobile": true,
     },
   },
 });
@@ -30,6 +31,7 @@ const InterceptorsRequest = async (config: AxiosRequestConfig) => {
   const interceptorHeaders = {
     token: `Bearer ${token}`,
     authorization: `Bearer ${token}`,
+    "X-Mobile": true,
   };
 
   const headers = {
