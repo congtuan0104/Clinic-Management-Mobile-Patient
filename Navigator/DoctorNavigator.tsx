@@ -7,11 +7,13 @@ import ProfileNavigator from "./ProfileNavigator";
 import { appColor } from "../theme";
 import CustomDrawer from "../components/CustomDrawer/CustomDrawer";
 import { Ionicons } from "@expo/vector-icons";
+import ChattingNavigator from "./ChattingNavigator";
 
 export type DoctorNavigatorDrawerParamList = {
   // undefined: the route doesn't have params
   ProfileNavigator: undefined;
   Appointment: undefined;
+  ChattingNavigator: undefined;
 };
 export type ProfileNavigatorProps = NativeStackScreenProps<
   DoctorNavigatorDrawerParamList,
@@ -60,6 +62,16 @@ export default function DoctorScreen({
             <Ionicons name="settings-outline" size={24} color={color} />
           ),
         }}
+      />
+      <DoctorNavigatorDrawer.Screen
+        name="ChattingNavigator"
+        options={{
+          title: "Nhắn tin",
+          drawerIcon: ({ color }) => (
+            <Ionicons name="settings-outline" size={24} color={color} />
+          ),
+        }}
+        component={ChattingNavigator}
       />
       <DoctorNavigatorDrawer.Screen
         name="Appointment"

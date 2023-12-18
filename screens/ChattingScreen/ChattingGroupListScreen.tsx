@@ -30,18 +30,26 @@ export default function ChattingGroupListScreen({
   >([]);
   const [searchList, setSearchList] = React.useState<GroupChatInfo[]>([]);
   const userInfo = useAppSelector(userInfoSelector);
+  let response;
   React.useEffect(() => {
     // Lấy danh sách group chat
     const getListGroupChat = async () => {
-      const response = await chatService.getListGroupChatByUserId(userInfo?.id);
-      if (response.status) {
-        const groupList = response.data ? response.data : [];
-        setGroupMessageList(groupList);
-        setSearchList(groupList);
+      try {
+        response = await chatService.getListGroupChatByUserId(userInfo?.id);
+        if (response.status) {
+          const groupList = response.data ? response.data : [];
+          setGroupMessageList(groupList);
+          setSearchList(groupList);
+        } else {
+          setGroupMessageList([]);
+          setSearchList([]);
+        }
+      } catch (error) {
+        console.log(error);
       }
     };
     getListGroupChat();
-  }, []);
+  }, [response, groupMessageList]);
 
   // Thực hiện việc navigate đến màn hình chat cụ thể
   const navigateToChatDetail = (groupId: number, groupName: string) => {
@@ -174,7 +182,21 @@ export default function ChattingGroupListScreen({
       {groupMessageList.length ? (
         renderGroupList()
       ) : (
-        <Text>Ban chua tham gia nhom</Text>
+        <Box flex="1">
+          <Text>Ban chua tham gia nhom</Text>
+          <TouchableOpacity
+            style={styles.but}
+            onPress={() => {
+              navigation.navigate("CreateChattingGroup");
+            }}
+          >
+            <Icon
+              as={<MaterialIcons name="chat" color="white" />}
+              color={appColor.white}
+              size={8}
+            />
+          </TouchableOpacity>
+        </Box>
       )}
     </React.Fragment>
   );

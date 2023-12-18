@@ -1,5 +1,5 @@
 import { View, Text } from "react-native";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { CreateChattingGroupScreenProps } from "../../Navigator/ChattingNavigator";
 import {
   Box,
@@ -23,6 +23,7 @@ import { LoadingSpinner } from "../../components/LoadingSpinner/LoadingSpinner";
 import { useAppSelector } from "../../hooks";
 import { userInfoSelector } from "../../store";
 import { chatService } from "../../services";
+import { clinicService } from "../../services/clinic.services";
 
 // Validate đăng nhập
 const schema: yup.ObjectSchema<ICreateGroupChatRequest> = yup.object({
@@ -96,7 +97,34 @@ export default function CreateChattingGroupScreen({
   ];
 
   const [selected, setSelected] = useState([]);
+  const [userInClinic, setUserInClinic] = useState([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  // Handle get user in clinic to create group
+  useEffect(() => {
+    const getUsersInClinic = async () => {
+      // Call API to get users in clinic
+      // (Using clinicId = 6d43806c-c86c-4e9e-ab12-ce9d4e0357f9 (testing))
+      const clinicId = "6d43806c-c86c-4e9e-ab12-ce9d4e0357f9";
+      const response = await clinicService.getUsersInClinic(clinicId);
+      let data: any = [];
+      if (response.status) {
+        const responseData = response.data;
+        if (responseData) {
+          responseData.map((user) => {
+            if (user.id !== userInfo?.id)
+              data.push({
+                key: user.id,
+                value: user.lastName + " " + user.firstName,
+              });
+          });
+        }
+        setUserInClinic(data);
+      } else {
+        console.log("Server error");
+      }
+    };
+    getUsersInClinic();
+  }, [userInClinic]);
   // Xử lí việc gọi API tạo nhóm
   const onSubmit = async (data: ICreateGroupChatRequest) => {
     setIsLoading(true);
@@ -201,7 +229,7 @@ export default function CreateChattingGroupScreen({
         <MultipleSelectList
           setSelected={(val: any) => setSelected(val)}
           onSelect={() => console.log(selected)}
-          data={data}
+          data={userInClinic}
           label="Danh sách thành viên"
           save="key"
           notFoundText="Không có dữ liệu"
