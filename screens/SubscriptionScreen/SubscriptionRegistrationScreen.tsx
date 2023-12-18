@@ -117,7 +117,13 @@ export default function SubscriptionRegistrationScreen({
           <Heading color={appColor.textSecondary}>3 tháng</Heading>
         </VStack>
         <Box width="full" alignItems="center" py={3}>
-          <Button backgroundColor="secondary.300" disabled width="full">
+          <Button
+            onPress={() => {
+              navigation.navigate("SubscriptionRegistrationProcess");
+            }}
+            backgroundColor="secondary.300"
+            width="full"
+          >
             <Text fontSize={20} color={appColor.white}>
               MUA NGAY
             </Text>

@@ -8,6 +8,7 @@ import SubscriptionRegistrationScreen from "../screens/SubscriptionScreen/Subscr
 import SubscriptionDetailScreen from "../screens/SubscriptionScreen/SubscriptionDetailScreen";
 import SubscriptionHistoryScreen from "../screens/SubscriptionScreen/SubscriptionHistory";
 import SubscriptionListScreen from "../screens/SubscriptionScreen/SubscriptionListScreen";
+import SubscriptionRegistrationProcessScreen from "../screens/SubscriptionScreen/SubscriptionRegistrationProcess";
 
 export type SubscriptionNavigatorStackParamList = {
   SubscriptionDashboard: undefined;
@@ -15,6 +16,7 @@ export type SubscriptionNavigatorStackParamList = {
   SubscriptionHistory: undefined;
   SubscriptionDetail: undefined;
   SubscriptionList: undefined;
+  SubscriptionRegistrationProcess: undefined;
 };
 
 export type SubscriptionDashboardScreenProps = NativeStackScreenProps<
@@ -40,6 +42,11 @@ export type SubscriptionDetailScreenProps = NativeStackScreenProps<
 export type SubscriptionListScreenProps = NativeStackScreenProps<
   SubscriptionNavigatorStackParamList,
   "SubscriptionList"
+>;
+
+export type SubscriptionRegistrationProcessScreenProps = NativeStackScreenProps<
+  SubscriptionNavigatorStackParamList,
+  "SubscriptionRegistrationProcess"
 >;
 
 const SubscriptionStackNavigator =
@@ -74,6 +81,11 @@ export default function SubscriptionNavigator({
       <SubscriptionStackNavigator.Screen
         name="SubscriptionList"
         component={SubscriptionListScreen}
+        options={{ headerShown: false }}
+      />
+      <SubscriptionStackNavigator.Screen
+        name="SubscriptionRegistrationProcess"
+        component={SubscriptionRegistrationProcessScreen}
         options={{ headerShown: false }}
       />
     </SubscriptionStackNavigator.Navigator>
