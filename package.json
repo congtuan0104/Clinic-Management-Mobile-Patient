@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@fcxlabs/react-native-step-indicator": "^1.0.4",
     "@hookform/resolvers": "^3.3.2",
     "@react-native-async-storage/async-storage": "^1.19.8",
     "@react-native-community/checkbox": "^0.5.16",
