@@ -154,6 +154,14 @@ const StackNavigator = () => {
     <NativeBaseProvider theme={theme}>
       <NavigationContainer theme={ReactNavigationTheme}>
         <RootStack.Navigator>
+          {/** If token = null: user doesn't login, render login screen
+           * If token != null: user have already login, check user role (moduleId)
+           * ModuleId = 1: Admin
+           * ModuleId = 2: Nurse
+           * ModuleId = 3: Doctor
+           * ModuleId = 4: Unknown
+           * ModuleId = 5: Guest
+           */}
           {token === null || user === null ? (
             <>
               <RootStack.Screen
@@ -173,6 +181,15 @@ const StackNavigator = () => {
                 component={ValidateNotification}
                 options={{ headerShown: false }}
                 initialParams={{ setLogin: setLogin }}
+              />
+            </>
+          ) : user?.moduleId === 2 ? (
+            <>
+              <RootStack.Screen
+                name="DoctorNavigator"
+                component={DoctorNavigator}
+                options={{ headerShown: false }}
+                initialParams={{ setLogout: setLogout }}
               />
             </>
           ) : user?.moduleId === 2 ? (

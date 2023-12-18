@@ -9,11 +9,13 @@ import { Ionicons } from "@expo/vector-icons";
 import CustomDrawer from "../components/CustomDrawer/CustomDrawer";
 import ChattingNavigator from "./ChattingNavigator";
 import ProfileNavigator from "./ProfileNavigator";
+import SubscriptionNavigator from "./SubscriptionNavigator";
 
 export type UserNavigatorDrawerParamList = {
   // undefined: the route doesn't have params
   ProfileNavigator: undefined;
   ChattingNavigator: undefined;
+  SubscriptionNavigator: undefined;
   Function02: undefined;
 };
 
@@ -24,6 +26,10 @@ export type ProfileNavigatorProps = NativeStackScreenProps<
 export type ChattingNavigatorProps = NativeStackScreenProps<
   UserNavigatorDrawerParamList,
   "ChattingNavigator"
+>;
+export type SubscriptionNavigatorProps = NativeStackScreenProps<
+  UserNavigatorDrawerParamList,
+  "SubscriptionNavigator"
 >;
 
 const UserNavigatorDrawer =
@@ -66,6 +72,16 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
         }}
         name="ProfileNavigator"
         component={ProfileNavigator}
+      />
+      <UserNavigatorDrawer.Screen
+        options={{
+          title: "Quản lý gói",
+          drawerIcon: ({ color }) => (
+            <Ionicons name="settings-outline" size={24} color={color} />
+          ),
+        }}
+        name="SubscriptionNavigator"
+        component={SubscriptionNavigator}
       />
       <UserNavigatorDrawer.Screen
         name="ChattingNavigator"

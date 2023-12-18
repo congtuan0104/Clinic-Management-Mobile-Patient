@@ -52,8 +52,6 @@ export default function ChattingNavigator({
   navigation,
   route,
 }: ChattingNavigatorProps) {
-  const { isOpen, onOpen, onClose } = useDisclose();
-
   return (
     <ChattingStackNavigator.Navigator initialRouteName="ChattingGroupList">
       <ChattingStackNavigator.Screen

@@ -56,7 +56,6 @@ const CustomDrawer = (props: any) => {
         </ImageBackground>
         <DrawerItemList {...props} />
       </DrawerContentScrollView>
-      z
       <View p="5" borderTopWidth="1" borderTopColor="#ccc">
         <Button onPress={handleLogout}>
           <HStack space={1}>
