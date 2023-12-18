@@ -83,7 +83,7 @@ export default function SubscriptionDashboardScreen({
             <Button
               width="full"
               onPress={() => {
-                navigation.navigate("SubscriptionRegistration");
+                navigation.navigate("SubscriptionList");
               }}
             >
               Mua gói ngay

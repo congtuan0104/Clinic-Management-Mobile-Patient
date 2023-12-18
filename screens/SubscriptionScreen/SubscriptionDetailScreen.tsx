@@ -111,7 +111,7 @@ export default function SubscriptionDetailScreen({
         width="90%"
         alignSelf="center"
         onPress={() => {
-          navigation.navigate("SubscriptionDashboard");
+          navigation.goBack();
         }}
       >
         Quay lại
