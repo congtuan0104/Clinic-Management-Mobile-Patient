@@ -22,6 +22,7 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { UserProfileScreenProps } from "../../Navigator/ProfileNavigator";
 import { MaterialIcons } from "@expo/vector-icons";
 import { appColor } from "../../theme";
+import { FCMConfig } from "../../config/firebaseCloudMessage";
 GoogleSignin.configure({
   webClientId:
     "931199521045-rn8i7um077q2b9pgpsrdejj90qj26fvv.apps.googleusercontent.com",
@@ -32,6 +33,9 @@ const ProfileScreen = ({ navigation, route }: UserProfileScreenProps) => {
 
   const handleChangeUserInfo = () => {};
 
+  useEffect(() => {
+    FCMConfig(userInfo?.id);
+  }, []);
   return (
     <Box
       bgColor="#fff"

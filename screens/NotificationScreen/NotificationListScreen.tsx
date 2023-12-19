@@ -36,7 +36,6 @@ const NotificationListScreen = ({
       )
       .ref(`/notifications/${userInfo?.id}`);
     const onChildAdd = reference.on("child_added", (snapshot) => {
-      console.log(snapshot.val());
       setNotificationList((state) => [snapshot.val(), ...state]);
       setInitialNotificationList((state) => [snapshot.val(), ...state]);
     });

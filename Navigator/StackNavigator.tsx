@@ -139,7 +139,6 @@ const StackNavigator = () => {
       firebase.initializeApp(firebaseConfig);
     }
     // init FCM config
-    FCMConfig();
     // bootstrap the app
     bootstrapAsync();
   }, [bootstrapAsync]);

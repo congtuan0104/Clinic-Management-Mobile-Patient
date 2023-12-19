@@ -1,5 +1,8 @@
 import messaging from "@react-native-firebase/messaging";
 import { Alert } from "react-native";
+import { notificationService } from "../services/notification.services";
+import { useAppSelector } from "../hooks";
+import { userInfoSelector } from "../store";
 
 const requestUserPermission = async () => {
   const authStatus = await messaging().requestPermission();
@@ -13,21 +16,33 @@ const requestUserPermission = async () => {
   } else return false;
 };
 
-const getFCMToken = async () => {
+const getFCMToken = async (userId: string) => {
   if (await requestUserPermission()) {
     // return fcm token for the device
     messaging()
       .getToken()
-      .then((token: string) => {
-        console.log("FCM token: ", token);
+      .then(async (token: string) => {
+        try {
+          console.log("FCM token: ", token);
+          // send token to server
+          const response = await notificationService.postFCMTokenToServer(
+            userId,
+            token
+          );
+          if (response.status) {
+            console.log("Send FCM token to server successfully");
+          }
+        } catch (error) {
+          console.log(error);
+        }
       });
   } else {
     console.log("Failed token");
   }
 };
 
-export const FCMConfig = () => {
-  getFCMToken();
+export const FCMConfig = (userId: any) => {
+  getFCMToken(userId);
 
   // Check whether an initial notification is available
   messaging()
