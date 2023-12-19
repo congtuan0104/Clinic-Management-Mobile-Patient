@@ -22,6 +22,8 @@ export default function SubscriptionDashboardScreen({
     <Box
       bgColor="#fff"
       width="90%"
+      maxW="90%"
+      maxH="95%"
       alignSelf="center"
       alignItems="center"
       p={5}
