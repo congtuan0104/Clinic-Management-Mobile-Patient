@@ -6,6 +6,7 @@ import StackNavigator from "./Navigator/StackNavigator";
 import { NativeBaseProvider } from "native-base";
 import { theme } from "./theme";
 import "react-native-gesture-handler";
+import 'expo-dev-client';
 
 export default function App() {
   return (

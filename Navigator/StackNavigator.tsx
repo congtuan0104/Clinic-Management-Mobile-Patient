@@ -109,6 +109,8 @@ const StackNavigator = () => {
       // await AsyncStorage.removeItem("user");
       // await AsyncStorage.removeItem("token");
       // Restore userInfo and dispatch to the store
+      await AsyncStorage.removeItem("user");
+      await AsyncStorage.removeItem("token");
       const testData = await AsyncStorage.getItem("user");
       const tokenString = await AsyncStorage.getItem("token");
       if (tokenString && testData) {
