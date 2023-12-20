@@ -10,12 +10,14 @@ import CustomDrawer from "../components/CustomDrawer/CustomDrawer";
 import ChattingNavigator from "./ChattingNavigator";
 import ProfileNavigator from "./ProfileNavigator";
 import SubscriptionNavigator from "./SubscriptionNavigator";
+import NotificationNavigator from "./NotificationNavigator";
 
 export type UserNavigatorDrawerParamList = {
   // undefined: the route doesn't have params
   ProfileNavigator: undefined;
   ChattingNavigator: undefined;
   SubscriptionNavigator: undefined;
+  NotificationNavigator: undefined;
   Function02: undefined;
 };
 
@@ -31,7 +33,10 @@ export type SubscriptionNavigatorProps = NativeStackScreenProps<
   UserNavigatorDrawerParamList,
   "SubscriptionNavigator"
 >;
-
+export type NotificationNavigatorProps = NativeStackScreenProps<
+  UserNavigatorDrawerParamList,
+  "NotificationNavigator"
+>;
 const UserNavigatorDrawer =
   createDrawerNavigator<UserNavigatorDrawerParamList>();
 
@@ -92,6 +97,16 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
           ),
         }}
         component={ChattingNavigator}
+      />
+      <UserNavigatorDrawer.Screen
+        name="NotificationNavigator"
+        options={{
+          title: "Thông báo",
+          drawerIcon: ({ color }) => (
+            <Ionicons name="settings-outline" size={24} color={color} />
+          ),
+        }}
+        component={NotificationNavigator}
       />
       <UserNavigatorDrawer.Screen
         name="Function02"
