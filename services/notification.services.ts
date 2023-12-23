@@ -8,7 +8,7 @@ export const notificationService = {
     });
   },
   async deleteFCMToken(userId: string, token: string) {
-    return axiosClient.delete(`/notification/create-user-token`, {
+    return axiosClient.delete(`/notification/delete-user-token`, {
       data: {
         userId,
         token,
