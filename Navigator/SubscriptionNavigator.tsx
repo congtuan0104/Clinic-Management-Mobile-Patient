@@ -14,7 +14,7 @@ export type SubscriptionNavigatorStackParamList = {
   SubscriptionDashboard: undefined;
   SubscriptionRegistration: undefined;
   SubscriptionHistory: undefined;
-  SubscriptionDetail: undefined;
+  SubscriptionDetail: { subscriptionId: number };
   SubscriptionList: undefined;
   SubscriptionRegistrationProcess: undefined;
 };

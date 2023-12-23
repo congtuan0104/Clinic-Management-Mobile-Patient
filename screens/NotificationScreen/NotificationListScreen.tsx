@@ -7,6 +7,7 @@ import {
   VStack,
   Image,
   ScrollView,
+  useToast,
 } from "native-base";
 import { NotificationListScreenProps } from "../../Navigator/NotificationNavigator";
 import NotificationItem from "../../components/NotificationItem/NotificationItem";
@@ -15,7 +16,7 @@ import { userInfoSelector } from "../../store";
 import { firebase } from "@react-native-firebase/database";
 import { Notification } from "../../types/notification.types";
 import dayjs from "dayjs";
-
+import ToastAlert from "../../components/Toast/Toast";
 const NotificationListScreen = ({
   navigation,
   route,
@@ -26,6 +27,7 @@ const NotificationListScreen = ({
   const [initialNotificationList, setInitialNotificationList] = useState<
     Notification[]
   >([]);
+  const toast = useToast();
   useEffect(() => {
     setNotificationList([]);
     setInitialNotificationList([]);

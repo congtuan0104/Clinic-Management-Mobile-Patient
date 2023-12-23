@@ -44,7 +44,9 @@ export default function SubscriptionHistoryScreen({
             </VStack>
             <Pressable
               onPress={() => {
-                navigation.navigate("SubscriptionDetail");
+                navigation.navigate("SubscriptionDetail", {
+                  subscriptionId: 1,
+                });
               }}
             >
               <FontAwesome
