@@ -14,8 +14,8 @@ import { useAppSelector } from "../../hooks";
 import { userInfoSelector } from "../../store";
 import { appColor } from "../../theme";
 import { useEffect, useState } from "react";
-import { subscriptionService } from "../../services";
 import ToastAlert from "../../components/Toast/Toast";
+import { clinicService } from "../../services";
 
 export default function SubscriptionDashboardScreen({
   navigation,
@@ -23,19 +23,19 @@ export default function SubscriptionDashboardScreen({
 }: SubscriptionDashboardScreenProps) {
   const toast = useToast();
   const userInfo = useAppSelector(userInfoSelector);
-  const [subscription, setSubscription] = useState<any>(null);
+  const [clinic, setClinic] = useState<any>([]);
   useEffect(() => {
     const getSubscriptionUsing = async () => {
-      // Call API to get plan that user is using it
-      // (fake data: using plan has id = 1)
+      // Call API to get clinic that user is using it
+
       try {
-        const response = await subscriptionService.getUserSubscriptionById(14);
+        const response = await clinicService.getCLinicByUserId(userInfo?.id);
         console.log(response);
         // If success, save subscription in state
         if (response.status) {
-          setSubscription(response.data);
+          setClinic(response.data);
         } else {
-          setSubscription(null);
+          setClinic([]);
         }
       } catch (error) {
         toast.show({
@@ -52,7 +52,7 @@ export default function SubscriptionDashboardScreen({
       }
     };
     getSubscriptionUsing();
-  }, [subscription]);
+  }, []);
   return (
     <>
       <Box
@@ -90,22 +90,18 @@ export default function SubscriptionDashboardScreen({
           </Text>
           <Text color={appColor.textSecondary}>{userInfo?.email}</Text>
         </Box>
-        {subscription ? (
+        {clinic?.length ? (
           <Box alignItems="flex-start" width="100%">
             <VStack space="5">
               <Heading size="md">Gói đang sử dụng</Heading>
               <HStack justifyContent="space-between" width="full">
                 <Text color={appColor.textSecondary}>Tên gói</Text>
-                <Text color={appColor.textSecondary}>
-                  {subscription.planName}
-                </Text>
+                <Text color={appColor.textSecondary}>asfasff</Text>
               </HStack>
 
               <HStack justifyContent="space-between" width="full">
                 <Text color={appColor.textSecondary}>Thời hạn</Text>
-                <Text color={appColor.textSecondary}>
-                  {subscription.duration + "day"}
-                </Text>
+                <Text color={appColor.textSecondary}>asdadsfaf</Text>
               </HStack>
 
               <HStack width="full">
@@ -145,9 +141,7 @@ export default function SubscriptionDashboardScreen({
         ) : (
           <Box alignItems="flex-start" width="100%">
             <VStack space="5">
-              <Heading size="md">
-                Bạn chưa mua gói hoặc gói của bạn đã hết hạn.
-              </Heading>
+              <Heading size="md">Hiện tại bạn vẫn chưa mua gói nào.</Heading>
               <HStack width="full" mt={64}>
                 <Button
                   width="full"
@@ -155,7 +149,7 @@ export default function SubscriptionDashboardScreen({
                     navigation.navigate("SubscriptionList");
                   }}
                 >
-                  Mua gói ngay
+                  Đăng ký ngay
                 </Button>
               </HStack>
               <HStack width="full">

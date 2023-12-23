@@ -8,4 +8,11 @@ export const clinicService = {
   ): Promise<IApiResponse<IClinicInfo[]>> {
     return axiosClient.get(`/clinics/${clinicId}/users`);
   },
+  async getCLinicByUserId(userId: any) {
+    return axiosClient.get(`/clinics`, {
+      params: {
+        id: userId,
+      },
+    });
+  },
 };
