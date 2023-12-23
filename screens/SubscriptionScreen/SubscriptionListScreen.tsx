@@ -37,9 +37,11 @@ export default function SubscriptionListScreen({
     getPlanList();
   }, []);
 
-  const handleBuyingSubscription = (subscriptionId: any) => {
-    console.log(subscriptionId);
-    navigation.navigate("SubscriptionRegistration");
+  const handleBuyingSubscription = (planId: any) => {
+    console.log(planId);
+    // find plan by planId
+    const planData = planList.find((plan: any) => plan.id === planId);
+    navigation.navigate("SubscriptionRegistration", { planData: planData });
   };
 
   return (

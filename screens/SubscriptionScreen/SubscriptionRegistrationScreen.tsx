@@ -16,6 +16,7 @@ export default function SubscriptionRegistrationScreen({
   navigation,
   route,
 }: SubscriptionRegistrationScreenProps) {
+  const { planData } = route.params;
   return (
     <Box>
       <Box
@@ -41,85 +42,51 @@ export default function SubscriptionRegistrationScreen({
               color={appColor.primary}
             />
             <Heading fontSize={40} color={appColor.primary}>
-              Premium
+              {planData.planName}
             </Heading>
           </HStack>
         </Box>
         <Box alignItems="flex-start" width="100%" minH="80">
           <VStack space="5">
             <HStack width="full">
-              <Heading size="md">
-                Gói dành cho phòng khám nhỏ từ 10 đến 50 người, sử dụng để quản
-                lý các chức năng cơ bản.
-              </Heading>
+              <Heading size="md">{planData.description}</Heading>
             </HStack>
-            <HStack
-              space={2}
-              justifyContent="flex-start"
-              alignItems="center"
-              width="full"
-            >
-              <FontAwesome
-                name="check-circle"
-                size={30}
-                color={appColor.backgroundPrimary}
-              />
-              <Text fontSize={15} color={appColor.textTitle}>
-                Quản lý nhóm từ 10-50 người
-              </Text>
-            </HStack>
-            <HStack
-              space={2}
-              justifyContent="flex-start"
-              alignItems="center"
-              width="full"
-            >
-              <FontAwesome
-                name="check-circle"
-                size={30}
-                color={appColor.backgroundPrimary}
-              />
-              <Text fontSize={15} color={appColor.textTitle}>
-                Quản lý thông báo
-              </Text>
-            </HStack>
-            <HStack space={2} justifyContent="flex-start" alignItems="center">
-              <FontAwesome
-                name="check-circle"
-                size={30}
-                color={appColor.backgroundPrimary}
-              />
-              <Text fontSize={15} color={appColor.textTitle}>
-                Gọi điện thoại, nhắn tin trò chuyện miễn phí, không giới hạn
-              </Text>
-            </HStack>
-            <HStack
-              space={2}
-              justifyContent="flex-start"
-              alignItems="center"
-              width="full"
-            >
-              <FontAwesome
-                name="check-circle"
-                size={30}
-                color={appColor.backgroundPrimary}
-              />
-              <Text fontSize={15} color={appColor.textTitle}>
-                Quản lý vật tư y tế
-              </Text>
-            </HStack>
+            {planData.planOptions.map((option: any, index: any) => {
+              return (
+                <HStack
+                  key={index}
+                  space={2}
+                  justifyContent="flex-start"
+                  alignItems="center"
+                  width="full"
+                >
+                  <FontAwesome
+                    name="check-circle"
+                    size={30}
+                    color={appColor.backgroundPrimary}
+                  />
+                  <Text fontSize={15} color={appColor.textTitle}>
+                    {option.optionName}
+                  </Text>
+                </HStack>
+              );
+            })}
           </VStack>
         </Box>
         <VStack alignItems="center">
           <Heading fontSize={50} color={appColor.primary}>
-            250.000đ
+            {planData.currentPrice} đ
           </Heading>
-          <Heading color={appColor.textSecondary}>3 tháng</Heading>
+          <Heading color={appColor.textSecondary}>
+            {planData.duration} ngày
+          </Heading>
         </VStack>
         <Box width="full" alignItems="center" py={3}>
           <Button
             onPress={() => {
-              navigation.navigate("SubscriptionRegistrationProcess");
+              navigation.navigate("SubscriptionRegistrationProcess", {
+                planData,
+              });
             }}
             backgroundColor="secondary.300"
             width="full"

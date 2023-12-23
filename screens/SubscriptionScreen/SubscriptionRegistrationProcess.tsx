@@ -49,6 +49,7 @@ export default function SubscriptionRegistrationProcessScreen({
   const [currentPosition, setCurrentPosition] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState<string>("1");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { planData } = route.params;
   useEffect(() => {
     // Khi currentStep thay đổi, sẽ render lại màn hình tương ứng với step mới
     // Ví dụ: khi bạn muốn chuyển từ step 1 sang step 2, gọi hàm setCurrentStep(2)
