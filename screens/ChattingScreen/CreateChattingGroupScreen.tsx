@@ -25,7 +25,7 @@ import { userInfoSelector } from "../../store";
 import { chatService } from "../../services";
 import { clinicService } from "../../services/clinic.services";
 
-// Validate đăng nhập
+// Validate
 const schema: yup.ObjectSchema<ICreateGroupChatRequest> = yup.object({
   groupName: yup.string().required("Tên nhóm không được để trống"),
   maxMember: yup
