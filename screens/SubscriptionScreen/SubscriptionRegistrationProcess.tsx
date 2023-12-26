@@ -10,6 +10,7 @@ import { StepThreeScreen } from "./SubscriptionRegistrationStep/SubscriptionRegi
 import { StepFourScreen } from "./SubscriptionRegistrationStep/SubscriptionRegistrationStep4";
 import { StepFiveScreen } from "./SubscriptionRegistrationStep/SubscriptionRegistrationStep5";
 import { customStyles } from "../../config/stepIndicator";
+import { paymentService } from "../../services/payment.services";
 export default function SubscriptionRegistrationProcessScreen({
   navigation,
   route,
@@ -17,6 +18,7 @@ export default function SubscriptionRegistrationProcessScreen({
   const labels = ["Thông tin", "Thành tiền", "Thanh toán", "Thành công"];
   const [currentPosition, setCurrentPosition] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState<string>("Zalopay");
+  const [subscriptionPlanId, setSubscriptionPlanId] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { planData } = route.params;
 
@@ -32,7 +34,11 @@ export default function SubscriptionRegistrationProcessScreen({
     switch (currentPosition) {
       case 0:
         return (
-          <StepOneScreen planData={planData} changePosition={changePosition} />
+          <StepOneScreen
+            planData={planData}
+            changePosition={changePosition}
+            setSubscriptionPlanId={setSubscriptionPlanId}
+          />
         );
       case 1:
         return (
@@ -45,6 +51,7 @@ export default function SubscriptionRegistrationProcessScreen({
             paymentMethod={paymentMethod}
             setPaymentMethod={setPaymentMethod}
             changePosition={changePosition}
+            handlePayment={handlePayment}
           />
         );
       case 3:
@@ -62,6 +69,28 @@ export default function SubscriptionRegistrationProcessScreen({
       setCurrentPosition(currentPosition + 1);
     } else {
       setCurrentPosition(currentPosition - 1);
+    }
+  };
+  const handlePayment = async () => {
+    try {
+      console.log(
+        "info",
+        paymentMethod,
+        subscriptionPlanId,
+        planData.currentPrice
+      );
+      // call API to create link
+      const response = await paymentService.createPayment({
+        totalCost: planData.currentPrice,
+        provider: paymentMethod,
+        subscribePlanId: subscriptionPlanId.toString(),
+      });
+      if (response.status) {
+        console.log(response.data);
+        changePosition(true);
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   return (

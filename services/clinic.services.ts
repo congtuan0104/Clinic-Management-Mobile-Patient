@@ -15,4 +15,7 @@ export const clinicService = {
       },
     });
   },
+  async createClinic(clinicInfo: any) {
+    return axiosClient.post("/clinics", clinicInfo);
+  },
 };

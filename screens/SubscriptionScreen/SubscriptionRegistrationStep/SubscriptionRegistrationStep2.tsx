@@ -10,19 +10,19 @@ export const StepTwoScreen = (props: any) => {
       <VStack space={5}>
         <HStack justifyContent="space-between">
           <Text>Tiền gói</Text>
-          <Text>250.000đ</Text>
+          <Text>{planData.currentPrice}d</Text>
         </HStack>
         <HStack justifyContent="space-between">
           <Text>Phí</Text>
-          <Text>25.000đ</Text>
+          <Text>0d</Text>
         </HStack>
         <HStack justifyContent="space-between">
           <Text>Giảm giá</Text>
-          <Text>10%</Text>
+          <Text>0%</Text>
         </HStack>
         <HStack justifyContent="space-between">
           <Text>Tổng tiền</Text>
-          <Text>205.000đ</Text>
+          <Text>{planData.currentPrice}d</Text>
         </HStack>
       </VStack>
       <HStack

@@ -18,10 +18,11 @@ import { useForm } from "react-hook-form";
 import { IClinicCreate } from "../../../types/clinic.types";
 import { useAppSelector } from "../../../hooks";
 import { userInfoSelector } from "../../../store";
+import { clinicService } from "../../../services";
 
 export const StepOneScreen = (props: any) => {
   const userInfo = useAppSelector(userInfoSelector);
-  const { planData, changePosition } = props;
+  const { planData, changePosition, setSubscriptionPlanId } = props;
   // Validate
   const schema: yup.ObjectSchema<IClinicCreate> = yup.object({
     name: yup.string().required("Tên không được để trống"),
@@ -53,9 +54,17 @@ export const StepOneScreen = (props: any) => {
     },
   });
 
+  // send data to server to create clinic
   const onSubmit = async (data: IClinicCreate) => {
-    console.log(data);
-    changePosition(true);
+    try {
+      const response = await clinicService.createClinic(data);
+      if (response.status) {
+        setSubscriptionPlanId(response.data.subscription.id);
+        changePosition(true);
+      }
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <VStack space={5} maxH="100%" minH="50%">

@@ -3,7 +3,14 @@ import { useState } from "react";
 import { PlanDataCard } from "../../../components/PlanDataCard/PlanDataCard";
 
 export const StepThreeScreen = (props: any) => {
-  const { paymentMethod, setPaymentMethod, planData, changePosition } = props;
+  const {
+    paymentMethod,
+    setPaymentMethod,
+    planData,
+    changePosition,
+    handlePayment,
+  } = props;
+
   return (
     <VStack space={5} minH="100%" maxH="100%">
       <Heading>Bước 3: Chọn hình thức thanh toán</Heading>
@@ -40,12 +47,7 @@ export const StepThreeScreen = (props: any) => {
         >
           Quay lại
         </Button>
-        <Button
-          borderRadius={20}
-          onPress={() => {
-            changePosition(true);
-          }}
-        >
+        <Button borderRadius={20} onPress={handlePayment}>
           Tiếp tục
         </Button>
       </HStack>
