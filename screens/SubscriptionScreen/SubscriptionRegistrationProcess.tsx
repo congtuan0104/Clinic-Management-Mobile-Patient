@@ -11,6 +11,7 @@ import { StepFourScreen } from "./SubscriptionRegistrationStep/SubscriptionRegis
 import { StepFiveScreen } from "./SubscriptionRegistrationStep/SubscriptionRegistrationStep5";
 import { customStyles } from "../../config/stepIndicator";
 import { paymentService } from "../../services/payment.services";
+import { openBrowserAsync } from "expo-web-browser";
 export default function SubscriptionRegistrationProcessScreen({
   navigation,
   route,
@@ -87,6 +88,7 @@ export default function SubscriptionRegistrationProcessScreen({
       });
       if (response.status) {
         console.log(response.data);
+        await openBrowserAsync(response.data);
         changePosition(true);
       }
     } catch (error) {

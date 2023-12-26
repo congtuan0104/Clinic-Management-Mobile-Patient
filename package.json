@@ -37,6 +37,7 @@
     "expo-image-picker": "~14.3.2",
     "expo-splash-screen": "~0.20.5",
     "expo-status-bar": "~1.6.0",
+    "expo-web-browser": "~12.3.2",
     "firebase": "^9.6.11",
     "native-base": "^3.4.28",
     "prop-types": "^15.8.1",
