@@ -15,6 +15,7 @@ import { clinicService } from "../services";
 import ToastAlert from "../components/Toast/Toast";
 import { useToast } from "native-base";
 import { LoadingSpinner } from "../components/LoadingSpinner/LoadingSpinner";
+import ClinicInfoNavigator from "./ClinicInfoNavigator";
 
 export type UserNavigatorDrawerParamList = {
   // undefined: the route doesn't have params
@@ -22,6 +23,7 @@ export type UserNavigatorDrawerParamList = {
   ChattingNavigator: undefined;
   SubscriptionNavigator: undefined;
   NotificationNavigator: undefined;
+  ClinicInfoNavigator: { clinic: any };
   Function02: {
     clinic: string;
     clinicList: any;
@@ -50,6 +52,12 @@ export type Function02NavigatorProps = NativeStackScreenProps<
   UserNavigatorDrawerParamList,
   "Function02"
 >;
+
+export type ClinicInfoNavigatorProps = NativeStackScreenProps<
+  UserNavigatorDrawerParamList,
+  "ClinicInfoNavigator"
+>;
+
 const UserNavigatorDrawer =
   createDrawerNavigator<UserNavigatorDrawerParamList>();
 
@@ -157,6 +165,19 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
           />
           {clinic && (
             <>
+              <UserNavigatorDrawer.Screen
+                name="ClinicInfoNavigator"
+                options={{
+                  title: "Thông tin phòng khám",
+                  drawerIcon: ({ color }) => (
+                    <Ionicons name="settings-outline" size={24} color={color} />
+                  ),
+                }}
+                component={ClinicInfoNavigator}
+                initialParams={{
+                  clinic,
+                }}
+              />
               <UserNavigatorDrawer.Screen
                 name="ChattingNavigator"
                 options={{
