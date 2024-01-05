@@ -160,8 +160,8 @@ const StackNavigator = () => {
 
   const HandleDeepLinking = () => {
     const handleLink = async (link: any) => {
-      console.log("Handle deep link");
-      console.log("Link: ", link);
+      // console.log("Handle deep link");
+      // console.log("Link: ", link);
       // assume the data in url is the object like this
       const paymentResult = {
         amount: 20000,
@@ -198,7 +198,7 @@ const StackNavigator = () => {
       dynamicLinks()
         .getInitialLink()
         .then((link: any) => {
-          console.log("Initial link: ", link);
+          // console.log("Initial link: ", link);
         });
     }, []);
     return null;

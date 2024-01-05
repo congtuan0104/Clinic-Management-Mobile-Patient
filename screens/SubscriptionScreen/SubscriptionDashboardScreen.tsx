@@ -82,8 +82,8 @@ export default function SubscriptionDashboardScreen({
         // domainUriPrefix is created in your Firebase console
         domainUriPrefix: "https://clinus.page.link",
       });
-      console.log("Link 1: ", link);
-      console.log("Link 2: ", link2);
+      // console.log("Link 1: ", link);
+      // console.log("Link 2: ", link2);
     } catch (error) {
       console.log("error", error);
     }
