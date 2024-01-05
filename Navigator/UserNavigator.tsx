@@ -41,8 +41,7 @@ const UserNavigatorDrawer =
   createDrawerNavigator<UserNavigatorDrawerParamList>();
 
 export default function UserScreen({ navigation, route }: UserNavigatorProps) {
-  const { setLogout } = route.params;
-
+  const { setLogout } = route.params?.params;
   return (
     <UserNavigatorDrawer.Navigator
       initialRouteName="ProfileNavigator"

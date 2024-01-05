@@ -24,6 +24,9 @@
             "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork"
           }
         ]
+      },
+      "runtimeVersion": {
+        "policy": "appVersion"
       }
     },
     "android": {
@@ -41,12 +44,19 @@
           "data": [
             {
               "scheme": "https",
-              "host": "api.clinus.live"
+              "host": "clinus.page.link",
+              "pathPrefix": "/payment"
+            },
+            {
+              "scheme": "https",
+              "host": "clinus.page.link",
+              "pathPrefix": "/verify-account"
             }
           ],
           "category": ["BROWSABLE", "DEFAULT"]
         }
-      ]
+      ],
+      "runtimeVersion": "1.0.0"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -67,6 +77,9 @@
       "eas": {
         "projectId": "cfdcaa5a-205a-4c17-87d3-f07957a50cc9"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/cfdcaa5a-205a-4c17-87d3-f07957a50cc9"
     }
   }
 }

@@ -1,9 +1,24 @@
 import { Box, HStack, Heading, VStack, Text, Button } from "native-base";
 import { Ionicons } from "@expo/vector-icons";
 import { appColor } from "../../../theme";
+import { SUBSCRIPTION_STATUS } from "../../../constants/paymentStatus";
 
 export const StepFiveScreen = (props: any) => {
-  const { changePosition } = props;
+  const { changePosition, paymentResult } = props;
+  const getPaymentStatus = () => {
+    const paymentStatus = paymentResult.status;
+    if (paymentStatus === SUBSCRIPTION_STATUS.ACTIVE) {
+      return "Đã thanh toán";
+    } else if (paymentStatus === SUBSCRIPTION_STATUS.CANCEL) {
+      return "Đã hủy thanh toán";
+    } else if (paymentStatus === SUBSCRIPTION_STATUS.EXPIRED) {
+      return "Đã quá hạn";
+    } else if (paymentStatus === SUBSCRIPTION_STATUS.INPAYMENT) {
+      return "INPAYMENT";
+    } else if (paymentStatus === SUBSCRIPTION_STATUS.PENDING) {
+      return "PENDING";
+    }
+  };
   return (
     <Box minH="100%" maxH="100%" justifyContent="center" alignItems="center">
       <VStack
@@ -20,31 +35,31 @@ export const StepFiveScreen = (props: any) => {
           color={appColor.primary}
         />
         <Heading>Thanh toán thành công!</Heading>
-        <Heading fontSize="45">250.000đ</Heading>
+        <Heading fontSize="45">{paymentResult.amount}đ</Heading>
       </VStack>
       <VStack space={5} width="full" mt={5}>
         <HStack justifyContent="space-between">
-          <Text>Mã đơn</Text>
-          <Text>47852zsf4sd</Text>
+          <Text>Mã phòng khám</Text>
+          <Text>{paymentResult.clinicId}</Text>
         </HStack>
         <HStack justifyContent="space-between">
-          <Text>Số tài khoản</Text>
-          <Text>4707432333333</Text>
+          <Text>Mã hóa đơn</Text>
+          <Text>{paymentResult.subscribePlanId}</Text>
         </HStack>
         <HStack justifyContent="space-between">
-          <Text>Thời gian</Text>
-          <Text>25/11/2023, 12:44:30</Text>
+          <Text>Trạng thái</Text>
+          <Text>{getPaymentStatus()}</Text>
         </HStack>
-        <HStack justifyContent="space-between">
+        {/* <HStack justifyContent="space-between">
           <Text>Phương thức</Text>
           <Text>VNPay</Text>
         </HStack>
         <HStack justifyContent="space-between">
           <Text>Tên người mua</Text>
           <Text>Nguyễn Nhật Khang</Text>
-        </HStack>
+        </HStack> */}
       </VStack>
-      <HStack
+      {/* <HStack
         mt="20%"
         width="full"
         justifyContent="space-between"
@@ -66,7 +81,7 @@ export const StepFiveScreen = (props: any) => {
         >
           Tiếp tục
         </Button>
-      </HStack>
+      </HStack> */}
     </Box>
   );
 };

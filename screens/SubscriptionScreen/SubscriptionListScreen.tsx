@@ -38,7 +38,6 @@ export default function SubscriptionListScreen({
   }, []);
 
   const handleBuyingSubscription = (planId: any) => {
-    console.log(planId);
     // find plan by planId
     const planData = planList.find((plan: any) => plan.id === planId);
     navigation.navigate("SubscriptionRegistration", { planData: planData });

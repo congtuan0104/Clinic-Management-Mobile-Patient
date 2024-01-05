@@ -16,6 +16,8 @@ import { appColor } from "../../theme";
 import { useEffect, useState } from "react";
 import ToastAlert from "../../components/Toast/Toast";
 import { clinicService } from "../../services";
+import dynamicLinks from "@react-native-firebase/dynamic-links";
+import { openBrowserAsync } from "expo-web-browser";
 
 export default function SubscriptionDashboardScreen({
   navigation,
@@ -27,10 +29,9 @@ export default function SubscriptionDashboardScreen({
   useEffect(() => {
     const getSubscriptionUsing = async () => {
       // Call API to get clinic that user is using it
-
+      await generateLink();
       try {
         const response = await clinicService.getCLinicByUserId(userInfo?.id);
-        console.log(response);
         // If success, save subscription in state
         if (response.status) {
           setClinic(response.data);
@@ -53,6 +54,41 @@ export default function SubscriptionDashboardScreen({
     };
     getSubscriptionUsing();
   }, []);
+
+  const generateLink = async () => {
+    // try {
+    //   const link = await dynamicLinks().buildShortLink(
+    //     {
+    //       link: "https://clinus.page.link/payment",
+    //       domainUriPrefix: "https://clinus.page.link/payment",
+    //       android: {
+    //         packageName: "com.nhatminh287.Mobileapppatient",
+    //       },
+    //     },
+    //     dynamicLinks.ShortLinkType.DEFAULT
+    //   );
+    //   console.log("Linkz: ", link);
+    // } catch (error) {
+    //   console.log("error: ", error);
+    // }
+    try {
+      const link = await dynamicLinks().buildLink({
+        link: "https://clinus.page.link/verify-account",
+        // domainUriPrefix is created in your Firebase console
+        domainUriPrefix: "https://clinus.page.link",
+      });
+      const link2 = await dynamicLinks().buildLink({
+        link: "https://clinus.page.link/payment?id=132",
+        // domainUriPrefix is created in your Firebase console
+        domainUriPrefix: "https://clinus.page.link",
+      });
+      console.log("Link 1: ", link);
+      console.log("Link 2: ", link2);
+    } catch (error) {
+      console.log("error", error);
+    }
+  };
+
   return (
     <>
       <Box

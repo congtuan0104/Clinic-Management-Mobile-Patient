@@ -2781,6 +2781,11 @@
   resolved "https://registry.npmjs.org/@react-native-firebase/database/-/database-18.7.1.tgz"
   integrity sha512-YVvR7EX/QW4NdJO/Nw19k1umBkovNQj1JZuGfPCmhLSuHgQa14YuyqS9T6ePbEICo9Ni/cU7Cc1zKX2aooOHHg==
 
+"@react-native-firebase/dynamic-links@^18.7.3":
+  version "18.7.3"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/dynamic-links/-/dynamic-links-18.7.3.tgz#c9e1ce4df5e71bc15531531806ed04a8174b07ac"
+  integrity sha512-Q22+3ZXsUfSdYGmhQHE1BiJJFx53SK/OpsrxytyV6PJz4acA8bN/ADh84mCbYTr0Mz6JiwSGrjBkDVkOS9Co7w==
+
 "@react-native-firebase/messaging@^18.7.3":
   version "18.7.3"
   resolved "https://registry.npmjs.org/@react-native-firebase/messaging/-/messaging-18.7.3.tgz"
@@ -4817,6 +4822,11 @@ expo-document-picker@^11.7.0:
   resolved "https://registry.npmjs.org/expo-document-picker/-/expo-document-picker-11.7.0.tgz"
   integrity sha512-y5OgUuJlip/Vj3CXi6Rfx6PqMkoYwytKmgN6x8afRPehVcYVk3j/EZxvz1MLgUhCmjyFnIpfgG5WTf8uSNbIiA==
 
+expo-eas-client@~0.6.0:
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/expo-eas-client/-/expo-eas-client-0.6.0.tgz#b722dde0de1b8b56701b282a5fdf28d3d3e79ec4"
+  integrity sha512-FSPy0ThcJBvzEzOZVhpOrYyHgQ8U1jJ4v7u7tr1x0KOVRqyf25APEQZFxxRPn3zAYW0tQ+uDTCbrwNymFqhQfw==
+
 expo-file-system@~15.4.0, expo-file-system@~15.4.4:
   version "15.4.4"
   resolved "https://registry.npmjs.org/expo-file-system/-/expo-file-system-15.4.4.tgz"
@@ -4897,10 +4907,32 @@ expo-status-bar@~1.6.0:
   resolved "https://registry.npmjs.org/expo-status-bar/-/expo-status-bar-1.6.0.tgz"
   integrity sha512-e//Oi2WPdomMlMDD3skE4+1ZarKCJ/suvcB4Jo/nO427niKug5oppcPNYO+csR6y3ZglGuypS+3pp/hJ+Xp6fQ==
 
+expo-structured-headers@~3.3.0:
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/expo-structured-headers/-/expo-structured-headers-3.3.0.tgz#9f0b041a1d243a22a4a23d9eb19f02ace3c5258c"
+  integrity sha512-t+h5Zqaukd3Tn97LaWPpibVsmiC/TFP8F+8sAUliwCSMzgcb5TATRs2NcAB+JcIr8EP3JJDyYXJrZle1cjs4mQ==
+
 expo-updates-interface@~0.10.0:
   version "0.10.1"
   resolved "https://registry.npmjs.org/expo-updates-interface/-/expo-updates-interface-0.10.1.tgz"
   integrity sha512-I6JMR7EgjXwckrydDmrkBEX/iw750dcqpzQVsjznYWfi0HTEOxajLHB90fBFqQkUV5i5s4Fd3hYQ1Cn0oMzUbA==
+
+expo-updates@~0.18.18:
+  version "0.18.18"
+  resolved "https://registry.yarnpkg.com/expo-updates/-/expo-updates-0.18.18.tgz#6650a144c48f5831b6e03f413a4599d47acca97d"
+  integrity sha512-j9I/vCepUwJ2ZfXsqy5wG+IxXAR05+uiiPABDP9fd++09zt/r2H97abyl5sWaR1h4/0Z9wxXtI0ZssVdDXPE8A==
+  dependencies:
+    "@expo/code-signing-certificates" "0.0.5"
+    "@expo/config" "~8.1.0"
+    "@expo/config-plugins" "~7.2.0"
+    arg "4.1.0"
+    chalk "^4.1.2"
+    expo-eas-client "~0.6.0"
+    expo-manifests "~0.7.0"
+    expo-structured-headers "~3.3.0"
+    expo-updates-interface "~0.10.0"
+    fbemitter "^3.0.0"
+    resolve-from "^5.0.0"
 
 expo-web-browser@~12.3.2:
   version "12.3.2"

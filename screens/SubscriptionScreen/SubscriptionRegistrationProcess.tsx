@@ -21,14 +21,16 @@ export default function SubscriptionRegistrationProcessScreen({
   const [paymentMethod, setPaymentMethod] = useState<string>("Zalopay");
   const [subscriptionPlanId, setSubscriptionPlanId] = useState<any>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { planData } = route.params;
-
+  const { planData, paymentResult } = route.params;
   useEffect(() => {
     // Khi currentStep thay đổi, sẽ render lại màn hình tương ứng với step mới
     // Ví dụ: khi bạn muốn chuyển từ step 1 sang step 2, gọi hàm setCurrentStep(2)
     // Bạn có thể gọi hàm setCurrentStep ở đâu đó trong code của bạn để chuyển step
     // (ví dụ: khi người dùng nhấn nút Next)
     // setCurrentStep(2);
+    if (paymentResult) {
+      setCurrentPosition(4);
+    }
   }, [currentPosition]);
 
   const renderStepScreen = () => {
@@ -58,7 +60,12 @@ export default function SubscriptionRegistrationProcessScreen({
       case 3:
         return <StepFourScreen changePosition={changePosition} />;
       case 4:
-        return <StepFiveScreen changePosition={changePosition} />;
+        return (
+          <StepFiveScreen
+            changePosition={changePosition}
+            paymentResult={paymentResult}
+          />
+        );
       default:
         return null;
     }
@@ -74,12 +81,12 @@ export default function SubscriptionRegistrationProcessScreen({
   };
   const handlePayment = async () => {
     try {
-      console.log(
-        "info",
-        paymentMethod,
-        subscriptionPlanId,
-        planData.currentPrice
-      );
+      // console.log(
+      //   "info",
+      //   paymentMethod,
+      //   subscriptionPlanId,
+      //   planData.currentPrice
+      // );
       // call API to create link
       const response = await paymentService.createPayment({
         totalCost: planData.currentPrice,
@@ -87,7 +94,7 @@ export default function SubscriptionRegistrationProcessScreen({
         subscribePlanId: subscriptionPlanId.toString(),
       });
       if (response.status) {
-        console.log(response.data);
+        // console.log(response.data);
         await openBrowserAsync(response.data);
         changePosition(true);
       }

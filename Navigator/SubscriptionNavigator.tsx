@@ -16,7 +16,7 @@ export type SubscriptionNavigatorStackParamList = {
   SubscriptionHistory: undefined;
   SubscriptionDetail: { subscriptionId: number };
   SubscriptionList: undefined;
-  SubscriptionRegistrationProcess: { planData: any };
+  SubscriptionRegistrationProcess: { planData: any; paymentResult: any };
 };
 
 export type SubscriptionDashboardScreenProps = NativeStackScreenProps<

@@ -86,6 +86,7 @@ export default function SubscriptionRegistrationScreen({
             onPress={() => {
               navigation.navigate("SubscriptionRegistrationProcess", {
                 planData,
+                paymentResult: null,
               });
             }}
             backgroundColor="secondary.300"

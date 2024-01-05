@@ -72,6 +72,7 @@ const RegisterScreen: React.FC<RegisterScreenProps> = ({
   const onSubmit = async (data: IRegisterFormData) => {
     setIsLoading(true);
     const { confirmPassword, ...registerData } = data;
+    console.log(registerData);
     // Send data to server
     await authApi
       .register(registerData)

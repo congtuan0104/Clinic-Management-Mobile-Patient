@@ -1,6 +1,6 @@
 import { LogBox, StyleSheet } from "react-native";
-import React, { useCallback } from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import React, { useCallback, useEffect } from "react";
+import { NavigationContainer, useLinkTo } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import LoginScreen from "../screens/AuthenticationScreen/Login/LoginScreen";
 import RegisterScreen from "../screens/AuthenticationScreen/Register/RegisterScreen";
@@ -20,6 +20,8 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { firebase, FirebaseAuthTypes } from "@react-native-firebase/auth";
 import { firebaseConfig } from "../config/firebase";
 import { FCMConfig } from "../config/firebaseCloudMessage";
+import dynamicLinks from "@react-native-firebase/dynamic-links";
+import { NavigationContainerRef } from "@react-navigation/native";
 
 // Create an object type with mappings for route name to the params of the route
 export type RootNativeStackParamList = {
@@ -28,12 +30,20 @@ export type RootNativeStackParamList = {
   Register: {
     setLogin: (user: IUserInfo | null, token: string | null) => void;
   };
-  UserNavigator: { setLogout: () => void };
+
+  UserNavigator: {
+    screen: string;
+    params: { screen: string; params: {}; setLogout: () => void };
+  };
+
   DoctorNavigator: { setLogout: () => void };
   ValidateNotification: {
     setLogin: (user: IUserInfo | null, token: string | null) => void;
   };
 };
+
+export const navigationRef =
+  React.createRef<NavigationContainerRef<RootNativeStackParamList>>();
 
 // Define type of props
 export type LoginScreenProps = NativeStackScreenProps<
@@ -147,9 +157,57 @@ const StackNavigator = () => {
   }
   console.log("USER", user);
   console.log("TOKEN", token);
+
+  const HandleDeepLinking = () => {
+    const handleLink = async (link: any) => {
+      console.log("Handle deep link");
+      console.log("Link: ", link);
+      // assume the data in url is the object like this
+      const paymentResult = {
+        amount: 20000,
+        clinicId: "b478ac56-8aac-4849-9063-4c21e8072381",
+        status: 2,
+        subscribePlanId: "9d0df7a5-5486-43b4-9957-d60ef8b1663f",
+      };
+      if (1) {
+        // const navigation = navigationRef.current;
+        // if (navigation) {
+        //   // Sửa ở đây
+        //   navigation.navigate("UserNavigator", {
+        //     screen: "SubscriptionNavigator",
+        //     params: {
+        //       // Set mock data to run, it isn't correct
+        //       screen: "SubscriptionRegistrationProcess",
+        //       params: {
+        //         planData: {
+        //           id: "tempId",
+        //         },
+        //         paymentResult: paymentResult,
+        //       },
+        //       setLogout,
+        //     },
+        //   });
+        // }
+      }
+    };
+    useEffect((): any => {
+      const unsubscribe = dynamicLinks().onLink(handleLink);
+      return () => unsubscribe();
+    }, []);
+    useEffect(() => {
+      dynamicLinks()
+        .getInitialLink()
+        .then((link: any) => {
+          console.log("Initial link: ", link);
+        });
+    }, []);
+    return null;
+  };
+
   return (
     <NativeBaseProvider theme={theme}>
-      <NavigationContainer theme={ReactNavigationTheme}>
+      <NavigationContainer theme={ReactNavigationTheme} ref={navigationRef}>
+        <HandleDeepLinking />
         <RootStack.Navigator>
           {/** If token = null: user doesn't login, render login screen
            * If token != null: user have already login, check user role (moduleId)
@@ -183,19 +241,25 @@ const StackNavigator = () => {
           ) : user?.moduleId === 2 ? (
             <>
               <RootStack.Screen
-                name="DoctorNavigator"
-                component={DoctorNavigator}
+                name="UserNavigator"
+                component={UserNavigator}
                 options={{ headerShown: false }}
-                initialParams={{ setLogout: setLogout }}
+                initialParams={{
+                  screen: "",
+                  params: { setLogout, screen: "", params: {} },
+                }}
               />
             </>
           ) : user?.moduleId === 2 ? (
             <>
               <RootStack.Screen
-                name="DoctorNavigator"
-                component={DoctorNavigator}
+                name="UserNavigator"
+                component={UserNavigator}
                 options={{ headerShown: false }}
-                initialParams={{ setLogout: setLogout }}
+                initialParams={{
+                  screen: "",
+                  params: { setLogout, screen: "", params: {} },
+                }}
               />
             </>
           ) : user?.moduleId === 4 ? (
@@ -204,7 +268,10 @@ const StackNavigator = () => {
                 name="UserNavigator"
                 component={UserNavigator}
                 options={{ headerShown: false }}
-                initialParams={{ setLogout: setLogout }}
+                initialParams={{
+                  screen: "",
+                  params: { setLogout, screen: "", params: {} },
+                }}
               />
             </>
           ) : null}
