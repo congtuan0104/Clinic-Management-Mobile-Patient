@@ -11,16 +11,38 @@ import {
 } from "native-base";
 import { SubscriptionListScreenProps } from "../../Navigator/SubscriptionNavigator";
 import { appColor } from "../../theme";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Fontisto, FontAwesome } from "@expo/vector-icons";
+import { clinicService } from "../../services";
+import { planService } from "../../services/plan.services";
 export default function SubscriptionListScreen({
   navigation,
   route,
 }: SubscriptionListScreenProps) {
-  const handleBuyingSubscription = (subscriptionId: any) => {
-    console.log(subscriptionId);
-    navigation.navigate("SubscriptionRegistration");
+  const [planList, setPlanList] = useState<any>([]);
+  // Call API to get all subscriptions
+  useEffect(() => {
+    const getPlanList = async () => {
+      try {
+        const response = await planService.getPlanList();
+        if (response.status) {
+          setPlanList(response.data);
+        } else {
+          setPlanList([]);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getPlanList();
+  }, []);
+
+  const handleBuyingSubscription = (planId: any) => {
+    // find plan by planId
+    const planData = planList.find((plan: any) => plan.id === planId);
+    navigation.navigate("SubscriptionRegistration", { planData: planData });
   };
+
   return (
     <VStack space={5} my={5}>
       <Box width="90%" alignSelf="center">
@@ -29,100 +51,42 @@ export default function SubscriptionListScreen({
       <ScrollView
         width="90%"
         alignSelf="center"
-        minH="3/5"
-        maxH="4/5"
+        minH="80%"
+        maxH="80%"
         backgroundColor={appColor.white}
         borderRadius={20}
       >
         <VStack space={5} width="90%" alignSelf="center" my={5}>
-          <Box backgroundColor="#DAD9FF" borderRadius={10} p={3}>
-            <HStack alignItems="center" justifyContent="space-between">
-              <VStack>
-                <Text fontSize={20}>Gói Premium</Text>
-                <Text>Thời hạn: 30 ngày</Text>
-                <Text>Tối đa: 50 thành viên</Text>
-              </VStack>
-              <Text>250.000đ</Text>
-            </HStack>
-            <Pressable
-              alignSelf="flex-end"
-              onPress={() => {
-                handleBuyingSubscription("1");
-              }}
-            >
-              <FontAwesome
-                name="arrow-circle-right"
-                size={35}
-                color={appColor.primary}
-              />
-            </Pressable>
-          </Box>
-          <Box backgroundColor="#FFF7D9" borderRadius={10} p={3}>
-            <HStack alignItems="center" justifyContent="space-between">
-              <VStack>
-                <Text fontSize={20}>Gói Super</Text>
-                <Text>Thời hạn: 30 ngày</Text>
-                <Text>Tối đa: 50 thành viên</Text>
-              </VStack>
-              <Text>250.000đ</Text>
-            </HStack>
-            <Pressable
-              alignSelf="flex-end"
-              onPress={() => {
-                handleBuyingSubscription("1");
-              }}
-            >
-              <FontAwesome
-                name="arrow-circle-right"
-                size={35}
-                color={appColor.primary}
-              />
-            </Pressable>
-          </Box>
-          <Box backgroundColor="#D9F8FF" borderRadius={10} p={3}>
-            <HStack alignItems="center" justifyContent="space-between">
-              <VStack>
-                <Text fontSize={20}>Gói VIP</Text>
-                <Text>Thời hạn: 30 ngày</Text>
-                <Text>Tối đa: 50 thành viên</Text>
-              </VStack>
-              <Text>250.000đ</Text>
-            </HStack>
-            <Pressable
-              alignSelf="flex-end"
-              onPress={() => {
-                handleBuyingSubscription("1");
-              }}
-            >
-              <FontAwesome
-                name="arrow-circle-right"
-                size={35}
-                color={appColor.primary}
-              />
-            </Pressable>
-          </Box>
-          <Box backgroundColor="#D9F8FF" borderRadius={10} p={3}>
-            <HStack alignItems="center" justifyContent="space-between">
-              <VStack>
-                <Text fontSize={20}>Gói VIP</Text>
-                <Text>Thời hạn: 30 ngày</Text>
-                <Text>Tối đa: 50 thành viên</Text>
-              </VStack>
-              <Text>250.000đ</Text>
-            </HStack>
-            <Pressable
-              alignSelf="flex-end"
-              onPress={() => {
-                handleBuyingSubscription("1");
-              }}
-            >
-              <FontAwesome
-                name="arrow-circle-right"
-                size={35}
-                color={appColor.primary}
-              />
-            </Pressable>
-          </Box>
+          {planList.map((plan: any, index: any) => {
+            return (
+              <Box
+                key={index}
+                backgroundColor="#DAD9FF"
+                borderRadius={10}
+                p={3}
+              >
+                <HStack alignItems="center" justifyContent="space-between">
+                  <VStack>
+                    <Text fontSize={20}>{plan.planName}</Text>
+                    <Text>Thời hạn: {plan.duration} ngày</Text>
+                    <Text>Giá tiền: {plan.currentPrice}đ</Text>
+                  </VStack>
+                </HStack>
+                <Pressable
+                  alignSelf="flex-end"
+                  onPress={() => {
+                    handleBuyingSubscription(plan.id);
+                  }}
+                >
+                  <FontAwesome
+                    name="arrow-circle-right"
+                    size={35}
+                    color={appColor.primary}
+                  />
+                </Pressable>
+              </Box>
+            );
+          })}
         </VStack>
       </ScrollView>
       <Button

@@ -1,5 +1,5 @@
 import { axiosClient } from "../config/axios";
-import { IApiResponse, GroupChatInfo, ICreateGroupChatRequest } from "../types";
+import { IApiResponse } from "../types";
 import { IClinicInfo } from "../types/clinic.types";
 
 export const clinicService = {
@@ -7,5 +7,18 @@ export const clinicService = {
     clinicId: string
   ): Promise<IApiResponse<IClinicInfo[]>> {
     return axiosClient.get(`/clinics/${clinicId}/users`);
+  },
+  async getAllClinic() {
+    return axiosClient.get(`/clinics`);
+  },
+  async getCLinicByUserId(userId: any) {
+    return axiosClient.get(`/clinics`, {
+      params: {
+        id: userId,
+      },
+    });
+  },
+  async createClinic(clinicInfo: any) {
+    return axiosClient.post("/clinics", clinicInfo);
   },
 };

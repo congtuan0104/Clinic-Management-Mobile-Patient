@@ -12,11 +12,11 @@ import SubscriptionRegistrationProcessScreen from "../screens/SubscriptionScreen
 
 export type SubscriptionNavigatorStackParamList = {
   SubscriptionDashboard: undefined;
-  SubscriptionRegistration: undefined;
+  SubscriptionRegistration: { planData: any };
   SubscriptionHistory: undefined;
-  SubscriptionDetail: undefined;
+  SubscriptionDetail: { subscriptionId: number };
   SubscriptionList: undefined;
-  SubscriptionRegistrationProcess: undefined;
+  SubscriptionRegistrationProcess: { planData: any; paymentResult: any };
 };
 
 export type SubscriptionDashboardScreenProps = NativeStackScreenProps<

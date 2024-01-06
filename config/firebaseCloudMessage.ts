@@ -11,7 +11,7 @@ const requestUserPermission = async () => {
     authStatus === messaging.AuthorizationStatus.PROVISIONAL;
 
   if (enabled) {
-    console.log("Authorization status:", authStatus);
+    // console.log("Authorization status:", authStatus);
     return true;
   } else return false;
 };
@@ -23,14 +23,14 @@ const getFCMToken = async (userId: string) => {
       .getToken()
       .then(async (token: string) => {
         try {
-          console.log("FCM token: ", token);
+          // console.log("FCM token: ", token);
           // send token to server
           const response = await notificationService.postFCMTokenToServer(
             userId,
             token
           );
           if (response.status) {
-            console.log("Send FCM token to server successfully");
+            // console.log("Send FCM token to server successfully");
           }
         } catch (error) {
           console.log(error);
