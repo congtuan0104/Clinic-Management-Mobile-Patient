@@ -69,8 +69,8 @@ export default function SubscriptionListScreen({
                   <VStack>
                     <Text fontSize={20}>{plan.planName}</Text>
                     <Text>Thời hạn: {plan.duration} ngày</Text>
+                    <Text>Giá tiền: {plan.currentPrice}đ</Text>
                   </VStack>
-                  <Text>{plan.currentPrice}đ</Text>
                 </HStack>
                 <Pressable
                   alignSelf="flex-end"

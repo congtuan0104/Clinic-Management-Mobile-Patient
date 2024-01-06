@@ -31,10 +31,16 @@ export const StepThreeScreen = (props: any) => {
           <Radio value="Vnpay">
             <Text>VNPay</Text>
           </Radio>
+          <Radio value="ATM">
+            <Text>ATM</Text>
+          </Radio>
+          <Radio value="InternationalCard">
+            <Text>Thẻ quốc tế</Text>
+          </Radio>
         </VStack>
       </Radio.Group>
       <HStack
-        mt="50%"
+        mt="20%"
         width="full"
         justifyContent="space-between"
         alignSelf="center"

@@ -33,7 +33,7 @@ export type RootNativeStackParamList = {
 
   UserNavigator: {
     screen: string;
-    params: { screen: string; params: {}; setLogout: () => void };
+    params: { setLogout: () => void };
   };
 
   DoctorNavigator: { setLogout: () => void };
@@ -160,34 +160,18 @@ const StackNavigator = () => {
 
   const HandleDeepLinking = () => {
     const handleLink = async (link: any) => {
-      // console.log("Handle deep link");
-      // console.log("Link: ", link);
+      console.log("Handle deep link");
+      console.log("Link: ", link);
       // assume the data in url is the object like this
-      const paymentResult = {
-        amount: 20000,
-        clinicId: "b478ac56-8aac-4849-9063-4c21e8072381",
-        status: 2,
-        subscribePlanId: "9d0df7a5-5486-43b4-9957-d60ef8b1663f",
-      };
-      if (1) {
-        // const navigation = navigationRef.current;
-        // if (navigation) {
-        //   // Sửa ở đây
-        //   navigation.navigate("UserNavigator", {
-        //     screen: "SubscriptionNavigator",
-        //     params: {
-        //       // Set mock data to run, it isn't correct
-        //       screen: "SubscriptionRegistrationProcess",
-        //       params: {
-        //         planData: {
-        //           id: "tempId",
-        //         },
-        //         paymentResult: paymentResult,
-        //       },
-        //       setLogout,
-        //     },
-        //   });
-        // }
+      if (link.url === "https://clinus.page.link/payment") {
+        const navigation = navigationRef.current;
+        if (navigation) {
+          // Sửa ở đây
+          navigation.navigate("UserNavigator", {
+            screen: "ClinicListNavigator",
+            params: { setLogout },
+          });
+        }
       }
     };
     useEffect((): any => {
@@ -198,7 +182,7 @@ const StackNavigator = () => {
       dynamicLinks()
         .getInitialLink()
         .then((link: any) => {
-          // console.log("Initial link: ", link);
+          console.log("Initial link: ", link);
         });
     }, []);
     return null;
@@ -246,7 +230,7 @@ const StackNavigator = () => {
                 options={{ headerShown: false }}
                 initialParams={{
                   screen: "",
-                  params: { setLogout, screen: "", params: {} },
+                  params: { setLogout },
                 }}
               />
             </>
@@ -258,7 +242,7 @@ const StackNavigator = () => {
                 options={{ headerShown: false }}
                 initialParams={{
                   screen: "",
-                  params: { setLogout, screen: "", params: {} },
+                  params: { setLogout },
                 }}
               />
             </>
@@ -270,7 +254,7 @@ const StackNavigator = () => {
                 options={{ headerShown: false }}
                 initialParams={{
                   screen: "",
-                  params: { setLogout, screen: "", params: {} },
+                  params: { setLogout },
                 }}
               />
             </>

@@ -16,7 +16,7 @@ export default function SubscriptionRegistrationProcessScreen({
   navigation,
   route,
 }: SubscriptionRegistrationProcessScreenProps) {
-  const labels = ["Thông tin", "Thành tiền", "Thanh toán", "Thành công"];
+  const labels = ["Thông tin", "Thành tiền", "Thanh toán"];
   const [currentPosition, setCurrentPosition] = useState<number>(0);
   const [paymentMethod, setPaymentMethod] = useState<string>("Zalopay");
   const [subscriptionPlanId, setSubscriptionPlanId] = useState<any>(null);
@@ -57,15 +57,15 @@ export default function SubscriptionRegistrationProcessScreen({
             handlePayment={handlePayment}
           />
         );
-      case 3:
-        return <StepFourScreen changePosition={changePosition} />;
-      case 4:
-        return (
-          <StepFiveScreen
-            changePosition={changePosition}
-            paymentResult={paymentResult}
-          />
-        );
+      // case 3:
+      //   return <StepFourScreen changePosition={changePosition} />;
+      // case 4:
+      //   return (
+      //     <StepFiveScreen
+      //       changePosition={changePosition}
+      //       paymentResult={paymentResult}
+      //     />
+      //   );
       default:
         return null;
     }
@@ -96,7 +96,7 @@ export default function SubscriptionRegistrationProcessScreen({
       if (response.status) {
         // console.log(response.data);
         await openBrowserAsync(response.data);
-        changePosition(true);
+        // changePosition(true);
       }
     } catch (error) {
       console.log(error);
@@ -108,7 +108,7 @@ export default function SubscriptionRegistrationProcessScreen({
         customStyles={customStyles}
         currentPosition={currentPosition}
         labels={labels}
-        stepCount={4}
+        stepCount={3}
       />
       {/** Step card */}
       <Box

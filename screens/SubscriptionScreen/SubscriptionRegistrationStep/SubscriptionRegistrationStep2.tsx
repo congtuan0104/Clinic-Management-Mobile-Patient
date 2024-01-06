@@ -26,7 +26,7 @@ export const StepTwoScreen = (props: any) => {
         </HStack>
       </VStack>
       <HStack
-        mt="50%"
+        mt="20%"
         width="full"
         justifyContent="space-between"
         alignSelf="center"

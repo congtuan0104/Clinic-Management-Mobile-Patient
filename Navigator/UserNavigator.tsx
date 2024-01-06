@@ -2,7 +2,7 @@ import * as React from "react";
 import { UserNavigatorProps } from "./StackNavigator";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import Function02 from "../screens/UserScreen/Function02/Function02";
+import Function02 from "../screens/UserScreen/ClinicList/ClinicList";
 import { appColor } from "../theme";
 // Import custom icons
 import { Ionicons } from "@expo/vector-icons";
@@ -16,6 +16,7 @@ import ToastAlert from "../components/Toast/Toast";
 import { useToast } from "native-base";
 import { LoadingSpinner } from "../components/LoadingSpinner/LoadingSpinner";
 import ClinicInfoNavigator from "./ClinicInfoNavigator";
+import ClinicListNavigator from "../screens/UserScreen/ClinicList/ClinicList";
 
 export type UserNavigatorDrawerParamList = {
   // undefined: the route doesn't have params
@@ -24,7 +25,7 @@ export type UserNavigatorDrawerParamList = {
   SubscriptionNavigator: undefined;
   NotificationNavigator: undefined;
   ClinicInfoNavigator: { clinic: any };
-  Function02: {
+  ClinicListNavigator: {
     clinic: string;
     clinicList: any;
     setClinic: (clinic: string) => void;
@@ -48,9 +49,9 @@ export type NotificationNavigatorProps = NativeStackScreenProps<
   "NotificationNavigator"
 >;
 
-export type Function02NavigatorProps = NativeStackScreenProps<
+export type ClinicListNavigatorProps = NativeStackScreenProps<
   UserNavigatorDrawerParamList,
-  "Function02"
+  "ClinicListNavigator"
 >;
 
 export type ClinicInfoNavigatorProps = NativeStackScreenProps<
@@ -139,14 +140,14 @@ export default function UserScreen({ navigation, route }: UserNavigatorProps) {
             component={ProfileNavigator}
           />
           <UserNavigatorDrawer.Screen
-            name="Function02"
+            name="ClinicListNavigator"
             options={{
               title: "Danh sách phòng khám",
               drawerIcon: ({ color }) => (
                 <Ionicons name="settings-outline" size={24} color={color} />
               ),
             }}
-            component={Function02}
+            component={ClinicListNavigator}
             initialParams={{
               clinic,
               setClinic,
